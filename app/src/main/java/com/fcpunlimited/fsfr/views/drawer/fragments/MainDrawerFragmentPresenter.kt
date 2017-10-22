@@ -9,22 +9,22 @@ import com.fcpunlimited.fsfr.di.contracts.MainDrawerFragmentContract
 class MainDrawerFragmentPresenter : MainDrawerFragmentContract.Presenter {
 
     var view : MainDrawerFragmentContract.View? = null
-    var updateStatisticks : Boolean = true
+    var updateStatistics: Boolean = true
 
     override fun bind(iView: IView) {
        view = iView as MainDrawerFragmentContract.View
     }
 
     override fun getStatistics() {
-        if (updateStatisticks) {
-            updateStatisticks = false
+        if (updateStatistics) {
+            updateStatistics = false
             view?.showStatistics() ?: println("Error")
         }
     }
 
     override fun onLayoutClick(examId: Int, examTestType: Int, purchased: Boolean) {
         println("click")
-        updateStatisticks = true
+        updateStatistics = true
     }
 
     override fun unBind() {

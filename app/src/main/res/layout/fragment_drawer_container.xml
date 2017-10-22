@@ -8,6 +8,7 @@
 
     <include layout="@layout/toolbar_layout" />
 
-    <include layout="@layout/fragment_container" />
+    <include layout="@layout/drawer_main"/>
+    <!--<include layout="@layout/fragment_container" />-->
 
 </LinearLayout>

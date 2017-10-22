@@ -16,6 +16,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:id="@+id/exam_card_view"
             android:layout_marginBottom="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -106,6 +107,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:id="@+id/training_card_view"
             android:layout_marginBottom="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -196,6 +198,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:id="@+id/chapters_card_view"
             android:layout_marginBottom="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -285,6 +288,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:id="@+id/search_card_view"
             android:layout_marginBottom="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
@@ -374,6 +378,7 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="120dp"
+            android:id="@+id/favourite_card_view"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"

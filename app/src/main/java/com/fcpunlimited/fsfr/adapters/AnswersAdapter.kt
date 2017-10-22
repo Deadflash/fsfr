@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.fcpunlimited.fsfr.R
-import kotlinx.android.synthetic.main.fragment_testing_answers_item.view.*
+import kotlinx.android.synthetic.main.testing_answers_item.view.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 /**
@@ -15,7 +15,7 @@ class AnswersAdapter(private val iAnswers: IAnswers) : RecyclerView.Adapter<Answ
 
     override fun getItemCount(): Int = 4
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.fragment_testing_answers_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.testing_answers_item, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvAnswer?.text = "ANSWER"

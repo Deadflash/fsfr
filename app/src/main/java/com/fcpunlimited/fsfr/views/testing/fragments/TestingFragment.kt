@@ -26,6 +26,7 @@ class TestingFragment : BaseFragment(),AnswersAdapter.IAnswers {
         recycler.adapter = AnswersAdapter(this)
         recycler.clearFocus()
         recycler.isNestedScrollingEnabled = false
+
     }
 
     override fun onAnswerClicked(position: Int, isRight: Boolean) {

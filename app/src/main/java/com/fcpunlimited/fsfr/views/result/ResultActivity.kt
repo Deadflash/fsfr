@@ -19,6 +19,8 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class ResultActivity : BaseActivity() {
 
+    private val progressLayoutAnim = ValueAnimator.ofFloat(0F, 1F)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
@@ -26,7 +28,7 @@ class ResultActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         ivBuyCart.setColorFilter(ContextCompat.getColor(this, R.color.blue_grey_500))
         setupAnimations()
-
+        startAnimation()
         purchase_layout.onClick {
 
         }
@@ -35,91 +37,69 @@ class ResultActivity : BaseActivity() {
 
         }
         btToMenu.onClick {
-            resultCardView.visibility = View.GONE
+            //            resultCardView.visibility = View.GONE
+            progressbar_layout.alpha = 0F
             purchaseCardView.visibility = View.GONE
-            tvTitle.visibility = View.GONE
-            tvAdvise.visibility = View.GONE
             tvTitle.alpha = 0F
             tvAdvise.alpha = 0F
-            setupAnimations()
+            startAnimation()
         }
     }
 
     private fun setupAnimations() {
-        val cardResultCardViewAnimator = ObjectAnimator.ofFloat(resultCardView, "translationX", -500F, 0F)
-        cardResultCardViewAnimator.duration = 700
-        cardResultCardViewAnimator.startDelay = 500
-        cardResultCardViewAnimator.interpolator = DecelerateInterpolator()
-        cardResultCardViewAnimator.addListener(object : Animator.AnimatorListener {
+        progressLayoutAnim.duration = 700
+        progressLayoutAnim.startDelay = 500
+        progressLayoutAnim.addUpdateListener { progressbar_layout.alpha = progressLayoutAnim.animatedValue as Float }
+        progressLayoutAnim.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(p0: Animator?) {}
+
+            override fun onAnimationCancel(p0: Animator?) {}
+
+            override fun onAnimationStart(p0: Animator?) {}
 
             override fun onAnimationEnd(p0: Animator?) {
 
                 val resultProgressBarAnimator = ObjectAnimator.ofInt(resultProgressbar, "progress", 0, 100)
-                resultProgressBarAnimator.duration = 1500
+                resultProgressBarAnimator.duration = 1200
                 resultProgressBarAnimator.interpolator = DecelerateInterpolator()
                 resultProgressBarAnimator.addUpdateListener { tvResult.text = resultProgressBarAnimator.animatedValue.toString() }
                 resultProgressBarAnimator.addListener(object : Animator.AnimatorListener {
                     override fun onAnimationRepeat(p0: Animator?) {}
 
                     override fun onAnimationEnd(p0: Animator?) {
-                        tvTitle.visibility = View.VISIBLE
-                        tvAdvise.visibility = View.VISIBLE
-                        val titleHeightAnimator = ValueAnimator.ofInt(0, 70)
-                        titleHeightAnimator.duration = 500
-                        titleHeightAnimator.addUpdateListener {
-                            val titleLayoutParams = tvTitle.layoutParams
-                            val adviseLayoutParams = tvAdvise.layoutParams
-                            titleLayoutParams.height = titleHeightAnimator.animatedValue as Int
-                            adviseLayoutParams.height = titleHeightAnimator.animatedValue as Int
-                            tvTitle.layoutParams = titleLayoutParams
-                            tvAdvise.layoutParams = adviseLayoutParams
-                        }
+
                         val greetingAlphaAnimator = ValueAnimator.ofFloat(0F, 1F)
-                        greetingAlphaAnimator.duration = 700
-                        greetingAlphaAnimator.startDelay = 500
+                        greetingAlphaAnimator.duration = 500
+                        greetingAlphaAnimator.startDelay = 100
                         greetingAlphaAnimator.addUpdateListener {
                             val currentAlpha = greetingAlphaAnimator.animatedValue as Float
                             tvTitle.alpha = currentAlpha
                             tvAdvise.alpha = currentAlpha
                         }
-                        val titleAnimatorSet = AnimatorSet()
-                        titleAnimatorSet.playTogether(titleHeightAnimator, greetingAlphaAnimator)
-                        titleAnimatorSet.start()
 
-                        titleAnimatorSet.addListener(object : Animator.AnimatorListener {
-                            override fun onAnimationRepeat(p0: Animator?) {}
+                        val purchaseAnimator: ObjectAnimator = ObjectAnimator.ofFloat(purchaseCardView, "translationX", 300F, 0F)
+                        purchaseAnimator.addUpdateListener { purchaseCardView.visibility = View.VISIBLE }
+                        purchaseAnimator.duration = 900
+                        purchaseAnimator.startDelay = 800
+                        purchaseAnimator.interpolator = BounceInterpolator()
 
-                            override fun onAnimationEnd(p0: Animator?) {
-                                purchaseCardView.visibility = View.VISIBLE
-                                val purchaseAnimator: ObjectAnimator = ObjectAnimator.ofFloat(purchaseCardView, "translationX", 300F, 0F)
-                                purchaseAnimator.duration = 900
-                                purchaseAnimator.interpolator = BounceInterpolator()
-                                purchaseAnimator.start()
-                            }
-
-                            override fun onAnimationCancel(p0: Animator?) {}
-
-                            override fun onAnimationStart(p0: Animator?) {}
-                        })
+                        val animSet = AnimatorSet()
+                        animSet.playTogether(greetingAlphaAnimator, purchaseAnimator)
+                        animSet.start()
                     }
 
                     override fun onAnimationStart(p0: Animator?) {}
 
                     override fun onAnimationCancel(p0: Animator?) {}
                 })
-
                 resultProgressBarAnimator.start()
-
             }
 
-            override fun onAnimationCancel(p0: Animator?) {}
-
-            override fun onAnimationStart(p0: Animator?) {
-                resultCardView.visibility = View.VISIBLE
-            }
         })
-        cardResultCardViewAnimator.start()
+    }
+
+    private fun startAnimation() {
+        progressLayoutAnim.start()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {

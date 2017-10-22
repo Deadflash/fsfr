@@ -17,115 +17,95 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="?android:attr/actionBarSize"
-            android:clipToPadding="false">
+            android:clipToPadding="false"
+            android:paddingBottom="?android:attr/actionBarSize">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <android.support.v7.widget.CardView
+                <TextView
+                    android:id="@+id/tvTitle"
+                    fontPath="fonts/RobotoBold.ttf"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:id="@+id/resultCardView"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="3dp"
-                    app:cardElevation="3dp"
-                    app:cardPreventCornerOverlap="true">
+                    android:alpha="0"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Поздравляем!!"
+                    android:textColor="@color/blue_grey_700"
+                    android:textSize="24sp" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
 
-                        <FrameLayout
-                            android:id="@+id/progressbar_layout"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="4dp">
+                <FrameLayout
+                    android:id="@+id/progressbar_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="4dp">
 
-                            <ProgressBar
-                                android:id="@+id/resultProgressbar"
-                                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                                android:layout_width="180dp"
-                                android:layout_height="180dp"
-                                android:indeterminate="false"
-                                android:max="100"
-                                android:padding="8dp"
-                                android:progress="0"
-                                android:progressDrawable="@drawable/custom_circle_progress_drawable" />
+                    <ProgressBar
+                        android:id="@+id/resultProgressbar"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="180dp"
+                        android:layout_height="180dp"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:padding="8dp"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/custom_circle_progress_drawable" />
 
-                            <TextView
-                                android:id="@+id/tvResult"
-                                fontPath="fonts/RobotoLight.ttf"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:gravity="center"
-                                android:text="0"
-                                android:textColor="@color/blue_grey_700"
-                                android:textSize="32sp" />
+                    <TextView
+                        android:id="@+id/tvResult"
+                        fontPath="fonts/RobotoLight.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textColor="@color/blue_grey_700"
+                        android:textSize="32sp" />
 
-                        </FrameLayout>
+                </FrameLayout>
 
-                        <TextView
-                            android:id="@+id/tvTitle"
-                            fontPath="fonts/RobotoBold.ttf"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:alpha="0"
-                            android:layout_below="@id/progressbar_layout"
-                            android:gravity="center"
-                            android:visibility="gone"
-                            android:padding="8dp"
-                            android:text="Поздравляем!!"
-                            android:textColor="@color/blue_grey_700"
-                            android:textSize="24sp" />
-
-                        <TextView
-                            fontPath="fonts/RobotoLight.ttf"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/tvAdvise"
-                            android:visibility="gone"
-                            android:alpha="0"
-                            android:layout_below="@id/tvTitle"
-                            android:gravity="center"
-                            android:padding="8dp"
-                            android:text="Повторите 3 главу"
-                            android:textColor="@color/blue_grey_700"
-                            android:textSize="@dimen/large_text" />
-
-                    </RelativeLayout>
-
-                </android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/tvAdvise"
+                    fontPath="fonts/RobotoLight.ttf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:alpha="0"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="Повторите 3 главу"
+                    android:textColor="@color/blue_grey_700"
+                    android:textSize="@dimen/large_text" />
 
             </LinearLayout>
         </ScrollView>
 
         <android.support.v7.widget.CardView
+            android:id="@+id/purchaseCardView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@+id/footer"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_gravity="end"
+            android:layout_margin="8dp"
             android:visibility="gone"
-            android:id="@+id/purchaseCardView"
             app:cardCornerRadius="3dp"
             app:cardElevation="3dp"
-            android:layout_margin="8dp"
-            app:cardPreventCornerOverlap="true"
-            android:layout_above="@+id/footer"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true">
+            app:cardPreventCornerOverlap="true">
 
             <RelativeLayout
+                android:id="@+id/purchase_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/purchase_layout"
+                android:background="?attr/selectableItemBackground"
                 android:clickable="true"
-                android:padding="6dp"
-                android:background="?attr/selectableItemBackground">
+                android:padding="6dp">
 
                 <ImageView
                     android:id="@+id/ivBuyCart"
@@ -158,9 +138,9 @@
             android:gravity="center">
 
             <Button
+                android:id="@+id/btShowFailedQuestions"
                 fontPath="fonts/RobotoLight.ttf"
                 android:layout_width="135dp"
-                android:id="@+id/btShowFailedQuestions"
                 android:layout_height="40dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -174,10 +154,10 @@
                 android:textColor="@color/blue_grey_700" />
 
             <Button
+                android:id="@+id/btToMenu"
                 fontPath="fonts/RobotoLight.ttf"
                 android:layout_width="135dp"
                 android:layout_height="40dp"
-                android:id="@+id/btToMenu"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"

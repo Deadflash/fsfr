@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.fcpunlimited.fsfr.R
+import icepick.Icepick
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
@@ -19,6 +20,12 @@ abstract class BaseActivity : AppCompatActivity() {
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         )
+        Icepick.restoreInstanceState(this, savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        Icepick.saveInstanceState(this, outState)
     }
 
     override fun attachBaseContext(newBase: Context?) {
