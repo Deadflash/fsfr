@@ -1,0 +1,26 @@
+<resources>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="app_name">ФСФР kotlin</string>
+    <string name="exam_base">Базовый экзамен</string>
+    <string name="exam_1">Экзамен серии 1.0</string>
+    <string name="exam_2">Экзамен серии 2.0</string>
+    <string name="exam_3">Экзамен серии 3.0</string>
+    <string name="exam_4">Экзамен серии 4.0</string>
+    <string name="exam_5">Экзамен серии 5.0</string>
+    <string name="exam_6">Экзамен серии 6.0</string>
+    <string name="exam_7">Экзамен серии 7.0</string>
+    <string name="average_exam_score">Средний бал: 0</string>
+    <string name="training">Тренировка</string>
+    <string name="exam">Экзамен</string>
+    <string name="by_chapters">По главам</string>
+    <string name="questions">Вопросы</string>
+    <string name="favourite">Избранное</string>
+    <string name="get_100_score">Наберите 100 баллов</string>
+    <string name="title_activity_testing">TestingActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="discussions">Обсуждения</string>
+</resources>

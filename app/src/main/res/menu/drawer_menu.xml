@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_base_exam"
+            android:icon="@drawable/ic_check_black_24dp"
+            android:title="@string/exam_base" />
+        <item
+            android:id="@+id/nav_1_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_1" />
+        <item
+            android:id="@+id/nav_2_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_2" />
+        <item
+            android:id="@+id/nav_3_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_3" />
+        <item
+            android:id="@+id/nav_4_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_4" />
+        <item
+            android:id="@+id/nav_5_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_5" />
+        <item
+            android:id="@+id/nav_6_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_6" />
+        <item
+            android:id="@+id/nav_7_serial_exam"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/exam_7" />
+
+    </group>
+
+</menu>

@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="3dp"
+            app:cardPreventCornerOverlap="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/exam_Layout"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:id="@+id/exam_image_layout"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/blue_grey_500"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="10dp"
+                        android:src="@drawable/diploma" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@id/exam_image_layout"
+                    android:layout_toRightOf="@id/exam_image_layout">
+
+                    <TextView
+                        fontPath="fonts/RobotoBold.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="@string/exam"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/large_text"
+                        android:id="@+id/textView" />
+
+                    <TextView fontPath="fonts/RobotoRegular.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/small_text"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="@string/get_100_score"
+                        android:layout_below="@+id/textView"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_above="@+id/tvExamProgressCount" />
+
+                    <TextView
+                        android:id="@+id/tvExamProgressCount"
+                        fontPath="fonts/RobotoMedium.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/examProgressBar"
+                        android:layout_alignLeft="@+id/examProgressBar"
+                        android:layout_alignStart="@+id/examProgressBar"
+                        android:text="@string/average_exam_score"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/medium_text" />
+
+                    <ProgressBar
+                        android:id="@+id/examProgressBar"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="8dp"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/custom_progress_drawable" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="3dp"
+            app:cardPreventCornerOverlap="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/training_layout"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:id="@+id/training_image_layout"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/blue_grey_400"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="10dp"
+                        android:src="@drawable/open_book" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@+id/training_image_layout"
+                    android:layout_toRightOf="@+id/training_image_layout">
+
+                    <TextView
+                        fontPath="fonts/RobotoBold.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="@string/training"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/large_text"
+                        android:id="@+id/textView2" />
+
+                    <TextView fontPath="fonts/RobotoRegular.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/small_text"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="Показываются верные ответы"
+                        android:layout_below="@+id/textView2"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_above="@+id/tvTrainingProgressCount" />
+
+                    <TextView
+                        android:id="@+id/tvTrainingProgressCount"
+                        fontPath="fonts/RobotoMedium.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/trainingProgressBar"
+                        android:layout_alignLeft="@+id/trainingProgressBar"
+                        android:layout_alignStart="@+id/trainingProgressBar"
+                        android:text="В среднем 0 балов"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/medium_text" />
+
+                    <ProgressBar
+                        android:id="@+id/trainingProgressBar"
+                        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="8dp"
+                        android:indeterminate="false"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/custom_progress_drawable" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="3dp"
+            app:cardPreventCornerOverlap="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/chapters_layout"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:id="@+id/chapters_image_layout"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/blue_grey_300"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="10dp"
+                        android:src="@drawable/agenda" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@+id/chapters_image_layout"
+                    android:layout_toRightOf="@+id/chapters_image_layout">
+
+                    <TextView
+                        fontPath="fonts/RobotoBold.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="@string/by_chapters"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/large_text"
+                        android:id="@+id/textView3" />
+
+                    <TextView fontPath="fonts/RobotoRegular.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/small_text"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="Все вопросы разбиты по главам"
+                        android:layout_below="@+id/textView3"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_above="@+id/tvChaptersProgressCount" />
+
+                    <TextView
+                        android:id="@+id/tvChaptersProgressCount"
+                        fontPath="fonts/RobotoMedium.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Глав: 0"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/medium_text"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="8dp"/>
+
+                    <!--<ProgressBar-->
+                        <!--android:id="@+id/chaptersProgressBar"-->
+                        <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="5dp"-->
+                        <!--android:layout_alignParentBottom="true"-->
+                        <!--android:layout_margin="8dp"-->
+                        <!--android:indeterminate="false"-->
+                        <!--android:max="100"-->
+                        <!--android:progress="0"-->
+                        <!--android:progressDrawable="@drawable/custom_progress_drawable" />-->
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="3dp"
+            app:cardPreventCornerOverlap="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/search_layout"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:id="@+id/search_image_layout"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/blue_grey_200"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="10dp"
+                        android:src="@drawable/loupe" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@+id/search_image_layout"
+                    android:layout_toRightOf="@+id/search_image_layout">
+
+                    <TextView
+                        fontPath="fonts/RobotoBold.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="@string/questions"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/large_text"
+                        android:id="@+id/textView4"/>
+
+                    <TextView fontPath="fonts/RobotoRegular.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/small_text"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="Поиск ответа по вопросу"
+                        android:layout_below="@+id/textView4"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_above="@+id/tvQuestionsProgressCount" />
+
+                    <TextView
+                        android:id="@+id/tvQuestionsProgressCount"
+                        fontPath="fonts/RobotoMedium.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_alignParentBottom="true"
+                        android:text="Всего вопросов: 0"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/medium_text" />
+
+                    <!--<ProgressBar-->
+                        <!--android:id="@+id/questionsProgressBar"-->
+                        <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="5dp"-->
+                        <!--android:layout_alignParentBottom="true"-->
+                        <!--android:layout_margin="8dp"-->
+                        <!--android:indeterminate="false"-->
+                        <!--android:max="100"-->
+                        <!--android:progress="0"-->
+                        <!--android:progressDrawable="@drawable/custom_progress_drawable" />-->
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="3dp"
+            app:cardElevation="3dp"
+            app:cardPreventCornerOverlap="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/favourite_layout"
+                android:background="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:id="@+id/favourite_image_layout"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/blue_grey_100"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="10dp"
+                        android:src="@drawable/favourite" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_toEndOf="@+id/favourite_image_layout"
+                    android:layout_toRightOf="@+id/favourite_image_layout">
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        fontPath="fonts/RobotoBold.ttf"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        android:text="@string/favourite"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/large_text" />
+
+                    <TextView fontPath="fonts/RobotoRegular.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/small_text"
+                        android:paddingLeft="8dp"
+                        android:paddingRight="8dp"
+                        android:text="Вопросы которые вам интересны"
+                        android:layout_below="@+id/textView5"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_above="@+id/favouriteProgressBar" />
+
+                    <TextView
+                        android:id="@+id/tvFavouriteProgressCount"
+                        fontPath="fonts/RobotoMedium.ttf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="8dp"
+                        android:text="Добавлено 0 вопросов"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/medium_text" />
+
+                    <!--<ProgressBar-->
+                        <!--android:id="@+id/favouriteProgressBar"-->
+                        <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="5dp"-->
+                        <!--android:layout_alignParentBottom="true"-->
+                        <!--android:layout_margin="8dp"-->
+                        <!--android:indeterminate="false"-->
+                        <!--android:max="100"-->
+                        <!--android:progress="0"-->
+                        <!--android:progressDrawable="@drawable/custom_progress_drawable" />-->
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</ScrollView>
