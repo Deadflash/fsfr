@@ -12,6 +12,7 @@ import com.fintrainer.fintrainer.di.contracts.DrawerContract
 import com.fintrainer.fintrainer.utils.Constants.DRAWER_MAIN_FRAGMENT_TAG
 import com.fintrainer.fintrainer.views.BaseFragment
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity
+import com.fintrainer.fintrainer.views.drawer.DrawerPresenter
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import icepick.State
 import kotlinx.android.synthetic.main.drawer_main.*

@@ -17,10 +17,10 @@ import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
+import com.fintrainer.fintrainer.utils.realm.RealmContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity
-import com.fintrainer.fintrainer.views.drawer.fragments.DrawerPresenter
 import com.fintrainer.fintrainer.views.search.SearchActivity
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.readystatesoftware.systembartint.SystemBarTintManager
@@ -48,6 +48,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     @Inject
     lateinit var presenter: DrawerPresenter
 
+    @Inject
+    lateinit var realmContainer: RealmContainer
+
     private val statisticsAnimSet = AnimatorSet()
     private val cardViewAnimSet = AnimatorSet()
     private val cardViewReverseAnimSet = AnimatorSet()
@@ -61,9 +64,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         setContentView(R.layout.activity_drawer)
         initStatusBar()
         setupToolbar()
+        App.initDrawerComponent()?.inject(this)
+//        App.component.inject(this)
 
-        App.component.inject(this)
-
+        realmContainer.initRealm()
         setupClickListeners()
         setupAnimations()
         setupReverseAnimation()
