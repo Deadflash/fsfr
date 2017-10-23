@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainMenuCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:paddingBottom="4dp"
+    android:paddingTop="4dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp"
+    app:cardPreventCornerOverlap="true">
+
+    <LinearLayout
+        android:id="@+id/discussion_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/discussion_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvUserName"
+                fontPath="fonts/RobotoBold.ttf"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingBottom="4dp"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:textSize="@dimen/large_text" />
+
+            <TextView
+                android:id="@+id/discussionText"
+                fontPath="fonts/RobotoRegular.ttf"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp"
+                android:textSize="@dimen/medium_text" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/blue_grey_600" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivStartDiscussion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:paddingLeft="8dp"
+                android:src="@drawable/ic_question_answer_white_24dp"
+                android:tint="@color/blue_grey_600" />
+
+            <TextView
+                android:id="@+id/tvCommentsCount"
+                fontPath="fonts/RobotoRegular.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/ivStartDiscussion"
+                android:layout_toRightOf="@id/ivStartDiscussion"
+                android:text="0"
+                android:textSize="@dimen/medium_text" />
+
+            <RelativeLayout
+                android:id="@+id/discussion_comment_rate"
+                android:layout_width="115dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="end"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp">
+
+                <ImageView
+                    android:id="@+id/rate_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/ic_thumb_up_black_24dp"
+                    android:tint="@color/blue_grey_600" />
+
+                <TextView
+                    android:id="@+id/rate_view"
+                    fontPath="fonts/RobotoRegular.ttf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/rate_btn"
+                    android:layout_toLeftOf="@+id/unrate_btn"
+                    android:layout_toRightOf="@+id/rate_btn"
+                    android:layout_toStartOf="@+id/unrate_btn"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textSize="@dimen/medium_text" />
+
+                <ImageView
+                    android:id="@+id/unrate_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/ic_thumb_down_black_24dp"
+                    android:tint="@color/blue_grey_600" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/discussion_negative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tvNegativeCommentText"
+            fontPath="fonts/RobotoRegular.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:text="@string/discussion_negative_like_text"
+            android:textSize="@dimen/medium_text" />
+
+
+        <TextView
+            android:id="@+id/tvNegativeShowBtn"
+            fontPath="fonts/RobotoRegular.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:text="@string/discussion_negative_like_comment_show_btn"
+            android:textSize="@dimen/medium_text" />
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

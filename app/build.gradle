@@ -2,12 +2,13 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
-        applicationId "com.fcpunlimited.fsfr"
+        applicationId "com.fintrainer.fintrainer"
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
@@ -26,16 +27,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs'
     })
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    //IcePick
-    //Circle Image View
-    //Calligraphy
-    //System Bar Tint
-    //picasso
-    //Dagger 2
-    //    provided 'javax.annotation:jsr250-api:1.0'
-    //Anko
+    compile 'com.google.android.gms:play-services-auth:11.0.4'
+//    compile 'com.google.firebase:firebase-core:10.0.1'
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:design:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
@@ -51,9 +47,13 @@ dependencies {
     kapt 'frankiesardo:icepick-processor:3.2.0'
     kapt 'com.google.dagger:dagger-compiler:2.9'
 }
+realm {
+    syncEnabled = true;
+}
 kapt {
     generateStubs = true
 }
 repositories {
     mavenCentral()
 }
+apply plugin: 'com.google.gms.google-services'

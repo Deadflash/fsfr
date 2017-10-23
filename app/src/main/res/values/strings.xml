@@ -23,4 +23,8 @@
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="discussions">Обсуждения</string>
+    <string name="add_discussions_empty_text">Для добавления вопроса нажмите \"+\" в правом верхнем углу экрана</string>
+    <string name="discussion_negative_like_comment_show_btn">Показать</string>
+    <string name="discussion_negative_like_text">Обсуждение набрало большое количество отрицательных оценок и было скрыто</string>
+    <string name="Answers">Ответы:</string>
 </resources>

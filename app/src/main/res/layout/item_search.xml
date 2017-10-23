@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            fontPath="fonts/RobotoRegular.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="4dp"
+            android:text="Код вопроса: "
+            android:textSize="@dimen/small_text" />
+
+        <TextView
+            android:id="@+id/tvQuestionCode"
+            fontPath="fonts/RobotoRegular.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:paddingTop="8dp"
+            android:textSize="@dimen/small_text" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvQuestion"
+        fontPath="fonts/RobotoRegular.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:text="Тело вопроса"
+        android:textSize="@dimen/large_text" />
+
+    <ImageView
+        android:id="@+id/ivQuestionImg"
+        android:layout_width="match_parent"
+        android:src="@color/blue_grey_500"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_height="200dp" />
+
+    <TextView
+        android:id="@+id/answerCaption"
+        fontPath="fonts/RobotoBold.ttf"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/Answers"
+        android:textSize="@dimen/medium_text" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/searchAnswersRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:overScrollMode="never">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:background="@color/blue_grey_300" />
+
+</LinearLayout>

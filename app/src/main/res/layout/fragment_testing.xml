@@ -23,8 +23,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="17dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:text="1.1.1"
                 android:textSize="@dimen/small_text" />
 
@@ -32,15 +32,19 @@
                 android:id="@+id/tvQuestion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:text="БОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текстБОЛЬШОЙ И ДЛИННЫЙ текстБОЛЬШОЙ И ДЛИННЫЙ текстБОЛЬШОЙ И ДЛИННЫЙ текстБОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текстБОЛЬШОЙ И ДЛИННЫЙ текст БОЛЬШОЙ И ДЛИННЫЙ текстБОЛЬШОЙ И ДЛИННЫЙ текст"
                 android:textSize="@dimen/medium_text" />
 
             <ImageView
                 android:id="@+id/ivTestingImg"
                 android:layout_width="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
                 android:layout_height="200dp"
-                android:padding="10dp"
                 android:src="@color/blue_grey_300" />
 
             <android.support.v7.widget.RecyclerView

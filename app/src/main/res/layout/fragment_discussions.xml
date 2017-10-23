@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_grey_50"
+    android:orientation="vertical"
+    tools:context="com.fintrainer.fintrainer.views.discussions.DiscussionsActivity">
+
+    <include layout="@layout/toolbar_layout" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycler"
+            android:layoutAnimation="@anim/recycler_layout_anim"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <TextView fontPath="fonts/RobotoRegular.ttf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_discussions_empty_text"
+            android:textSize="@dimen/large_text"
+            android:padding="8dp"
+            android:gravity="center"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+</LinearLayout>
