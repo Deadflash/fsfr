@@ -3,29 +3,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:background="@color/blue_grey_50"
     android:orientation="vertical"
     tools:context="com.fcpunlimited.fsfr.views.search.SearchActivity">
 
     <include layout="@layout/toolbar_layout" />
 
     <android.support.v7.widget.SearchView
+        fontPath="fonts/RobotoRegular.ttf"
+        android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/districtSearch"
         android:focusable="true"
-        android:focusableInTouchMode="true"
-        >
+        android:focusableInTouchMode="true">
 
     </android.support.v7.widget.SearchView>
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:layoutAnimation="@anim/recycler_layout_anim"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        android:id="@+id/recycler">
+        android:scrollbars="vertical">
 
     </android.support.v7.widget.RecyclerView>
 

@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/red_500</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@color/blue_grey_600</item>
     </style>
 
     <style name="DrawerTheme" parent="AppTheme">

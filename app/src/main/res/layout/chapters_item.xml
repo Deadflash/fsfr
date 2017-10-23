@@ -35,7 +35,7 @@
             android:layout_toRightOf="@+id/ivChapterImg"
             android:layout_toStartOf="@id/count"
             android:padding="10dp"
-            android:textSize="14sp" />
+            android:textSize="@dimen/medium_text" />
 
         <FrameLayout
             android:id="@+id/count"
@@ -58,7 +58,7 @@
                     android:layout_centerVertical="true"
                     android:gravity="start"
                     android:padding="10dp"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/small_text" />
 
                 <ImageView
                     android:layout_width="match_parent"

@@ -21,6 +21,7 @@ import com.fcpunlimited.fsfr.views.App
 import com.fcpunlimited.fsfr.views.BaseActivity
 import com.fcpunlimited.fsfr.views.chapters.ChaptersActivity
 import com.fcpunlimited.fsfr.views.drawer.fragments.MainDrawerFragmentPresenter
+import com.fcpunlimited.fsfr.views.search.SearchActivity
 import com.fcpunlimited.fsfr.views.testing.TestingActivity
 import com.readystatesoftware.systembartint.SystemBarTintManager
 import icepick.State
@@ -313,23 +314,16 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         }
         training_layout.id -> {
             presenter.onLayoutClick(0, 0, false)
-//            presenter.getStatistics()
         }
         chapters_layout.id -> {
             presenter.onLayoutClick(0, 2, false)
             startActivity<ChaptersActivity>()
         }
         search_layout.id -> {
-            presenter.onLayoutClick(0, 3, false)
-//            exam_card_view.visibility = View.INVISIBLE
-//            training_card_view.visibility = View.INVISIBLE
-//            chapters_card_view.visibility = View.INVISIBLE
-//            search_card_view.visibility = View.INVISIBLE
-//            favourite_card_view.visibility = View.INVISIBLE
+            startActivity<SearchActivity>()
         }
         favourite_layout.id -> {
             presenter.onLayoutClick(0, 4, false)
-//            startReverseAnimations()
         }
         else -> println("miss click")
     }

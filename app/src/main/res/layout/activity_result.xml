@@ -34,7 +34,7 @@
                     android:gravity="center"
                     android:padding="8dp"
                     android:text="Поздравляем!!"
-                    android:textColor="@color/blue_grey_700"
+                    android:textColor="@color/blue_grey_600"
                     android:textSize="24sp" />
 
 
@@ -65,7 +65,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="0"
-                        android:textColor="@color/blue_grey_700"
+                        android:textColor="@color/blue_grey_600"
                         android:textSize="32sp" />
 
                 </FrameLayout>
@@ -79,7 +79,7 @@
                     android:gravity="center"
                     android:padding="8dp"
                     android:text="Повторите 3 главу"
-                    android:textColor="@color/blue_grey_700"
+                    android:textColor="@color/blue_grey_600"
                     android:textSize="@dimen/large_text" />
 
             </LinearLayout>
@@ -122,6 +122,7 @@
                     android:layout_gravity="center"
                     android:layout_toEndOf="@+id/ivBuyCart"
                     android:layout_toRightOf="@+id/ivBuyCart"
+                    android:textColor="@color/blue_grey_600"
                     android:padding="8dp"
                     android:text="Купить"
                     android:textSize="@dimen/large_text" />
@@ -150,8 +151,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="Ошибки"
+                android:textSize="@dimen/medium_text"
                 android:textAllCaps="false"
-                android:textColor="@color/blue_grey_700" />
+                android:textColor="@color/blue_grey_600" />
 
             <Button
                 android:id="@+id/btToMenu"
@@ -164,8 +166,9 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/ripple_right"
                 android:text="В меню"
+                android:textSize="@dimen/medium_text"
                 android:textAllCaps="false"
-                android:textColor="@color/blue_grey_700" />
+                android:textColor="@color/blue_grey_600" />
 
         </LinearLayout>
 

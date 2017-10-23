@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:text="Александр Кротков"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="@dimen/medium_text" />
 
     </LinearLayout>
 
