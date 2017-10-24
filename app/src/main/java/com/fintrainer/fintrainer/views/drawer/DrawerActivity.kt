@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -11,13 +12,27 @@ import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.util.DisplayMetrics
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
-import com.fintrainer.fintrainer.utils.realm.RealmContainer
+import com.fintrainer.fintrainer.structure.ExamStatisticAndInfo
+import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
+import com.fintrainer.fintrainer.utils.Constants.EXAM_BASE
+import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_1
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_2
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_3
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_4
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_5
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_6
+import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_7
+import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
+import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
+import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity
@@ -35,6 +50,7 @@ import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
 import javax.inject.Inject
 
+
 class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener {
 
     @State
@@ -45,11 +61,28 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     @JvmField
     var trainingProgress: Int? = null
 
-    @Inject
-    lateinit var presenter: DrawerPresenter
+    @State
+    @JvmField
+    var chaptersCountProgress: Int? = null
+
+    @State
+    @JvmField
+    var questionsCountProgress: Int? = null
+
+    @State
+    @JvmField
+    var favouriteCountProgress: Int? = null
+
+    @State
+    @JvmField
+    var selectedExam: Int = 0
+
+    @State
+    @JvmField
+    var currentExam: Int = 0
 
     @Inject
-    lateinit var realmContainer: RealmContainer
+    lateinit var presenter: DrawerPresenter
 
     private val statisticsAnimSet = AnimatorSet()
     private val cardViewAnimSet = AnimatorSet()
@@ -57,28 +90,26 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     private val duration: Long = 400
     private val reverseDuration: Long = 200
     private val delayDuration: Long = 100
-    private val translationX: Float = -700F
+    private var translationX: Float = 0.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawer)
-        initStatusBar()
-        setupToolbar()
         App.initDrawerComponent()?.inject(this)
-//        App.component.inject(this)
 
-        realmContainer.initRealm()
+        val displayMetrics = DisplayMetrics()
+        (applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(displayMetrics)
+        translationX = -displayMetrics.widthPixels.toFloat()
+
+        initStatusBar()
+        setupDrawer()
+
         setupClickListeners()
-        setupAnimations()
-        setupReverseAnimation()
-        setupStatisticsAnimation()
-    }
+        setupCardViewAnimations()
+        setupReverseCardViewAnimations()
 
-    override fun onResume() {
-        super.onResume()
         presenter.bind(this)
-        clearStatisticView()
-        presenter.getStatistics()
+        presenter.getStatistics(selectedExam)
     }
 
     private fun initStatusBar() {
@@ -96,40 +127,71 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         }
     }
 
-    private fun setupToolbar() {
+    private fun setupDrawer() {
         setSupportActionBar(toolbar)
         val toggle = object : ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             override fun onDrawerClosed(drawerView: View?) {
                 super.onDrawerClosed(drawerView)
-                startReverseAnimations()
+                if (currentExam != selectedExam) {
+                    currentExam = selectedExam
+                    cardViewReverseAnimSet.start()
+                    presenter.getStatistics(selectedExam)
+                    setupTitle()
+                }
             }
         }
         drawer.addDrawerListener(toggle)
         toggle.syncState()
+        setupTitle()
+
         navigation_view.setNavigationItemSelectedListener(this)
         navigation_view.getHeaderView(0)?.ivLogout?.onClick { toast("logout") }
         navigation_view.menu?.getItem(0)?.isChecked = true
     }
 
-    private fun setupStatisticsAnimation() {
-        examProgress = 100
-        trainingProgress = 20
-        val exam = ObjectAnimator.ofInt(examProgressBar, "progress", 0, 100)
+    private fun setupTitle() {
+        supportActionBar?.title = when (selectedExam) {
+            EXAM_BASE -> "Базовый экзамен"
+            EXAM_SERIAL_1 -> "Серия 1.0"
+            EXAM_SERIAL_2 -> "Серия 2.0"
+            EXAM_SERIAL_3 -> "Серия 3.0"
+            EXAM_SERIAL_4 -> "Серия 4.0"
+            EXAM_SERIAL_5 -> "Серия 5.0"
+            EXAM_SERIAL_6 -> "Серия 6.0"
+            EXAM_SERIAL_7 -> "Серия 7.0"
+            else -> "ФСФР Экзамены"
+        }
+    }
+
+    private fun setupStatisticsAnimation(examProgress: Int, trainingProgress: Int, chaptersCount: Int, questionsCount: Int, favouriteCount: Int) {
+        val exam = ObjectAnimator.ofInt(examProgressBar, "progress", 0, examProgress)
         exam.addUpdateListener {
             tvExamProgressCount?.text = "Средний бал: ${exam.animatedValue}"
         }
-        val train = ObjectAnimator.ofInt(trainingProgressBar, "progress", 0, 20)
+        val train = ObjectAnimator.ofInt(trainingProgressBar, "progress", 0, trainingProgress)
         train.addUpdateListener {
             tvTrainingProgressCount?.text = "В среднем ${train.animatedValue} балов"
         }
-        statisticsAnimSet.playTogether(exam, train)
+        val chaptersCountAnim = ValueAnimator.ofInt(0, chaptersCount)
+        chaptersCountAnim.addUpdateListener {
+            tvChaptersProgressCount.text = "Глав: ${chaptersCountAnim.animatedValue}"
+        }
+        val questionsCountAnim = ValueAnimator.ofInt(0, questionsCount)
+        questionsCountAnim.addUpdateListener {
+            tvQuestionsProgressCount.text = "Всего вопросов: ${questionsCountAnim.animatedValue}"
+        }
+        val favouriteCountAnim = ValueAnimator.ofInt(0, favouriteCount)
+        favouriteCountAnim.addUpdateListener {
+            tvFavouriteProgressCount.text = "Добавлено ${favouriteCountAnim.animatedValue} вопросов"
+        }
+        statisticsAnimSet.playTogether(exam, train, chaptersCountAnim, questionsCountAnim, favouriteCountAnim)
         statisticsAnimSet.duration = 1500
-        statisticsAnimSet.startDelay = 100
+        statisticsAnimSet.startDelay = 150
         statisticsAnimSet.interpolator = DecelerateInterpolator()
     }
 
-    private fun setupAnimations() {
+    private fun setupCardViewAnimations() {
         exam_card_view.visibility = View.INVISIBLE
         training_card_view.visibility = View.INVISIBLE
         chapters_card_view.visibility = View.INVISIBLE
@@ -192,7 +254,8 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             override fun onAnimationRepeat(p0: Animator?) {}
 
             override fun onAnimationEnd(p0: Animator?) {
-                showStatistics()
+                statisticsAnimSet.start()
+//                startStatisticAnimation()
             }
 
             override fun onAnimationCancel(p0: Animator?) {}
@@ -200,10 +263,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             override fun onAnimationStart(p0: Animator?) {}
 
         })
-        startAnimations()
+//        startCardViewsAnimation()
     }
 
-    private fun setupReverseAnimation() {
+    private fun setupReverseCardViewAnimations() {
         val exAnim = ObjectAnimator.ofFloat(exam_card_view, "translationX", 0F, translationX)
         exAnim.duration = reverseDuration
         exAnim.startDelay = delayDuration
@@ -231,7 +294,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         chaptersAnim.addUpdateListener { chapters_card_view.visibility = View.VISIBLE }
         val chaptersRevAlphaAnim = ValueAnimator.ofFloat(1F, 0F)
         chaptersRevAlphaAnim.duration = reverseDuration
-        chaptersRevAlphaAnim.startDelay = delayDuration +200
+        chaptersRevAlphaAnim.startDelay = delayDuration + 200
         chaptersRevAlphaAnim.addUpdateListener { chapters_card_view.alpha = chaptersRevAlphaAnim.animatedValue as Float }
 
         val searchAnim = ObjectAnimator.ofFloat(search_card_view, "translationX", 0F, translationX)
@@ -260,7 +323,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
             override fun onAnimationEnd(p0: Animator?) {
                 clearStatisticView()
-                startAnimations()
+                setupUserProgress()
+//                cardViewAnimSet.start()
+//                startCardViewsAnimation()
             }
 
             override fun onAnimationCancel(p0: Animator?) {}
@@ -270,19 +335,14 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         })
     }
 
-    private fun startAnimations() {
-        cardViewAnimSet.start()
-    }
-
-    private fun startReverseAnimations() {
-        cardViewReverseAnimSet.start()
-    }
-
     private fun clearStatisticView() {
         tvExamProgressCount.text = "Средний бал: 0"
         examProgressBar.progress = 0
         tvTrainingProgressCount.text = "В среднем 0 балов"
         trainingProgressBar.progress = 0
+        tvChaptersProgressCount.text = "Глав: 0"
+        tvQuestionsProgressCount.text = "Всего вопросов: 0"
+        tvFavouriteProgressCount.text = "Добавлено 0 вопросов"
     }
 
     private fun setupUserProgress() {
@@ -290,6 +350,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         examProgressBar.progress = examProgress ?: 0
         tvTrainingProgressCount.text = "В среднем ${trainingProgress?.toString() ?: "0"} балов"
         trainingProgressBar.progress = trainingProgress ?: 0
+        tvChaptersProgressCount.text = "Глав: ${chaptersCountProgress?.toString() ?: "0"}"
+        tvQuestionsProgressCount.text = "Всего вопросов: ${questionsCountProgress?.toString() ?: "0"}"
+        tvFavouriteProgressCount.text = "Добавлено ${favouriteCountProgress?.toString() ?: "0"} вопросов"
     }
 
     private fun setupClickListeners() {
@@ -300,21 +363,17 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         favourite_layout.setOnClickListener(this)
     }
 
-    override fun onPause() {
-        super.onPause()
-        statisticsAnimSet.cancel()
-        presenter.unBind()
-    }
-
-    override fun showStatistics() {
-        if (!statisticsAnimSet.isRunning) {
-            statisticsAnimSet.start()
+    override fun showStatistics(statistics: ExamStatisticAndInfo) {
+        setupStatisticsAnimation(statistics.averageGrade, statistics.averageRightAnswers, statistics.chaptersCount, statistics.questionsCount, statistics.favouriteQuestionsCount)
+        if (!cardViewAnimSet.isRunning) {
+            cardViewAnimSet.start()
         }
+//        startStatisticAnimation()
     }
 
     override fun onClick(p0: View?) = when (p0?.id) {
         exam_Layout.id -> {
-            startActivityForResult<TestingActivity>(1)
+            startActivityForResult<TestingActivity>(EXAM_INTENT,"intentId" to EXAM_INTENT,"examId" to currentExam)
         }
         training_layout.id -> {
             presenter.onLayoutClick(0, 0, false)
@@ -334,53 +393,64 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         toast("Result Code $resultCode Request Code $requestCode")
+        when(requestCode){
+            EXAM_INTENT -> App.releaseTestingComponent()
+            TESTING_INTENT -> toast("TestIntent")
+            CHAPTER_INTENT -> toast("ChapterIntent")
+            SEARCH_INTENT -> toast("SearchIntent")
+            FAVOURITE_INTENT -> toast("FavoriteIntent")
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        drawer.closeDrawer(GravityCompat.START)
         return when (item.itemId) {
             R.id.nav_base_exam -> {
-//                toast("base")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_BASE
                 true
             }
             R.id.nav_1_serial_exam -> {
-//                toast("serial 1")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_1
                 true
             }
             R.id.nav_2_serial_exam -> {
-//                toast("serial 2")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_2
                 true
             }
             R.id.nav_3_serial_exam -> {
-//                toast("serial 3")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_3
                 true
             }
             R.id.nav_4_serial_exam -> {
-//                toast("serial 4")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_4
                 true
             }
             R.id.nav_5_serial_exam -> {
-//                toast("serial 5")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_5
                 true
             }
             R.id.nav_6_serial_exam -> {
-//                toast("serial 6")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_6
                 true
             }
             R.id.nav_7_serial_exam -> {
-//                toast("serial 7")
-                drawer.closeDrawer(GravityCompat.START)
+                selectedExam = EXAM_SERIAL_7
                 true
             }
             else -> return false
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        statisticsAnimSet.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.unBind()
+        App.releaseDrawerComponent()
     }
 
     override fun onBackPressed() {

@@ -4,7 +4,9 @@ import android.app.Application
 import com.fintrainer.fintrainer.di.components.AppComponent
 import com.fintrainer.fintrainer.di.components.DaggerAppComponent
 import com.fintrainer.fintrainer.di.components.DrawerComponent
+import com.fintrainer.fintrainer.di.components.TestingComponent
 import com.fintrainer.fintrainer.di.modules.DrawerModule
+import com.fintrainer.fintrainer.di.modules.TestingModule
 import com.fintrainer.fintrainer.utils.realm.RealmContainer
 import io.realm.Realm
 import javax.inject.Inject
@@ -19,6 +21,9 @@ class App : Application() {
         private var drawerComponent: DrawerComponent? = null
 
         @JvmStatic
+        private var testingComponent: TestingComponent? = null
+
+        @JvmStatic
         lateinit var appComponent: AppComponent
 
         @JvmStatic
@@ -27,6 +32,24 @@ class App : Application() {
                 drawerComponent = appComponent.subDrawerComponent(DrawerModule())
             }
             return drawerComponent
+        }
+
+        @JvmStatic
+        fun releaseDrawerComponent() {
+            drawerComponent = null
+        }
+
+        @JvmStatic
+        fun initTestingComponent(): TestingComponent? {
+            if (testingComponent == null){
+                testingComponent = appComponent.subTestingComponent(TestingModule())
+            }
+            return testingComponent
+        }
+
+        @JvmStatic
+        fun releaseTestingComponent(){
+            testingComponent = null
         }
     }
 
@@ -38,6 +61,7 @@ class App : Application() {
         Realm.init(this)
         appComponent = DaggerAppComponent.create()
         appComponent.inject(this)
-//        realmContainer.initRealm()
+        realmContainer.initRealm()
+        realmContainer.initStatisticsRealm()
     }
 }

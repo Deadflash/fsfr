@@ -8,28 +8,50 @@ import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.fintrainer.fintrainer.R
+import com.fintrainer.fintrainer.di.contracts.TestingContract
+import com.fintrainer.fintrainer.structure.TestingDto
+import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
 import com.fintrainer.fintrainer.views.testing.fragments.TestingFragment
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
+import javax.inject.Inject
 
-class TestingActivity : BaseActivity() {
+class TestingActivity : BaseActivity(), TestingContract.View {
+
+    @Inject
+    lateinit var presenter: TestingPresenter
+
+    private lateinit var tests: List<TestingDto>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_testing)
+        App.initTestingComponent()?.inject(this)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        view_pager.adapter = SectionsPagerAdapter(supportFragmentManager)
+
+        presenter.bind(this)
+        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.testing_menu, menu)
         return true
+    }
+
+    override fun showTest(tests: List<TestingDto>) {
+        this.tests = tests
+        setupViewPager()
+    }
+
+    private fun setupViewPager() {
+        view_pager.adapter = SectionsPagerAdapter(supportFragmentManager)
+        progressBar.visibility = View.GONE
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -43,7 +65,6 @@ class TestingActivity : BaseActivity() {
             true
         }
         R.id.menu_favourite -> {
-            toast("Favourite")
             true
         }
         R.id.menu_discussions -> {
@@ -60,11 +81,23 @@ class TestingActivity : BaseActivity() {
 
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
-        override fun getItem(position: Int): Fragment = TestingFragment()
+        override fun getItem(position: Int): Fragment {
+            val fragment = TestingFragment()
+            val bundle = Bundle()
+            bundle.putInt("position", position)
+            fragment.arguments = bundle
+            return fragment
+        }
 
-        override fun getCount(): Int = 300
+        override fun getCount(): Int = tests.size
 
         override fun getPageTitle(position: Int): CharSequence? = "TESTING"
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.unBind()
+//        App.releaseTestingComponent()
     }
 }
+

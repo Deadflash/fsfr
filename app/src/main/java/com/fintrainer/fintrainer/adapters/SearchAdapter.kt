@@ -20,7 +20,7 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
             override fun onAnswerClicked(position: Int, isRight: Boolean) {
 
             }
-        })
+        }, emptyList())
     }
 
     override fun getItemCount(): Int = 50
