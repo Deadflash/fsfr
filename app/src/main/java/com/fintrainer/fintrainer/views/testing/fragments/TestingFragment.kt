@@ -1,5 +1,6 @@
 package com.fintrainer.fintrainer.views.testing.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -8,13 +9,17 @@ import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.AnswersAdapter
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.Constants.TESTING_FRAGMENT_TAG
+import com.fintrainer.fintrainer.utils.IPageSelector
+import com.fintrainer.fintrainer.utils.PicassoContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseFragment
-import com.fintrainer.fintrainer.views.result.ResultActivity
+import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.fintrainer.fintrainer.views.testing.TestingPresenter
 import kotlinx.android.synthetic.main.fragment_testing.*
-import org.jetbrains.anko.support.v4.startActivityForResult
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.support.v4.onUiThread
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
 /**
@@ -24,8 +29,16 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
 
     @Inject
     lateinit var presenter: TestingPresenter
+    @Inject
+    lateinit var picasso: PicassoContainer
 
     private lateinit var tests: List<TestingDto>
+    private var pageSelector: IPageSelector? = null
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        pageSelector = context as TestingActivity
+    }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,20 +47,60 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
         recycler.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean = false
         }
-        val position: Int? = arguments.getInt("position")
-        if (position != null) {
-            tvQuestionCode.text = tests[position].code
-            tvQuestion.text = tests[position].task
-//            ivTestingImg.drawable = tests[position].image
+        val position: Int = arguments.getInt("position", -1)
+        if (position != -1) {
+            tvQuestionCode.text = tests[position].code ?: ""
+            tvQuestion.text = tests[position].task ?: ""
+            if (tests[position].image != null && activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName) != 0) {
+                ivTestingImg.visibility = View.VISIBLE
+                picasso.loadImage(ivTestingImg, activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName))
+            }
 
-            recycler.adapter = AnswersAdapter(this, tests[position].answers ?: emptyList())
+            recycler.adapter = AnswersAdapter(this, tests[position], activity.intent.getIntExtra("intentId", -1))
             recycler.clearFocus()
             recycler.isNestedScrollingEnabled = false
         }
     }
 
-    override fun onAnswerClicked(position: Int, isRight: Boolean) {
-        startActivityForResult<ResultActivity>(2)
+    override fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int) {
+        presenter.updateTestStatistics(isRight, weight, chapter)
+    }
+
+    override fun onAnswerClicked() {
+        val position: Int = arguments.getInt("position", -1)
+        if (position != -1) {
+            var moveTo: Int
+            doAsync {
+                moveTo = checkIfClicked(position)
+                if (moveTo >= tests.size) {
+                    moveTo = 0
+                }
+                onUiThread {
+                    pageSelector?.changePage(moveTo)
+                }
+            }
+        }
+    }
+
+    private fun checkIfClicked(position: Int): Int {
+        if (tests[position].clicked == true) {
+            (position until tests.size)
+                    .filter { tests[it].clicked == false || tests[it].clicked == null }
+                    .forEach { return it }
+
+            (0 until position)
+                    .filter { tests[it].clicked == false || tests[it].clicked == null }
+                    .forEach { return it }
+            onUiThread {
+                presenter.showResults()
+            }
+        }
+        return position
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        pageSelector = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

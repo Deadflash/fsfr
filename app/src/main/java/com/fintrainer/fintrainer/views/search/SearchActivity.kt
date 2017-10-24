@@ -8,6 +8,7 @@ import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.SearchAdapter
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
+import javax.inject.Inject
 
 class SearchActivity : AppCompatActivity() {
 
@@ -23,7 +24,7 @@ class SearchActivity : AppCompatActivity() {
         search.clearFocus()
 
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = SearchAdapter()
+        recycler.adapter = SearchAdapter(intent.getIntExtra("intentId", -1))
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {

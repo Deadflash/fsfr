@@ -5,6 +5,7 @@ import com.fintrainer.fintrainer.di.components.AppComponent
 import com.fintrainer.fintrainer.di.components.DaggerAppComponent
 import com.fintrainer.fintrainer.di.components.DrawerComponent
 import com.fintrainer.fintrainer.di.components.TestingComponent
+import com.fintrainer.fintrainer.di.modules.AppModule
 import com.fintrainer.fintrainer.di.modules.DrawerModule
 import com.fintrainer.fintrainer.di.modules.TestingModule
 import com.fintrainer.fintrainer.utils.realm.RealmContainer
@@ -59,7 +60,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Realm.init(this)
-        appComponent = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
         appComponent.inject(this)
         realmContainer.initRealm()
         realmContainer.initStatisticsRealm()
