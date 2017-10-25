@@ -13,7 +13,7 @@ interface TestingContract {
     }
 
     interface Presenter : IPresenter {
-        fun loadTests(examId: Int, intentId: Int)
+        fun loadTests(examId: Int, intentId: Int, chapter: Int)
         fun getLoadedTests(): List<TestingDto>
         fun updateTestStatistics(isRight: Boolean, weight: Int, chapter: Int, testPosition: Int)
         fun showResults()

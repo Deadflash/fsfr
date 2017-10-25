@@ -15,7 +15,12 @@ import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.TestingContract
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
+import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
+import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
+import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
+import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RESULT_INTENT
+import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.utils.CustomViewPagerScroller
 import com.fintrainer.fintrainer.utils.IPageSelector
 import com.fintrainer.fintrainer.views.App
@@ -44,8 +49,16 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        when(intent.getIntExtra("intentId", -1)){
+            EXAM_INTENT -> supportActionBar?.title = "Экзамен"
+            TESTING_INTENT -> supportActionBar?.title = "Тренировка"
+            CHAPTER_INTENT -> supportActionBar?.title = "Глава ${intent.getIntExtra("chapter",1)}"
+            FAILED_TESTS_INTENT -> supportActionBar?.title = "Ошибки"
+            FAVOURITE_INTENT -> supportActionBar?.title = "Избранное"
+        }
+
         presenter.bind(this)
-        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1))
+        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1),intent.getIntExtra("chapter",1))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

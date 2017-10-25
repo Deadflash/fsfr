@@ -179,6 +179,11 @@ class ResultActivity : BaseActivity() {
         progressLayoutAnim.start()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.unBind()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
         android.R.id.home -> {
             onBackPressed()

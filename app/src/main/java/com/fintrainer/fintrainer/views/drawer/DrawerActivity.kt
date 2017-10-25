@@ -380,10 +380,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         }
         chapters_layout.id -> {
             presenter.onLayoutClick(0, 2, false)
-            startActivity<ChaptersActivity>()
+            startActivityForResult<ChaptersActivity>(CHAPTER_INTENT,"intentId" to CHAPTER_INTENT,"examId" to currentExam)
         }
         search_layout.id -> {
-            startActivity<SearchActivity>()
+            startActivityForResult<SearchActivity>(SEARCH_INTENT,"intentId" to SEARCH_INTENT,"examId" to currentExam)
         }
         favourite_layout.id -> {
             presenter.onLayoutClick(0, 4, false)
@@ -392,12 +392,11 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        toast("Result Code $resultCode Request Code $requestCode")
         when(requestCode){
             EXAM_INTENT -> App.releaseTestingComponent()
             TESTING_INTENT -> App.releaseTestingComponent()
-            CHAPTER_INTENT -> toast("ChapterIntent")
-            SEARCH_INTENT -> toast("SearchIntent")
+            CHAPTER_INTENT -> App.releaseChapterComponent()
+            SEARCH_INTENT -> App.releaseSearchComponent()
             FAVOURITE_INTENT -> toast("FavoriteIntent")
         }
         super.onActivityResult(requestCode, resultCode, data)

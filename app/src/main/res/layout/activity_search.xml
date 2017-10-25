@@ -16,20 +16,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
+        android:visibility="gone"
         android:focusableInTouchMode="true">
 
     </android.support.v7.widget.SearchView>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:layoutAnimation="@anim/recycler_layout_anim"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        android:scrollbars="vertical">
+        android:layout_height="match_parent">
 
-    </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:layoutAnimation="@anim/recycler_layout_anim"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:scrollbars="vertical">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/progressBar"/>
+
+    </FrameLayout>
 
 </LinearLayout>

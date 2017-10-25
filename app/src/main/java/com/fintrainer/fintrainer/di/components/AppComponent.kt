@@ -1,8 +1,6 @@
 package com.fintrainer.fintrainer.di.components
 
-import com.fintrainer.fintrainer.di.modules.DrawerModule
-import com.fintrainer.fintrainer.di.modules.AppModule
-import com.fintrainer.fintrainer.di.modules.TestingModule
+import com.fintrainer.fintrainer.di.modules.*
 import com.fintrainer.fintrainer.views.App
 import dagger.Component
 import javax.inject.Singleton
@@ -17,4 +15,6 @@ interface AppComponent {
 
     fun subDrawerComponent(drawerModule: DrawerModule): DrawerComponent
     fun subTestingComponent(testingModule: TestingModule): TestingComponent
+    fun subChapterComponent(chapterModule: ChapterModule): ChapterComponent
+    fun subSearchComponent(searchModule: SearchModule): SearchComponent
 }

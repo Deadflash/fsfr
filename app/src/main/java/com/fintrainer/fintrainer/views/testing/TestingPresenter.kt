@@ -4,6 +4,7 @@ import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.di.contracts.TestingContract
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
+import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
@@ -27,12 +28,13 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
         view = iView as TestingContract.View
     }
 
-    override fun loadTests(examId: Int, intentId: Int) {
+    override fun loadTests(examId: Int, intentId: Int, chapter: Int) {
         if (tests.isEmpty()) {
             doAsync {
                 when (intentId) {
-                    EXAM_INTENT -> tests = realmContainer.getExamAsync(intentId, examId)
-                    TESTING_INTENT -> tests = realmContainer.getExamAsync(intentId,examId)
+                    EXAM_INTENT -> tests = realmContainer.getExamAsync(examId)
+                    TESTING_INTENT -> tests = realmContainer.getTestsAcync(examId)
+                    CHAPTER_INTENT -> tests = realmContainer.getByChapterAsync(chapter,examId)
                 }
                 uiThread {
                     view?.showTest(tests)

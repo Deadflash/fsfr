@@ -1,8 +1,5 @@
 package com.fintrainer.fintrainer.utils.realm
 
-import android.support.design.widget.BaseTransientBottomBar
-import android.support.design.widget.Snackbar
-import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
@@ -95,8 +92,8 @@ class RealmContainer {
         return average!!
     }
 
-    fun getExamAsync(intentId: Int, examId: Int): List<TestingDto> {
-        val tests = randomExams(intentId == EXAM_INTENT, examId)
+    fun getExamAsync(examId: Int): List<TestingDto> {
+        val tests = randomExams(true, examId)
         shuffleAnswers(tests)
         return tests
     }
@@ -127,7 +124,7 @@ class RealmContainer {
         }
     }
 
-    fun getTestsAcync(needWeight: Boolean, examId: Int): List<TestingDto> {
+    fun getTestsAcync(examId: Int): List<TestingDto> {
         val testingDtos = ArrayList<TestingDto>()
         val realmWithExams = Realm.getDefaultInstance()
         realmWithExams.use { realmWithExams ->
@@ -176,12 +173,50 @@ class RealmContainer {
         return testingDtos
     }
 
+    fun getChaptersAsync(examId: Int): List<ChapterRealm> {
+        val realmWithExams = Realm.getDefaultInstance()
+        realmWithExams.use {
+            return realmWithExams.copyFromRealm(it.where(ChapterRealm::class.java).equalTo("type", examId).findAll())
+
+        }
+    }
+
+    fun getByChapterAsync(chapter: Int, examId: Int): List<TestingDto> {
+        val realmWithExams = Realm.getDefaultInstance()
+        var testingDtos: MutableList<TestingDto> = ArrayList()
+        realmWithExams.use { realmWithExams ->
+            val freeTests = realmWithExams.where(TestingDto::class.java).equalTo("type", examId).equalTo("chapter", chapter).findAll()
+            if (!freeTests.isEmpty()) {
+//                    if (!purchased) {
+                if (false) {
+                    for (i in 0..4) {
+                        testingDtos.add(realmWithExams.copyFromRealm<TestingDto>(freeTests.get(i)))
+                    }
+                } else {
+                    testingDtos = realmWithExams.copyFromRealm<TestingDto>(freeTests)
+                }
+                shuffleAnswers(testingDtos)
+                return testingDtos
+            }
+        }
+        return testingDtos
+    }
+
     private fun shuffleAnswers(testingDtos: List<TestingDto>?) {
 //        if (sharedPreferences.getBoolean("key_shuffle_answers", false)) {
 //            for (testingDto in testingDtos) {
 //                Collections.shuffle(testingDto.answers!!)
 //            }
 //        }
+    }
+
+    fun getAllQuestionsAsync(examId: Int): List<TestingDto> {
+        var questions: List<TestingDto> = emptyList()
+        val realmWithExams = Realm.getDefaultInstance()
+        realmWithExams.use { realmWithExams ->
+            questions = realmWithExams.copyFromRealm(realmWithExams.where(TestingDto::class.java).equalTo("type", examId).findAll())
+        }
+        return questions
     }
 
     @RealmModule(classes = arrayOf(ExamDto::class, TestingDto::class, ChapterRealm::class, AnswersDto::class))

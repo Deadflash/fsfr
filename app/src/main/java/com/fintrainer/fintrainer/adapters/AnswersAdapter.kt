@@ -11,6 +11,7 @@ import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
+import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import kotlinx.android.synthetic.main.item_answers.view.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -27,15 +28,15 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvAnswer?.text = test.answers?.get(position)?.text ?: ""
         holder.tvAnswerPosition?.text = (position + 1).toString()
-        if (test.clicked == true) {
+        if (test.clicked == true || intentId == SEARCH_INTENT) {
             if (test.answers?.get(position)?.clicked == true) {
                 setAnswerLayoutBg(position, holder)
-            } else if (intentId == FAILED_TESTS_INTENT || intentId == TESTING_INTENT && test.answers?.get(position)?.status == true) {
+            } else if (intentId == FAILED_TESTS_INTENT || intentId == CHAPTER_INTENT || intentId == TESTING_INTENT || intentId == SEARCH_INTENT && test.answers?.get(position)?.status == true) {
                 setAnswerLayoutBg(position, holder)
             }
         }
         holder.answerLayout?.onClick {
-            if (intentId != FAILED_TESTS_INTENT) {
+            if (intentId != FAILED_TESTS_INTENT && intentId != SEARCH_INTENT) {
                 if (test.clicked != true) {
                     test.clicked = true
                     test.answers?.get(position)?.clicked = true
