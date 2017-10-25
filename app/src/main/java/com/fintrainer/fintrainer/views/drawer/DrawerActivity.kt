@@ -376,7 +376,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             startActivityForResult<TestingActivity>(EXAM_INTENT,"intentId" to EXAM_INTENT,"examId" to currentExam)
         }
         training_layout.id -> {
-            presenter.onLayoutClick(0, 0, false)
+            startActivityForResult<TestingActivity>(TESTING_INTENT,"intentId" to TESTING_INTENT,"examId" to currentExam)
         }
         chapters_layout.id -> {
             presenter.onLayoutClick(0, 2, false)
@@ -395,7 +395,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         toast("Result Code $resultCode Request Code $requestCode")
         when(requestCode){
             EXAM_INTENT -> App.releaseTestingComponent()
-            TESTING_INTENT -> toast("TestIntent")
+            TESTING_INTENT -> App.releaseTestingComponent()
             CHAPTER_INTENT -> toast("ChapterIntent")
             SEARCH_INTENT -> toast("SearchIntent")
             FAVOURITE_INTENT -> toast("FavoriteIntent")

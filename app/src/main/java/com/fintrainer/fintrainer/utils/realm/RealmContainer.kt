@@ -5,6 +5,7 @@ import android.support.design.widget.Snackbar
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
+import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -23,7 +24,6 @@ class RealmContainer {
 
     fun initRealm() {
         val bArray: ByteArray = (fk + fk2).toByteArray()
-        println("Byte array key $bArray")
         val config = RealmConfiguration.Builder()
                 .name("n")
                 .assetFile("n") // e.g "default.realmWithExams" or "lib/data.realmWithExams"
@@ -95,13 +95,13 @@ class RealmContainer {
         return average!!
     }
 
-    fun getTestsAsync(intentId: Int, examId: Int): List<TestingDto> {
-        val tests = randomTests(intentId == EXAM_INTENT, examId)
+    fun getExamAsync(intentId: Int, examId: Int): List<TestingDto> {
+        val tests = randomExams(intentId == EXAM_INTENT, examId)
         shuffleAnswers(tests)
         return tests
     }
 
-    private fun randomTests(needWeight: Boolean, examId: Int): List<TestingDto> {
+    private fun randomExams(needWeight: Boolean, examId: Int): List<TestingDto> {
         val realmWithExams = Realm.getDefaultInstance()
         realmWithExams.use { realmWithExams ->
             val testingDtos = ArrayList<TestingDto>()
@@ -125,6 +125,55 @@ class RealmContainer {
             }
             return testingDtos
         }
+    }
+
+    fun getTestsAcync(needWeight: Boolean, examId: Int): List<TestingDto> {
+        val testingDtos = ArrayList<TestingDto>()
+        val realmWithExams = Realm.getDefaultInstance()
+        realmWithExams.use { realmWithExams ->
+            //            if (!purchased) {
+            if (!true) {
+                val chaptersCount = realmWithExams.where(ChapterRealm::class.java).equalTo("type", examId).count()
+                for (i in 0L until chaptersCount) {
+                    val freeTests = realmWithExams.where(TestingDto::class.java).equalTo("type", examId).equalTo("chapter", i + 1).findAll()
+
+                    for (o in 0..4) {
+                        testingDtos.add(realmWithExams.copyFromRealm(freeTests.get(o)))
+                    }
+                }
+                return testingDtos
+            } else {
+                return randomPurchasedTests(realmWithExams, RANDOM_TESTS_COUNT, false, examId)
+            }
+        }
+    }
+
+    private fun randomPurchasedTests(realmWithExams: Realm, iterationCount: Int, needWeight: Boolean, examId: Int): List<TestingDto> {
+        val testingDtos = ArrayList<TestingDto>()
+        var iterationCount = iterationCount
+        val list = ArrayList<Long>()
+        val count = realmWithExams.where(TestingDto::class.java).equalTo("type", examId).count()
+        if (count == 0L) {
+//            Snackbar.make(activity.findViewById(R.id.fragmentContainer), "Ошибка", BaseTransientBottomBar.LENGTH_SHORT).show()
+            return emptyList()
+        }
+        for (i in 1 until count) {
+            list.add(i)
+        }
+        if (list.size < 100) {
+            iterationCount = list.size
+        }
+        Collections.shuffle(list)
+        var i = 0
+        while (i < iterationCount) {
+            val testingDto = realmWithExams.where(TestingDto::class.java).equalTo("type", examId).equalTo("index", list[i]).findFirst()
+            if (testingDto != null) {
+                testingDtos.add(realmWithExams.copyFromRealm(testingDto!!))
+                i = if (needWeight) testingDto!!.weight!! + i else i + 1
+            }
+        }
+        shuffleAnswers(testingDtos)
+        return testingDtos
     }
 
     private fun shuffleAnswers(testingDtos: List<TestingDto>?) {

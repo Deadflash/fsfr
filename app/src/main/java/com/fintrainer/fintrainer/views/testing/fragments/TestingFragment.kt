@@ -8,6 +8,7 @@ import android.view.View
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.AnswersAdapter
 import com.fintrainer.fintrainer.structure.TestingDto
+import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_FRAGMENT_TAG
 import com.fintrainer.fintrainer.utils.IPageSelector
 import com.fintrainer.fintrainer.utils.PicassoContainer
@@ -19,7 +20,6 @@ import kotlinx.android.synthetic.main.fragment_testing.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.onUiThread
 import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
 /**
@@ -43,7 +43,11 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         App.initTestingComponent()?.inject(this)
-        tests = presenter.getLoadedTests()
+        tests = if (activity.intent.getIntExtra("intentId", -1) != -1 && activity.intent.getIntExtra("intentId", -1) == FAILED_TESTS_INTENT) {
+            presenter.getFailedTests()
+        } else {
+            presenter.getLoadedTests()
+        }
         recycler.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean = false
         }
@@ -63,7 +67,7 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
     }
 
     override fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int) {
-        presenter.updateTestStatistics(isRight, weight, chapter)
+        presenter.updateTestStatistics(isRight, weight, chapter, arguments.getInt("position", 0))
     }
 
     override fun onAnswerClicked() {

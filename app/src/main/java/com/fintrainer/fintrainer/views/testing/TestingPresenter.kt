@@ -4,6 +4,9 @@ import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.di.contracts.TestingContract
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
+import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
+import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
+import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.utils.realm.RealmContainer
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -15,6 +18,7 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
 
     private var view: TestingContract.View? = null
     private var tests: List<TestingDto> = emptyList()
+    private var failedTests = mutableListOf<TestingDto>()
     private val results: TestingResultsDto = TestingResultsDto(0, 0, 0, 0, 0)
     private val worstChapters = mutableMapOf<Int, Int>()
     private var isShown: Boolean = false
@@ -26,15 +30,18 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
     override fun loadTests(examId: Int, intentId: Int) {
         if (tests.isEmpty()) {
             doAsync {
-                tests = realmContainer.getTestsAsync(intentId, examId)
+                when (intentId) {
+                    EXAM_INTENT -> tests = realmContainer.getExamAsync(intentId, examId)
+                    TESTING_INTENT -> tests = realmContainer.getExamAsync(intentId,examId)
+                }
                 uiThread {
-                    if (view != null) {
-                        view?.showTest(tests)
-                    }
+                    view?.showTest(tests)
                 }
             }
         } else {
-            if (view != null) {
+            if (intentId == FAILED_TESTS_INTENT) {
+                view?.showTest(failedTests)
+            } else {
                 view?.showTest(tests)
             }
         }
@@ -42,15 +49,22 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
 
     override fun getLoadedTests(): List<TestingDto> = tests
 
-    override fun updateTestStatistics(isRight: Boolean, weight: Int, chapter: Int) {
+    override fun updateTestStatistics(isRight: Boolean, weight: Int, chapter: Int, testPosition: Int) {
         if (isRight) {
             results.right = results.right + 1
             results.weight = results.weight + weight
         } else {
+            tests[testPosition].answers?.forEach {
+                println("ADDED ${tests[testPosition].code} $testPosition: status: ${it.status} Clicked: ${it.clicked}")
+            }
+            println()
+            failedTests.add(tests[testPosition])
             results.wrong = results.wrong + 1
             worstChapters.put(chapter, if (worstChapters[chapter] == null) 1 else worstChapters[chapter]?.plus(1) ?: 0)
         }
     }
+
+    override fun getFailedTests(): List<TestingDto> = failedTests
 
     override fun showResults() {
         var max = 0
@@ -60,7 +74,7 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
                 results.worthChapter = chapter.key
             }
         }
-        if (!isShown){
+        if (!isShown) {
             isShown = true
             view?.showResults(results)
         }

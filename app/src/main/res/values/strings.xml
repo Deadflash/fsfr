@@ -27,4 +27,5 @@
     <string name="discussion_negative_like_comment_show_btn">Показать</string>
     <string name="discussion_negative_like_text">Обсуждение набрало большое количество отрицательных оценок и было скрыто</string>
     <string name="Answers">Ответы:</string>
+    <string name="results">Результаты</string>
 </resources>
