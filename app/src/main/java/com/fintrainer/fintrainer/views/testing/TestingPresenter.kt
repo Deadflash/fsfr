@@ -33,8 +33,8 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
             doAsync {
                 when (intentId) {
                     EXAM_INTENT -> tests = realmContainer.getExamAsync(examId)
-                    TESTING_INTENT -> tests = realmContainer.getTestsAcync(examId)
-                    CHAPTER_INTENT -> tests = realmContainer.getByChapterAsync(chapter,examId)
+                    TESTING_INTENT -> tests = realmContainer.getTestsAsync(examId)
+                    CHAPTER_INTENT -> tests = realmContainer.getByChapterAsync(chapter, examId)
                 }
                 uiThread {
                     view?.showTest(tests)
@@ -56,14 +56,34 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
             results.right = results.right + 1
             results.weight = results.weight + weight
         } else {
-            tests[testPosition].answers?.forEach {
-                println("ADDED ${tests[testPosition].code} $testPosition: status: ${it.status} Clicked: ${it.clicked}")
-            }
-            println()
             failedTests.add(tests[testPosition])
             results.wrong = results.wrong + 1
             worstChapters.put(chapter, if (worstChapters[chapter] == null) 1 else worstChapters[chapter]?.plus(1) ?: 0)
         }
+    }
+
+    override fun checkIsQuestionFavourite(index: Int, type: Int, chapter: Int, isAddRemoveAction: Boolean) {
+        doAsync {
+            val isFavourite = realmContainer.checkQuestionIsFavouriteAsync(index, type)
+            if (!isAddRemoveAction) {
+                uiThread {
+                    view?.showIsFavouriteQuestion(isFavourite)
+                }
+            } else {
+                realmContainer.addRemoveFavourite(!isFavourite, index, type, chapter)
+                uiThread {
+                    view?.showIsFavouriteQuestion(!isFavourite)
+                }
+            }
+        }
+    }
+
+    override fun addToFavourite() {
+
+    }
+
+    override fun removeFromFavourite() {
+
     }
 
     override fun getFailedTests(): List<TestingDto> = failedTests
@@ -84,7 +104,7 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
 
     override fun saveTestsResult(intentId: Int, weight: Int, testType: Int, rightAnswers: Int) {
         doAsync {
-            realmContainer.saveResults(intentId,weight,testType,rightAnswers)
+            realmContainer.saveResults(intentId, weight, testType, rightAnswers)
         }
     }
 

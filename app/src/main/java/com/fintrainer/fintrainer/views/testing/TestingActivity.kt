@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.view.Menu
 import android.view.MenuItem
@@ -28,6 +27,7 @@ import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
 import com.fintrainer.fintrainer.views.result.ResultActivity
 import com.fintrainer.fintrainer.views.testing.fragments.TestingFragment
+import icepick.State
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.startActivity
@@ -40,7 +40,16 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     @Inject
     lateinit var presenter: TestingPresenter
 
-    private lateinit var tests: List<TestingDto>
+    private var tests: List<TestingDto>? = null
+    private var menuItem: MenuItem? = null
+
+    @State
+    @JvmField
+    var currentPagerPosition: Int = 0
+
+    @State
+    @JvmField
+    var isFavourite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,16 +58,16 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        when(intent.getIntExtra("intentId", -1)){
+        when (intent.getIntExtra("intentId", -1)) {
             EXAM_INTENT -> supportActionBar?.title = "Экзамен"
             TESTING_INTENT -> supportActionBar?.title = "Тренировка"
-            CHAPTER_INTENT -> supportActionBar?.title = "Глава ${intent.getIntExtra("chapter",1)}"
+            CHAPTER_INTENT -> supportActionBar?.title = "Глава ${intent.getIntExtra("chapter", 1)}"
             FAILED_TESTS_INTENT -> supportActionBar?.title = "Ошибки"
             FAVOURITE_INTENT -> supportActionBar?.title = "Избранное"
         }
 
         presenter.bind(this)
-        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1),intent.getIntExtra("chapter",1))
+        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1), intent.getIntExtra("chapter", 1))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -68,14 +77,26 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun showTest(tests: List<TestingDto>) {
         this.tests = tests
+        checkIsFavourite(false)
         setupViewPager()
     }
 
+    override fun showIsFavouriteQuestion(isFavourite: Boolean) {
+        this.isFavourite = isFavourite
+        setFavouriteIcon(isFavourite)
+    }
+
+    private fun setFavouriteIcon(isFavourite: Boolean) {
+        menuItem?.setIcon(if (isFavourite) R.drawable.ic_bookmark_white_24dp else R.drawable.ic_bookmark_border_white_24dp)
+    }
+
     override fun showResults(results: TestingResultsDto) {
-        startActivityForResult<ResultActivity>(RESULT_INTENT,"weight" to results.weight,
-                "right" to results.right,"wrong" to results.wrong,"worthChapter" to results.worthChapter,
-                "intentId" to intent.getIntExtra("intentId", -1), "standaloned" to intent.getBooleanExtra("standaloned", false),
-                "testType" to (tests[0]?.type ?: 0),"purchased" to intent.getBooleanExtra("purchased", false))
+        if (tests != null) {
+            startActivityForResult<ResultActivity>(RESULT_INTENT, "weight" to results.weight,
+                    "right" to results.right, "wrong" to results.wrong, "worthChapter" to results.worthChapter,
+                    "intentId" to intent.getIntExtra("intentId", -1), "standaloned" to intent.getBooleanExtra("standaloned", false),
+                    "testType" to (tests!![0].type ?: 0), "purchased" to intent.getBooleanExtra("purchased", false))
+        }
     }
 
     private fun setupViewPager() {
@@ -88,11 +109,33 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        view_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+            override fun onPageSelected(position: Int) {
+                currentPagerPosition = position
+                checkIsFavourite(false)
+            }
+
+        })
+
         progressBar.visibility = View.GONE
     }
 
+    private fun checkIsFavourite(isAddRemoveAction: Boolean) {
+        if (tests != null) {
+            presenter.checkIsQuestionFavourite(tests!![currentPagerPosition].index!!.toInt(), tests!![currentPagerPosition].type!!.toInt(), tests!![currentPagerPosition].chapter!!, isAddRemoveAction)
+        }
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.getItem(1)?.icon = ContextCompat.getDrawable(this, R.drawable.ic_bookmark_border_white_24dp)
+        menuItem = menu!!.getItem(1)
+        setFavouriteIcon(isFavourite)
+//        menu.getItem(1).icon = ContextCompat.getDrawable(this, if (isFavourite) R.drawable.ic_bookmark_white_24dp else R.drawable.ic_bookmark_border_white_24dp)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -102,6 +145,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
             true
         }
         R.id.menu_favourite -> {
+            checkIsFavourite(true)
             true
         }
         R.id.menu_discussions -> {
@@ -126,13 +170,13 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
             return fragment
         }
 
-        override fun getCount(): Int = tests.size
+        override fun getCount(): Int = tests?.size ?: 0
 
         override fun getPageTitle(position: Int): CharSequence? = "TESTING"
     }
 
     override fun changePage(position: Int) {
-        view_pager.setCurrentItem(position,true)
+        view_pager.setCurrentItem(position, true)
     }
 
     override fun onDestroy() {

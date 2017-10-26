@@ -405,9 +405,14 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 App.releaseTestingComponent()
                 presenter.getStatistics(selectedExam,false)
             }
-            CHAPTER_INTENT -> App.releaseChapterComponent()
+            CHAPTER_INTENT -> {
+                App.releaseChapterComponent()
+                presenter.getStatistics(selectedExam,false)
+            }
             SEARCH_INTENT -> App.releaseSearchComponent()
-            FAVOURITE_INTENT -> toast("FavoriteIntent")
+            FAVOURITE_INTENT -> {
+                presenter.getStatistics(selectedExam,false)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
