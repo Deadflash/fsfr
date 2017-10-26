@@ -7,6 +7,7 @@ import com.fintrainer.fintrainer.structure.TestingResultsDto
 import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
+import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.utils.realm.RealmContainer
 import org.jetbrains.anko.doAsync
@@ -35,6 +36,7 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
                     EXAM_INTENT -> tests = realmContainer.getExamAsync(examId)
                     TESTING_INTENT -> tests = realmContainer.getTestsAsync(examId)
                     CHAPTER_INTENT -> tests = realmContainer.getByChapterAsync(chapter, examId)
+                    FAVOURITE_INTENT -> tests = realmContainer.getFavouriteQuestionsAsync(examId)
                 }
                 uiThread {
                     view?.showTest(tests)

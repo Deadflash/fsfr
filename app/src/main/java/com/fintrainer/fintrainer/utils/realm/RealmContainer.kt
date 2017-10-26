@@ -6,6 +6,7 @@ import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmObject
 import io.realm.annotations.RealmModule
 import java.util.*
 
@@ -178,6 +179,26 @@ class RealmContainer {
             }
         }
         return testingDtos
+    }
+
+    fun getFavouriteQuestionsAsync(examId: Int): List<TestingDto> {
+        Realm.getInstance(statisticConf).use {
+            var questions = mutableListOf<TestingDto>()
+            val favouriteQuestions = it.where(FavouriteQuestionsDto::class.java).equalTo("type", examId).findAll()
+            if (!favouriteQuestions.isEmpty()) {
+                Realm.getDefaultInstance().use {
+                    favouriteQuestions
+                            .mapNotNull { questionsDto ->
+                                it.where(TestingDto::class.java)
+                                        .equalTo("type", questionsDto.type)
+                                        .equalTo("index", questionsDto.index)
+                                        .findFirst()
+                            }
+                            .mapTo(questions) { testingDto -> it.copyFromRealm(testingDto) as TestingDto }
+                }
+            }
+            return questions
+        }
     }
 
     private fun shuffleAnswers(testingDtos: List<TestingDto>?) {

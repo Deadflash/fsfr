@@ -390,7 +390,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
         }
         favourite_layout.id -> {
-            presenter.onLayoutClick(0, 4, false)
+            startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
         }
         else -> println("miss click")
     }
@@ -407,10 +407,12 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             }
             CHAPTER_INTENT -> {
                 App.releaseChapterComponent()
+                App.releaseTestingComponent()
                 presenter.getStatistics(selectedExam,false)
             }
             SEARCH_INTENT -> App.releaseSearchComponent()
             FAVOURITE_INTENT -> {
+                App.releaseTestingComponent()
                 presenter.getStatistics(selectedExam,false)
             }
         }

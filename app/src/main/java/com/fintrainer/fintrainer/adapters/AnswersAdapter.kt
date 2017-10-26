@@ -31,7 +31,7 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
         if (test.clicked == true || intentId == SEARCH_INTENT) {
             if (test.answers?.get(position)?.clicked == true) {
                 setAnswerLayoutBg(position, holder)
-            } else if (intentId == FAILED_TESTS_INTENT || intentId == CHAPTER_INTENT || intentId == TESTING_INTENT || intentId == SEARCH_INTENT && test.answers?.get(position)?.status == true) {
+            } else if (intentId != EXAM_INTENT && test.answers?.get(position)?.status == true) {
                 setAnswerLayoutBg(position, holder)
             }
         }
