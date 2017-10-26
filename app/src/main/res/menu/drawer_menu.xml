@@ -36,5 +36,21 @@
             android:title="@string/exam_7" />
 
     </group>
+    <item android:title="@string/other">
+        <menu>
+            <item
+                android:id="@+id/nav_mail"
+                android:icon="@drawable/ic_email_black_24dp"
+                android:title="@string/mail_to" />
+            <item
+                android:id="@+id/nav_favourite"
+                android:title="@string/like"
+                android:icon="@drawable/ic_favorite_black_24dp"/>
+            <item
+                android:id="@+id/nav_options"
+                android:title="@string/options"
+                android:icon="@drawable/ic_settings_black_24dp"/>
+        </menu>
+    </item>
 
 </menu>

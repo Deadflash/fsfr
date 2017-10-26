@@ -22,6 +22,7 @@ import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.fintrainer.fintrainer.views.testing.TestingPresenter
+import icepick.State
 import kotlinx.android.synthetic.main.activity_result.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
@@ -30,6 +31,10 @@ import javax.inject.Inject
 
 
 class ResultActivity : BaseActivity() {
+
+    @State
+    @JvmField
+    var isResultsSave: Boolean = false
 
     @Inject
     lateinit var presenter: TestingPresenter
@@ -87,6 +92,10 @@ class ResultActivity : BaseActivity() {
             tvTitle.alpha = 0F
             tvAdvise.alpha = 0F
             startAnimation()
+        }
+        if (!isResultsSave && intentId == EXAM_INTENT || intentId == TESTING_INTENT){
+            isResultsSave = true
+            presenter.saveTestsResult(intentId ?: -1,weight ?: -1,testType ?: -1,rightAnswers ?: -1)
         }
     }
 

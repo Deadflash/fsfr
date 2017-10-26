@@ -18,5 +18,6 @@ interface TestingContract {
         fun updateTestStatistics(isRight: Boolean, weight: Int, chapter: Int, testPosition: Int)
         fun showResults()
         fun getFailedTests(): List<TestingDto>
+        fun saveTestsResult(intentId: Int, weight: Int, testType: Int, rightAnswers: Int)
     }
 }

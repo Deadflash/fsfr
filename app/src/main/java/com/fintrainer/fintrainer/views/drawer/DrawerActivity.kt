@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -20,6 +21,7 @@ import android.view.animation.DecelerateInterpolator
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
 import com.fintrainer.fintrainer.structure.ExamStatisticAndInfo
+import com.fintrainer.fintrainer.utils.Constants.APP_PNAME
 import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_BASE
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
@@ -45,9 +47,9 @@ import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.email
 import javax.inject.Inject
 
 
@@ -108,8 +110,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         setupCardViewAnimations()
         setupReverseCardViewAnimations()
 
+        setupUserProgress()
         presenter.bind(this)
-        presenter.getStatistics(selectedExam)
+        presenter.getStatistics(selectedExam,true)
     }
 
     private fun initStatusBar() {
@@ -136,7 +139,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 if (currentExam != selectedExam) {
                     currentExam = selectedExam
                     cardViewReverseAnimSet.start()
-                    presenter.getStatistics(selectedExam)
+                    presenter.getStatistics(selectedExam,true)
                     setupTitle()
                 }
             }
@@ -255,15 +258,15 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
             override fun onAnimationEnd(p0: Animator?) {
                 statisticsAnimSet.start()
-//                startStatisticAnimation()
             }
 
             override fun onAnimationCancel(p0: Animator?) {}
 
-            override fun onAnimationStart(p0: Animator?) {}
+            override fun onAnimationStart(p0: Animator?) {
+                clearStatisticView()
+            }
 
         })
-//        startCardViewsAnimation()
     }
 
     private fun setupReverseCardViewAnimations() {
@@ -322,10 +325,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             override fun onAnimationRepeat(p0: Animator?) {}
 
             override fun onAnimationEnd(p0: Animator?) {
-                clearStatisticView()
-                setupUserProgress()
 //                cardViewAnimSet.start()
-//                startCardViewsAnimation()
             }
 
             override fun onAnimationCancel(p0: Animator?) {}
@@ -363,27 +363,31 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         favourite_layout.setOnClickListener(this)
     }
 
-    override fun showStatistics(statistics: ExamStatisticAndInfo) {
+    override fun showStatistics(statistics: ExamStatisticAndInfo,showFullAnim: Boolean) {
         setupStatisticsAnimation(statistics.averageGrade, statistics.averageRightAnswers, statistics.chaptersCount, statistics.questionsCount, statistics.favouriteQuestionsCount)
         if (!cardViewAnimSet.isRunning) {
-            cardViewAnimSet.start()
+            if (showFullAnim) {
+                cardViewAnimSet.start()
+            }else{
+                statisticsAnimSet.start()
+            }
         }
 //        startStatisticAnimation()
     }
 
     override fun onClick(p0: View?) = when (p0?.id) {
         exam_Layout.id -> {
-            startActivityForResult<TestingActivity>(EXAM_INTENT,"intentId" to EXAM_INTENT,"examId" to currentExam)
+            startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam)
         }
         training_layout.id -> {
-            startActivityForResult<TestingActivity>(TESTING_INTENT,"intentId" to TESTING_INTENT,"examId" to currentExam)
+            startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam)
         }
         chapters_layout.id -> {
             presenter.onLayoutClick(0, 2, false)
-            startActivityForResult<ChaptersActivity>(CHAPTER_INTENT,"intentId" to CHAPTER_INTENT,"examId" to currentExam)
+            startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam)
         }
         search_layout.id -> {
-            startActivityForResult<SearchActivity>(SEARCH_INTENT,"intentId" to SEARCH_INTENT,"examId" to currentExam)
+            startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
         }
         favourite_layout.id -> {
             presenter.onLayoutClick(0, 4, false)
@@ -392,9 +396,15 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when(requestCode){
-            EXAM_INTENT -> App.releaseTestingComponent()
-            TESTING_INTENT -> App.releaseTestingComponent()
+        when (requestCode) {
+            EXAM_INTENT -> {
+                App.releaseTestingComponent()
+                presenter.getStatistics(selectedExam,false)
+            }
+            TESTING_INTENT -> {
+                App.releaseTestingComponent()
+                presenter.getStatistics(selectedExam,false)
+            }
             CHAPTER_INTENT -> App.releaseChapterComponent()
             SEARCH_INTENT -> App.releaseSearchComponent()
             FAVOURITE_INTENT -> toast("FavoriteIntent")
@@ -435,6 +445,17 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             }
             R.id.nav_7_serial_exam -> {
                 selectedExam = EXAM_SERIAL_7
+                true
+            }
+            R.id.nav_mail -> {
+                email("fcpunlimited@gmail.com","Вопрос","")
+                true
+            }
+            R.id.nav_favourite ->{
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + APP_PNAME)))
+                true
+            }
+            R.id.nav_options -> {
                 true
             }
             else -> return false

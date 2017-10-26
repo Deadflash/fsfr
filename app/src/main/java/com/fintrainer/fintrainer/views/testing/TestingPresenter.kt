@@ -82,6 +82,12 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
         }
     }
 
+    override fun saveTestsResult(intentId: Int, weight: Int, testType: Int, rightAnswers: Int) {
+        doAsync {
+            realmContainer.saveResults(intentId,weight,testType,rightAnswers)
+        }
+    }
+
     override fun unBind() {
         view = null
     }

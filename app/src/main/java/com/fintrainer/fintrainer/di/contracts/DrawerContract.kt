@@ -8,11 +8,11 @@ import com.fintrainer.fintrainer.structure.ExamStatisticAndInfo
 interface DrawerContract {
     interface View : IView {
         fun showDialog(dialogType: Int)
-        fun showStatistics(statistics: ExamStatisticAndInfo)
+        fun showStatistics(statistics: ExamStatisticAndInfo,showFullAnim: Boolean)
     }
 
     interface Presenter : IPresenter {
         fun onLayoutClick(examId: Int, examTestType: Int, purchased: Boolean)
-        fun getStatistics(examId: Int)
+        fun getStatistics(examId: Int, showFullAnim: Boolean)
     }
 }

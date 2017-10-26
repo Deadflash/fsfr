@@ -16,12 +16,9 @@ class DrawerPresenter(private var realmContainer: RealmContainer) : DrawerContra
         view = iView as DrawerContract.View
     }
 
-    override fun getStatistics(examId: Int) {
-//        if (updateStatistics) {
-//            updateStatistics = false
-            val examInfo = realmContainer.getExamInformation(examId)
-            view?.showStatistics(examInfo) ?: println("Error")
-//        }
+    override fun getStatistics(examId: Int, showFullAnim: Boolean) {
+        val examInfo = realmContainer.getExamInformation(examId)
+        view?.showStatistics(examInfo, showFullAnim) ?: println("Error")
     }
 
     override fun onLayoutClick(examId: Int, examTestType: Int, purchased: Boolean) {

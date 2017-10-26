@@ -5,6 +5,9 @@ package com.fintrainer.fintrainer.utils
  */
 
 object Constants {
+
+    val APP_PNAME = "com.fintrainer.fintrainer"
+
     val DRAWER_MAIN_FRAGMENT_TAG = "drawer_main_fragment"
     val TESTING_FRAGMENT_TAG = "testing_fragment"
     val DISCUSSIONS_FRAGMENT_TAG = "discussions_fragment"

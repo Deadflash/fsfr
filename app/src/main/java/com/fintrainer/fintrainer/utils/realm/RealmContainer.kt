@@ -219,6 +219,20 @@ class RealmContainer {
         return questions
     }
 
+    fun saveResults(intentId: Int, weight: Int, testType: Int, rightAnswers : Int){
+        val realmWithStatistics = Realm.getInstance(statisticConf)
+        realmWithStatistics.use { realmWithStatistics ->
+            realmWithStatistics.beginTransaction()
+            var statistics = AverageGradeStatisticDto()
+            statistics.examType = intentId
+            statistics.rightAnswersCount = rightAnswers
+            statistics.testType = testType
+            statistics.grade = if (weight > 100) 100 else weight
+            realmWithStatistics.copyToRealm(statistics)
+            realmWithStatistics.commitTransaction()
+        }
+    }
+
     @RealmModule(classes = arrayOf(ExamDto::class, TestingDto::class, ChapterRealm::class, AnswersDto::class))
     private inner class Default
 

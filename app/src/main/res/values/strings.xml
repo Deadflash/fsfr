@@ -28,4 +28,8 @@
     <string name="discussion_negative_like_text">Обсуждение набрало большое количество отрицательных оценок и было скрыто</string>
     <string name="Answers">Ответы:</string>
     <string name="results">Результаты</string>
+    <string name="mail_to">Задать вопрос</string>
+    <string name="like">Оставить отзыв</string>
+    <string name="options">Настройки</string>
+    <string name="other">Прочее</string>
 </resources>
