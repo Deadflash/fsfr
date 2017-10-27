@@ -1,6 +1,7 @@
 package com.fintrainer.fintrainer.di.modules
 
 import android.content.Context
+import com.fintrainer.fintrainer.utils.GoogleAuthContainer
 import com.fintrainer.fintrainer.utils.PicassoContainer
 import com.fintrainer.fintrainer.utils.realm.RealmContainer
 import dagger.Module
@@ -24,4 +25,8 @@ class AppModule(val context: Context) {
     @Provides
     @Singleton
     fun providePicasso(context: Context): PicassoContainer = PicassoContainer(context)
+
+    @Provides
+    @Singleton
+    fun provideGoogleAuth(): GoogleAuthContainer = GoogleAuthContainer()
 }

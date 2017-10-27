@@ -3,7 +3,8 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="app_name">ФСФР kotlin</string>
+    <string name="server_client_id">883656660285-r2gcd6r1t9dbpu4ddlasavgkp2ra376v.apps.googleusercontent.com</string>
+    <string name="app_name">ФСФР Экзамены</string>
     <string name="exam_base">Базовый экзамен</string>
     <string name="exam_1">Экзамен серии 1.0</string>
     <string name="exam_2">Экзамен серии 2.0</string>
@@ -26,6 +27,7 @@
     <string name="add_discussions_empty_text">Для добавления вопроса нажмите \"+\" в правом верхнем углу экрана</string>
     <string name="discussion_negative_like_comment_show_btn">Показать</string>
     <string name="discussion_negative_like_text">Обсуждение набрало большое количество отрицательных оценок и было скрыто</string>
+    <string name="something_went_wrong">Что-то пошло не так, попробуйте позже</string>
     <string name="Answers">Ответы:</string>
     <string name="results">Результаты</string>
     <string name="mail_to">Задать вопрос</string>

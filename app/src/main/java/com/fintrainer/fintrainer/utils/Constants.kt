@@ -7,6 +7,7 @@ package com.fintrainer.fintrainer.utils
 object Constants {
 
     val APP_PNAME = "com.fintrainer.fintrainer"
+    val RC_SIGN_IN = 10
 
     val DRAWER_MAIN_FRAGMENT_TAG = "drawer_main_fragment"
     val TESTING_FRAGMENT_TAG = "testing_fragment"

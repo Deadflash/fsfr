@@ -18,12 +18,16 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:id="@+id/ivAvatar"
+            android:clickable="false"
             android:src="@color/blue_grey_800" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/ivLogout"
+            android:visibility="invisible"
+            android:clickable="false"
             android:src="@drawable/ic_exit_to_app_white_24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>
@@ -40,7 +44,8 @@
             fontPath="fonts/RobotoMedium.ttf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Александр Кротков"
+            android:id="@+id/tvName"
+            android:text="Авторизируйтесь"
             android:textColor="@android:color/white"
             android:textSize="@dimen/medium_text" />
 

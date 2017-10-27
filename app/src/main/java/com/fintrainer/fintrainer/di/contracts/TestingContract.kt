@@ -11,8 +11,6 @@ interface TestingContract {
         fun showTest(tests: List<TestingDto>)
         fun showResults(testingResultsDto: TestingResultsDto)
         fun showIsFavouriteQuestion(isFavourite: Boolean)
-//        fun onRemoveFavourite()
-//        fun onAddFavourite()
     }
 
     interface Presenter : IPresenter {

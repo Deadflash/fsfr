@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -19,6 +20,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import com.fintrainer.fintrainer.R
+import com.fintrainer.fintrainer.di.contracts.AuthContract
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
 import com.fintrainer.fintrainer.structure.ExamStatisticAndInfo
 import com.fintrainer.fintrainer.utils.Constants.APP_PNAME
@@ -33,27 +35,30 @@ import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_5
 import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_6
 import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_7
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
+import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
+import com.fintrainer.fintrainer.utils.GoogleAuthContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity
 import com.fintrainer.fintrainer.views.search.SearchActivity
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.readystatesoftware.systembartint.SystemBarTintManager
+import com.squareup.picasso.Picasso
 import icepick.State
 import kotlinx.android.synthetic.main.activity_drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
+import org.jetbrains.anko.displayManager
+import org.jetbrains.anko.email
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivityForResult
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.email
 import javax.inject.Inject
 
 
-class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener {
+class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener, AuthContract.View {
 
     @State
     @JvmField
@@ -83,8 +88,15 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     @JvmField
     var currentExam: Int = 0
 
+    @State
+    @JvmField
+    var isAuthClicked: Boolean = false
+
     @Inject
     lateinit var presenter: DrawerPresenter
+
+    @Inject
+    lateinit var auth: GoogleAuthContainer
 
     private val statisticsAnimSet = AnimatorSet()
     private val cardViewAnimSet = AnimatorSet()
@@ -106,13 +118,17 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         initStatusBar()
         setupDrawer()
 
+        setupNavigationView()
+
         setupClickListeners()
         setupCardViewAnimations()
         setupReverseCardViewAnimations()
 
         setupUserProgress()
         presenter.bind(this)
-        presenter.getStatistics(selectedExam,true)
+        presenter.getStatistics(selectedExam, true)
+        auth.bind(this@DrawerActivity)
+        auth.tryToLogin()
     }
 
     private fun initStatusBar() {
@@ -139,7 +155,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 if (currentExam != selectedExam) {
                     currentExam = selectedExam
                     cardViewReverseAnimSet.start()
-                    presenter.getStatistics(selectedExam,true)
+                    presenter.getStatistics(selectedExam, true)
                     setupTitle()
                 }
             }
@@ -147,10 +163,52 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         drawer.addDrawerListener(toggle)
         toggle.syncState()
         setupTitle()
+    }
 
+    private fun setupNavigationView() {
         navigation_view.setNavigationItemSelectedListener(this)
-        navigation_view.getHeaderView(0)?.ivLogout?.onClick { toast("logout") }
+        val navView = navigation_view.getHeaderView(0)
+        navView?.ivLogout?.isClickable = !isAuthClicked
+        navView?.ivAvatar?.isClickable = !isAuthClicked
+        navView?.ivLogout?.onClick {
+            auth.logout()
+            isAuthClicked = true
+            navView.ivLogout?.isClickable = false
+        }
+        navView?.ivAvatar?.onClick {
+            auth.login()
+            isAuthClicked = true
+            navView.ivAvatar?.isClickable = false
+        }
         navigation_view.menu?.getItem(0)?.isChecked = true
+    }
+
+    override fun setClickable() {
+        navigation_view.getHeaderView(0)?.ivLogout?.isClickable = true
+        navigation_view.getHeaderView(0)?.ivAvatar?.isClickable = true
+    }
+
+    override fun showUserInfo(userName: String, userAvatarUri: Uri, isLoggedIn: Boolean) {
+        isAuthClicked = false
+        val navView = navigation_view.getHeaderView(0)
+        navView?.tvName?.text = userName
+//        navView?.ivAvatar?.setImageURI(userAvatarUri)
+        Picasso.with(this)
+                .load(userAvatarUri)
+                .fit()
+                .centerInside()
+                .error(R.color.blue_grey_300)
+                .into(navView?.ivAvatar)
+//        navView.ivLogout.setImageResource(if (isLoggedIn) R.drawable.ic_account_box_white_24dp else R.drawable.ic_exit_to_app_white_24dp)
+        if (isLoggedIn) {
+            navView?.ivLogout?.visibility = View.VISIBLE
+            navView.ivAvatar.isClickable = false
+            navView.ivLogout.isClickable = true
+        } else {
+            navView?.ivLogout?.visibility = View.INVISIBLE
+            navView?.ivAvatar?.isClickable = true
+            navView.ivLogout.isClickable = false
+        }
     }
 
     private fun setupTitle() {
@@ -363,12 +421,12 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         favourite_layout.setOnClickListener(this)
     }
 
-    override fun showStatistics(statistics: ExamStatisticAndInfo,showFullAnim: Boolean) {
+    override fun showStatistics(statistics: ExamStatisticAndInfo, showFullAnim: Boolean) {
         setupStatisticsAnimation(statistics.averageGrade, statistics.averageRightAnswers, statistics.chaptersCount, statistics.questionsCount, statistics.favouriteQuestionsCount)
         if (!cardViewAnimSet.isRunning) {
             if (showFullAnim) {
                 cardViewAnimSet.start()
-            }else{
+            } else {
                 statisticsAnimSet.start()
             }
         }
@@ -399,21 +457,24 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         when (requestCode) {
             EXAM_INTENT -> {
                 App.releaseTestingComponent()
-                presenter.getStatistics(selectedExam,false)
+                presenter.getStatistics(selectedExam, false)
             }
             TESTING_INTENT -> {
                 App.releaseTestingComponent()
-                presenter.getStatistics(selectedExam,false)
+                presenter.getStatistics(selectedExam, false)
             }
             CHAPTER_INTENT -> {
                 App.releaseChapterComponent()
                 App.releaseTestingComponent()
-                presenter.getStatistics(selectedExam,false)
+                presenter.getStatistics(selectedExam, false)
             }
             SEARCH_INTENT -> App.releaseSearchComponent()
             FAVOURITE_INTENT -> {
                 App.releaseTestingComponent()
-                presenter.getStatistics(selectedExam,false)
+                presenter.getStatistics(selectedExam, false)
+            }
+            RC_SIGN_IN -> {
+                auth.onActivityResult(requestCode, resultCode, data!!)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -455,10 +516,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 true
             }
             R.id.nav_mail -> {
-                email("fcpunlimited@gmail.com","Вопрос","")
+                email("fcpunlimited@gmail.com", "Вопрос", "")
                 true
             }
-            R.id.nav_favourite ->{
+            R.id.nav_favourite -> {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + APP_PNAME)))
                 true
             }
@@ -477,6 +538,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onDestroy() {
         super.onDestroy()
         presenter.unBind()
+        auth.unBind()
         App.releaseDrawerComponent()
     }
 
