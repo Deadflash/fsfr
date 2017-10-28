@@ -1,6 +1,7 @@
 package com.fintrainer.fintrainer.views.testing
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -15,6 +16,7 @@ import com.fintrainer.fintrainer.di.contracts.TestingContract
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
 import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
+import com.fintrainer.fintrainer.utils.Constants.DISCUSSION_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
@@ -149,10 +151,19 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
             true
         }
         R.id.menu_discussions -> {
-            startActivity<DiscussionsActivity>()
+            startActivityForResult<DiscussionsActivity>(DISCUSSION_INTENT)
             true
         }
         else -> false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode){
+            DISCUSSION_INTENT -> {
+                App.releaseDiscussionsComponent()
+            }
+        }
     }
 
     override fun onBackPressed() {
