@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.DiscussionsAdapter
+import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
 import com.fintrainer.fintrainer.utils.Constants.DISCUSSIONS_FRAGMENT_TAG
 import com.fintrainer.fintrainer.views.BaseFragment
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.toolbar_layout.*
 /**
  * Created by krotk on 23.10.2017.
  */
-class FragmentDiscussions : BaseFragment() {
+class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -29,6 +30,10 @@ class FragmentDiscussions : BaseFragment() {
     private fun setupRecycler() {
         recycler.layoutManager = LinearLayoutManager(context)
         recycler.adapter = DiscussionsAdapter()
+    }
+
+    override fun showDiscussions() {
+
     }
 
     override fun getFragmentLayout(): Int = R.layout.fragment_discussions

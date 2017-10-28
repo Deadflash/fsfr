@@ -2,7 +2,7 @@ package com.fintrainer.fintrainer.views.drawer
 
 import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
-import com.fintrainer.fintrainer.utils.realm.RealmContainer
+import com.fintrainer.fintrainer.utils.RealmContainer
 
 /**
  * Created by krotk on 21.10.2017.

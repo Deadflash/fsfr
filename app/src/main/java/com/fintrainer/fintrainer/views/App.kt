@@ -3,7 +3,7 @@ package com.fintrainer.fintrainer.views
 import android.app.Application
 import com.fintrainer.fintrainer.di.components.*
 import com.fintrainer.fintrainer.di.modules.*
-import com.fintrainer.fintrainer.utils.realm.RealmContainer
+import com.fintrainer.fintrainer.utils.RealmContainer
 import io.realm.Realm
 import javax.inject.Inject
 
@@ -30,6 +30,9 @@ class App : Application() {
         private var searchComponent: SearchComponent? = null
 
         @JvmStatic
+        private var discussionComponent: DiscussionComponent? = null
+
+        @JvmStatic
         fun initDrawerComponent(): DrawerComponent? {
             if (drawerComponent == null) {
                 drawerComponent = appComponent.subDrawerComponent(DrawerModule())
@@ -44,41 +47,54 @@ class App : Application() {
 
         @JvmStatic
         fun initTestingComponent(): TestingComponent? {
-            if (testingComponent == null){
+            if (testingComponent == null) {
                 testingComponent = appComponent.subTestingComponent(TestingModule())
             }
             return testingComponent
         }
 
         @JvmStatic
-        fun releaseTestingComponent(){
+        fun releaseTestingComponent() {
             testingComponent = null
         }
 
         @JvmStatic
-        fun initChapterComponent(): ChapterComponent?{
-            if (chapterComponent == null){
+        fun initChapterComponent(): ChapterComponent? {
+            if (chapterComponent == null) {
                 chapterComponent = appComponent.subChapterComponent(ChapterModule())
             }
             return chapterComponent
         }
 
         @JvmStatic
-        fun releaseChapterComponent(){
+        fun releaseChapterComponent() {
             chapterComponent = null
         }
 
         @JvmStatic
-        fun initSearchComponent(): SearchComponent?{
-            if (searchComponent == null){
+        fun initSearchComponent(): SearchComponent? {
+            if (searchComponent == null) {
                 searchComponent = appComponent.subSearchComponent(SearchModule())
             }
             return searchComponent
         }
 
         @JvmStatic
-        fun releaseSearchComponent(){
+        fun releaseSearchComponent() {
             searchComponent = null
+        }
+
+        @JvmStatic
+        fun initDiscussionsComponent(): DiscussionComponent?{
+            if (discussionComponent == null){
+                discussionComponent = appComponent.subDiscussionsComponent(DiscussionsModule())
+            }
+            return discussionComponent
+        }
+
+        @JvmStatic
+        fun releaseDiscussionsComponent(){
+            discussionComponent = null
         }
     }
 

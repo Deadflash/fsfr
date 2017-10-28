@@ -3,7 +3,7 @@ package com.fintrainer.fintrainer.di.modules
 import android.content.Context
 import com.fintrainer.fintrainer.utils.GoogleAuthContainer
 import com.fintrainer.fintrainer.utils.PicassoContainer
-import com.fintrainer.fintrainer.utils.realm.RealmContainer
+import com.fintrainer.fintrainer.utils.RealmContainer
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

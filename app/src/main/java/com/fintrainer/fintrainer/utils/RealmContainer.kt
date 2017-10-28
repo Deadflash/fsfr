@@ -1,12 +1,17 @@
-package com.fintrainer.fintrainer.utils.realm
+package com.fintrainer.fintrainer.utils
 
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
+import com.fintrainer.fintrainer.utils.Constants.REALM_FAIL_CONNECT_CODE
+import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_AUTH
+import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_DISCUSSION_REALM
+import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_SCHEMA_VERSION
+import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_URL
+import com.fintrainer.fintrainer.utils.Constants.REALM_SUCCESS_CONNECT_CODE
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
-import io.realm.Realm
-import io.realm.RealmConfiguration
-import io.realm.RealmObject
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import io.realm.*
 import io.realm.annotations.RealmModule
 import java.util.*
 
@@ -19,9 +24,9 @@ class RealmContainer {
     private val fk2 = "{b����\\u0002"
 
     private lateinit var statisticConf: RealmConfiguration
+    private var discussionsConfig: RealmConfiguration? = null
 
     fun initRealm() {
-//        val bArray: ByteArray = (fk + fk2).toByteArray()
         val config = RealmConfiguration.Builder()
                 .name("n")
                 .assetFile("n") // e.g "default.realmWithExams" or "lib/data.realmWithExams"
@@ -41,6 +46,26 @@ class RealmContainer {
                 .schemaVersion(2)
                 .migration(Migration())
                 .build()
+    }
+
+    fun initDiscussionsRealm(account: GoogleSignInAccount, realmCallBack: DiscussionRealmCallBack) {
+        if (discussionsConfig == null) {
+            SyncUser.loginAsync(SyncCredentials.google(account.idToken), REALM_SERVER_URL + REALM_SERVER_AUTH, object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
+                override fun onSuccess(result: SyncUser?) {
+                    discussionsConfig = SyncConfiguration.Builder(result, REALM_SERVER_URL + REALM_SERVER_DISCUSSION_REALM)
+                            .schemaVersion(REALM_SERVER_SCHEMA_VERSION)
+                            .waitForInitialRemoteData()
+                            .build()
+                    realmCallBack.realmConfigCallback(REALM_SUCCESS_CONNECT_CODE)
+                }
+
+                override fun onError(error: ObjectServerError?) {
+                    realmCallBack.realmConfigCallback(error?.errorCode?.intValue() ?: REALM_FAIL_CONNECT_CODE)
+                }
+            })
+        }else {
+            realmCallBack.realmConfigCallback(REALM_SUCCESS_CONNECT_CODE)
+        }
     }
 
     fun getExamInformation(examId: Int): ExamStatisticAndInfo {
@@ -257,6 +282,10 @@ class RealmContainer {
                 })
             }
         }
+    }
+
+    interface DiscussionRealmCallBack {
+        fun realmConfigCallback(code: Int)
     }
 
     @RealmModule(classes = arrayOf(ExamDto::class, TestingDto::class, ChapterRealm::class, AnswersDto::class))

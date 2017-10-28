@@ -1,7 +1,7 @@
 package com.fintrainer.fintrainer.di.modules
 
 import com.fintrainer.fintrainer.di.scopes.PerActivity
-import com.fintrainer.fintrainer.utils.realm.RealmContainer
+import com.fintrainer.fintrainer.utils.RealmContainer
 import com.fintrainer.fintrainer.views.drawer.DrawerPresenter
 import dagger.Module
 import dagger.Provides

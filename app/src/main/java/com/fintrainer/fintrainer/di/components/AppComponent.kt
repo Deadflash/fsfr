@@ -17,4 +17,5 @@ interface AppComponent {
     fun subTestingComponent(testingModule: TestingModule): TestingComponent
     fun subChapterComponent(chapterModule: ChapterModule): ChapterComponent
     fun subSearchComponent(searchModule: SearchModule): SearchComponent
+    fun subDiscussionsComponent(discussionsModule: DiscussionsModule):DiscussionComponent
 }

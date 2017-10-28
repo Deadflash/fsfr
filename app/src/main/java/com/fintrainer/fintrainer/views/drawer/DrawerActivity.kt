@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -51,7 +50,6 @@ import kotlinx.android.synthetic.main.activity_drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
-import org.jetbrains.anko.displayManager
 import org.jetbrains.anko.email
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivityForResult
@@ -127,6 +125,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         setupUserProgress()
         presenter.bind(this)
         presenter.getStatistics(selectedExam, true)
+    }
+
+    override fun onResume() {
+        super.onResume()
         auth.bind(this@DrawerActivity)
         auth.tryToLogin()
     }
@@ -183,7 +185,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         navigation_view.menu?.getItem(0)?.isChecked = true
     }
 
-    override fun setClickable() {
+    override fun setLoginLogoutButtonsClickable() {
         navigation_view.getHeaderView(0)?.ivLogout?.isClickable = true
         navigation_view.getHeaderView(0)?.ivAvatar?.isClickable = true
     }
@@ -474,7 +476,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 presenter.getStatistics(selectedExam, false)
             }
             RC_SIGN_IN -> {
-                auth.onActivityResult(requestCode, resultCode, data!!)
+                auth.onAuthResult(requestCode, resultCode, data!!)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -533,12 +535,12 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onPause() {
         super.onPause()
         statisticsAnimSet.cancel()
+        auth.unBind()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         presenter.unBind()
-        auth.unBind()
         App.releaseDrawerComponent()
     }
 

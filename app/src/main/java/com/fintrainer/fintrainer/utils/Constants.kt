@@ -7,6 +7,13 @@ package com.fintrainer.fintrainer.utils
 object Constants {
 
     val APP_PNAME = "com.fintrainer.fintrainer"
+    val REALM_SERVER_URL = "http://91.240.84.213:9080"
+    val REALM_SERVER_AUTH = "/auth"
+    val REALM_SERVER_SCHEMA_VERSION = 4L
+    val REALM_SERVER_DISCUSSION_REALM = "/fsfr-discussion"
+    val REALM_SUCCESS_CONNECT_CODE = 0
+    val REALM_FAIL_CONNECT_CODE: Int = -1
+    val ACCOUNT_ERROR_CODE: Int = -1
     val RC_SIGN_IN = 10
 
     val DRAWER_MAIN_FRAGMENT_TAG = "drawer_main_fragment"
