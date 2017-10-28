@@ -26,7 +26,7 @@ import org.jetbrains.anko.uiThread
 
 class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthContract.AuthContainer {
 
-    private var activity: AppCompatActivity? = null
+//    private var activity: AppCompatActivity? = null
     private var mGoogleApiClient: GoogleApiClient? = null
     private var view: AuthContract.View? = null
     private var account: GoogleSignInAccount? = null
@@ -36,7 +36,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
     override fun bind(iView: IView) {
         if (iView is DrawerActivity) {
             view = iView
-            activity = iView
+//            activity = iView
         }
     }
 
@@ -122,12 +122,12 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
     private fun setupGoogleApiClient() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestIdToken(activity?.getString(R.string.server_client_id))
+                .requestIdToken((view as? DrawerActivity)?.getString(R.string.server_client_id))
                 .build()
 
-        mGoogleApiClient = activity?.let {
+        mGoogleApiClient = (view as? DrawerActivity)?.let {
             GoogleApiClient.Builder(it)
-                    .enableAutoManage(activity!!, this)
+                    .enableAutoManage(view as DrawerActivity, this)
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                     .build()
         }
@@ -140,7 +140,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
             showUserInfo(account?.displayName!!, account?.photoUrl!!, true)
         } else {
             val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
-            activity?.startActivityForResult(signInIntent, RC_SIGN_IN)
+            (view as? DrawerActivity)?.startActivityForResult(signInIntent, RC_SIGN_IN)
             discussionActivity?.startActivityForResult(signInIntent, RC_SIGN_IN)
         }
     }
@@ -162,7 +162,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
 
     override fun unBind() {
         view = null
-        activity = null
+//        activity = null
     }
 
     interface AccountCallback {
