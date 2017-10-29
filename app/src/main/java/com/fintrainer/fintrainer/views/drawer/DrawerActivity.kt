@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -53,6 +54,7 @@ import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.email
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivityForResult
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 
@@ -127,10 +129,15 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         presenter.getStatistics(selectedExam, true)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         auth.bind(this@DrawerActivity)
         auth.tryToLogin()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
     private fun initStatusBar() {
@@ -162,6 +169,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 }
             }
         }
+        toggle.isDrawerSlideAnimationEnabled = false
         drawer.addDrawerListener(toggle)
         toggle.syncState()
         setupTitle()
@@ -171,23 +179,23 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         navigation_view.setNavigationItemSelectedListener(this)
         val navView = navigation_view.getHeaderView(0)
         navView?.ivLogout?.isClickable = !isAuthClicked
-        navView?.ivAvatar?.isClickable = !isAuthClicked
+        navView?.ivLogin?.isClickable = !isAuthClicked
         navView?.ivLogout?.onClick {
             auth.logout()
             isAuthClicked = true
             navView.ivLogout?.isClickable = false
         }
-        navView?.ivAvatar?.onClick {
+        navView?.ivLogin?.onClick {
             auth.login()
             isAuthClicked = true
-            navView.ivAvatar?.isClickable = false
+            navView.ivLogin?.isClickable = false
         }
         navigation_view.menu?.getItem(0)?.isChecked = true
     }
 
     override fun setLoginLogoutButtonsClickable() {
         navigation_view.getHeaderView(0)?.ivLogout?.isClickable = true
-        navigation_view.getHeaderView(0)?.ivAvatar?.isClickable = true
+        navigation_view.getHeaderView(0)?.ivLogin?.isClickable = true
     }
 
     override fun showUserInfo(userName: String, userAvatarUri: Uri, isLoggedIn: Boolean) {
@@ -195,20 +203,26 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         val navView = navigation_view.getHeaderView(0)
         navView?.tvName?.text = userName
 //        navView?.ivAvatar?.setImageURI(userAvatarUri)
-        Picasso.with(this)
-                .load(userAvatarUri)
-                .fit()
-                .centerInside()
-                .error(R.color.blue_grey_300)
-                .into(navView?.ivAvatar)
+        if (userAvatarUri != Uri.EMPTY) {
+            Picasso.with(this)
+                    .load(userAvatarUri)
+                    .fit()
+                    .centerInside()
+                    .error(R.mipmap.ic_launcher)
+                    .into(navView?.ivAvatar)
+        }else{
+            navView?.ivAvatar?.setImageResource(R.mipmap.ic_launcher)
+        }
 //        navView.ivLogout.setImageResource(if (isLoggedIn) R.drawable.ic_account_box_white_24dp else R.drawable.ic_exit_to_app_white_24dp)
         if (isLoggedIn) {
             navView?.ivLogout?.visibility = View.VISIBLE
-            navView.ivAvatar.isClickable = false
+            navView?.ivLogin?.visibility = View.INVISIBLE
+            navView.ivLogin.isClickable = false
             navView.ivLogout.isClickable = true
         } else {
             navView?.ivLogout?.visibility = View.INVISIBLE
-            navView?.ivAvatar?.isClickable = true
+            navView?.ivLogin?.visibility = View.VISIBLE
+            navView?.ivLogin?.isClickable = true
             navView.ivLogout.isClickable = false
         }
     }
@@ -476,7 +490,12 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 presenter.getStatistics(selectedExam, false)
             }
             RC_SIGN_IN -> {
-                auth.onAuthResult(requestCode, resultCode, data!!)
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    toast(R.string.action_canceled)
+                    setLoginLogoutButtonsClickable()
+                }else{
+                    auth.onAuthResult(requestCode, resultCode, data!!)
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -535,6 +554,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onPause() {
         super.onPause()
         statisticsAnimSet.cancel()
+    }
+
+    override fun onStop() {
+        super.onStop()
         auth.unBind()
     }
 

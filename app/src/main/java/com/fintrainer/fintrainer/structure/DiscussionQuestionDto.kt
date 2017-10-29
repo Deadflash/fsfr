@@ -12,6 +12,7 @@ open class DiscussionQuestionDto : RealmObject(){
         @PrimaryKey
         var id: String? = null
         var questionId: String? = null
+        var questionType: Int? = null
         var discussionCreator: String? = null
         var text: String? = null
         var commentList: RealmList<DiscussionCommentDto>? = null

@@ -10,9 +10,13 @@ object Constants {
     val REALM_SERVER_URL = "http://91.240.84.213:9080"
     val REALM_SERVER_AUTH = "/auth"
     val REALM_SERVER_SCHEMA_VERSION = 4L
-    val REALM_SERVER_DISCUSSION_REALM = "/fsfr-discussion"
-    val REALM_SUCCESS_CONNECT_CODE = 0
-    val REALM_FAIL_CONNECT_CODE: Int = -1
+    val REALM_SERVER_DISCUSSION_REALM = "/fsfr-discussion-test"
+    val REALM_SUCCESS_CONNECT_CODE = 2
+    val REALM_FAIL_CONNECT_CODE: Int = 3
+    val AUTH_INTERNET_CONNECTION_ERROR = 7
+    val REALM_SUCCES_CODE = 0
+    val REALM_ERROR_CODE = 1
+    val REALM_AUTH_TOKEN_ERROR = 611
     val ACCOUNT_ERROR_CODE: Int = -1
     val RC_SIGN_IN = 10
 

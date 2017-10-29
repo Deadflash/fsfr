@@ -2,49 +2,56 @@ package com.fintrainer.fintrainer.views.discussions.fragments
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.view.MenuItem
 import android.view.View
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.DiscussionsAdapter
 import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
+import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 import com.fintrainer.fintrainer.utils.Constants.DISCUSSIONS_FRAGMENT_TAG
+import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseFragment
-import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
+import com.fintrainer.fintrainer.views.discussions.DiscussionsPresenter
 import kotlinx.android.synthetic.main.fragment_discussions.*
-import kotlinx.android.synthetic.main.toolbar_layout.*
+import org.jetbrains.anko.support.v4.toast
+import javax.inject.Inject
 
 /**
  * Created by krotk on 23.10.2017.
  */
 class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView {
 
+    @Inject
+    lateinit var presenter: DiscussionsPresenter
+
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
-        val discussionActivity = activity as DiscussionsActivity
-        discussionActivity.setSupportActionBar(toolbar)
-        discussionActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setupRecycler()
+        App.initDiscussionsComponent()?.inject(this)
+
+        val purchased = activity.intent.getBooleanExtra("purchased", false)
+        val questionCode = activity.intent.getStringExtra("questionCode")
+        val testType = activity.intent.getIntExtra("testType", -1)
+
+        presenter.bindDiscussionsView(this)
+        presenter.getDiscussions(questionCode, testType)
     }
 
-    private fun setupRecycler() {
-        recycler.layoutManager = LinearLayoutManager(context)
-        recycler.adapter = DiscussionsAdapter()
+    override fun showDiscussions(discussions: List<DiscussionQuestionDto>) {
+        if (discussions.isEmpty()) {
+            tvEmptyDiscussions.visibility = View.VISIBLE
+            toast("Discussions is empty")
+        } else {
+            tvEmptyDiscussions.visibility = View.GONE
+            recycler.layoutManager = LinearLayoutManager(context)
+            recycler.adapter = DiscussionsAdapter()
+        }
     }
 
-    override fun showDiscussions() {
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        presenter.unbindDiscussionsView()
     }
 
     override fun getFragmentLayout(): Int = R.layout.fragment_discussions
 
     override fun getFragmentTag(): String = DISCUSSIONS_FRAGMENT_TAG
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId){
-        android.R.id.home ->{
-            activity.onBackPressed()
-            true
-        }
-        else -> false
-    }
 }

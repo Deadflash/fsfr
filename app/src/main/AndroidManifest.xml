@@ -27,7 +27,11 @@
         <activity android:name="com.fintrainer.fintrainer.views.result.ResultActivity" />
         <activity android:name="com.fintrainer.fintrainer.views.chapters.ChaptersActivity" />
         <activity android:name="com.fintrainer.fintrainer.views.search.SearchActivity" />
-        <activity android:name="com.fintrainer.fintrainer.views.discussions.DiscussionsActivity"></activity>
+        <activity
+            android:name="com.fintrainer.fintrainer.views.discussions.DiscussionsActivity"
+            android:windowSoftInputMode="adjustResize">
+
+        </activity>
     </application>
 
 </manifest>

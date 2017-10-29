@@ -28,10 +28,18 @@
     <string name="discussion_negative_like_comment_show_btn">Показать</string>
     <string name="discussion_negative_like_text">Обсуждение набрало большое количество отрицательных оценок и было скрыто</string>
     <string name="something_went_wrong">Что-то пошло не так, попробуйте позже</string>
+    <string name="ask_question">Задайте вопрос</string>
+    <string name="error_realm_config">Не удалось подключиться к базе данных</string>
+    <string name="action_canceled">Действие отменено</string>
     <string name="Answers">Ответы:</string>
     <string name="results">Результаты</string>
     <string name="mail_to">Задать вопрос</string>
     <string name="like">Оставить отзыв</string>
     <string name="options">Настройки</string>
     <string name="other">Прочее</string>
+    <string name="internet_connection_error">Проверьте подключение к сети</string>
+    <string name="my_exams">Мои Экзамены</string>
+    <string name="discussion_add_menu">Добавить</string>
+    <string name="add_discussion_text">Задайте интересующий вас вопрос, этот вопрос будет виден всем пользователям.</string>
+    <string name="discussion_add_question_hint">Введите вопрос</string>
 </resources>

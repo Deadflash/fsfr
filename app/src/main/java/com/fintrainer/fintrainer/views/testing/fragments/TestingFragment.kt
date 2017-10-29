@@ -52,17 +52,19 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
             override fun canScrollVertically(): Boolean = false
         }
         val position: Int = arguments.getInt("position", -1)
-        if (position != -1) {
-            tvQuestionCode.text = tests[position].code ?: ""
-            tvQuestion.text = tests[position].task ?: ""
-            if (tests[position].image != null && activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName) != 0) {
-                ivTestingImg.visibility = View.VISIBLE
-                picasso.loadImage(ivTestingImg, activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName))
-            }
+        if (!tests.isEmpty()) {
+            if (position != -1) {
+                tvQuestionCode.text = tests[position].code ?: ""
+                tvQuestion.text = tests[position].task ?: ""
+                if (tests[position].image != null && activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName) != 0) {
+                    ivTestingImg.visibility = View.VISIBLE
+                    picasso.loadImage(ivTestingImg, activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName))
+                }
 
-            recycler.adapter = AnswersAdapter(this, tests[position], activity.intent.getIntExtra("intentId", -1))
-            recycler.clearFocus()
-            recycler.isNestedScrollingEnabled = false
+                recycler.adapter = AnswersAdapter(this, tests[position], activity.intent.getIntExtra("intentId", -1))
+                recycler.clearFocus()
+                recycler.isNestedScrollingEnabled = false
+            }
         }
     }
 

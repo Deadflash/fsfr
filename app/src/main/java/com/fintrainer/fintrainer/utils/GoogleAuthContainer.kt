@@ -1,13 +1,14 @@
 package com.fintrainer.fintrainer.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.AuthContract
 import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.utils.Constants.ACCOUNT_ERROR_CODE
+import com.fintrainer.fintrainer.utils.Constants.AUTH_INTERNET_CONNECTION_ERROR
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
 import com.fintrainer.fintrainer.views.drawer.DrawerActivity
@@ -18,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
 import org.jetbrains.anko.uiThread
 
 /**
@@ -26,7 +28,7 @@ import org.jetbrains.anko.uiThread
 
 class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthContract.AuthContainer {
 
-//    private var activity: AppCompatActivity? = null
+    //    private var activity: AppCompatActivity? = null
     private var mGoogleApiClient: GoogleApiClient? = null
     private var view: AuthContract.View? = null
     private var account: GoogleSignInAccount? = null
@@ -41,7 +43,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
     }
 
     override fun bindDiscussionActivityView(discussionActivity: DiscussionsActivity) {
-       this.discussionActivity = discussionActivity
+        this.discussionActivity = discussionActivity
     }
 
     override fun unbindDiscussionActivityView() {
@@ -78,8 +80,10 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
             Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback { callback ->
                 uiThread {
                     if (callback.isSuccess) {
+                        println("logout: ${callback.statusCode} CODE: ${callback.status} ${callback.status.statusCode}")
                         account = null
-                        showUserInfo("ФСФР Экзамены", Uri.EMPTY, false)
+                        (view as? DrawerActivity)?.getString(R.string.my_exams)?.let { it1 -> showUserInfo(it1, Uri.EMPTY, false) }
+                        view?.setLoginLogoutButtonsClickable()
                     } else {
                         view?.setLoginLogoutButtonsClickable()
                     }
@@ -97,6 +101,8 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
                         if (googleSignInResult.isSuccess) {
                             account = googleSignInResult.signInAccount
                             showUserInfo(account?.displayName ?: "", account?.photoUrl ?: Uri.EMPTY, true)
+                        } else if (googleSignInResult.status.statusCode == AUTH_INTERNET_CONNECTION_ERROR) {
+                            showInternetConnectionError()
                         }
                     }
                 }
@@ -139,10 +145,20 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
             accountCallBack?.onSuccess(result.signInAccount!!)
             showUserInfo(account?.displayName!!, account?.photoUrl!!, true)
         } else {
-            val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
-            (view as? DrawerActivity)?.startActivityForResult(signInIntent, RC_SIGN_IN)
-            discussionActivity?.startActivityForResult(signInIntent, RC_SIGN_IN)
+            if (result.status.statusCode == AUTH_INTERNET_CONNECTION_ERROR) {
+                showInternetConnectionError()
+            } else {
+                val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
+                (view as? DrawerActivity)?.startActivityForResult(signInIntent, RC_SIGN_IN)
+                discussionActivity?.startActivityForResult(signInIntent, RC_SIGN_IN)
+            }
         }
+    }
+
+    private fun showInternetConnectionError() {
+        (view as? DrawerActivity)?.toast(R.string.internet_connection_error)
+        view?.setLoginLogoutButtonsClickable()
+        discussionActivity?.toast(R.string.internet_connection_error)
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
@@ -155,7 +171,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
         if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
             handleSignInResult(Auth.GoogleSignInApi.getSignInResultFromIntent(data))
         } else {
-            accountCallBack?.onError(ACCOUNT_ERROR_CODE)
+            accountCallBack?.onError(resultCode)
             view?.setLoginLogoutButtonsClickable()
         }
     }

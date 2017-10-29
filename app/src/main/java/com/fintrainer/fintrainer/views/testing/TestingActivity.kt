@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_testing.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
+import org.jetbrains.anko.toast
 import java.lang.reflect.Field
 import javax.inject.Inject
 
@@ -79,8 +80,12 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun showTest(tests: List<TestingDto>) {
         this.tests = tests
-        checkIsFavourite(false)
-        setupViewPager()
+        if (tests.isEmpty()){
+            toast(R.string.something_went_wrong)
+        }else {
+            checkIsFavourite(false)
+            setupViewPager()
+        }
     }
 
     override fun showIsFavouriteQuestion(isFavourite: Boolean) {
@@ -151,7 +156,10 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
             true
         }
         R.id.menu_discussions -> {
-            startActivityForResult<DiscussionsActivity>(DISCUSSION_INTENT)
+            startActivityForResult<DiscussionsActivity>(DISCUSSION_INTENT,
+                    "purchased" to intent.getBooleanExtra("purchased", false),
+                    "questionCode" to (tests?.get(currentPagerPosition)?.code.toString()),
+                    "testType" to (tests?.get(currentPagerPosition)?.type ?: -1))
             true
         }
         else -> false

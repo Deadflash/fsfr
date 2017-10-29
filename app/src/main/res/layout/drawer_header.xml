@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
     android:background="@color/blue_grey_500"
@@ -16,19 +17,33 @@
         android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivAvatar"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:id="@+id/ivAvatar"
             android:clickable="false"
-            android:src="@color/blue_grey_800" />
+            android:src="@mipmap/ic_launcher" />
+
+        <ImageView
+            android:id="@+id/ivLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:clickable="false"
+            android:paddingLeft="5dp"
+            android:paddingBottom="5dp"
+            android:visibility="invisible"
+            android:src="@drawable/ic_exit_to_app_white_24dp"
+         />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ivLogout"
-            android:visibility="invisible"
+            android:id="@+id/ivLogin"
+            android:src="@drawable/ic_account_box_white_24dp"
+            android:paddingLeft="5dp"
+            android:paddingBottom="5dp"
             android:clickable="false"
-            android:src="@drawable/ic_exit_to_app_white_24dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>
 
@@ -41,12 +56,12 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tvName"
             fontPath="fonts/RobotoMedium.ttf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tvName"
-            android:text="Авторизируйтесь"
             android:textColor="@android:color/white"
+            android:text="@string/my_exams"
             android:textSize="@dimen/medium_text" />
 
     </LinearLayout>

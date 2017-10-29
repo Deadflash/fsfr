@@ -25,6 +25,7 @@ class RealmContainer {
 
     private lateinit var statisticConf: RealmConfiguration
     private var discussionsConfig: RealmConfiguration? = null
+    private var discussionsRealm: Realm? = null
 
     fun initRealm() {
         val config = RealmConfiguration.Builder()
@@ -48,6 +49,47 @@ class RealmContainer {
                 .build()
     }
 
+//    fun createRealm() {
+//        val myCredentials = SyncCredentials.usernamePassword("fcpunlimited@gmail.com", " 3535583q", false)
+//        SyncUser.loginAsync(myCredentials, "http://91.240.84.213:9080/auth", object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
+//            override fun onSuccess(user: SyncUser) {
+//
+//                val config = SyncConfiguration.Builder(user, "realm://91.240.84.213:9080" + REALM_SERVER_DISCUSSION_REALM)
+//                        .schemaVersion(REALM_SERVER_SCHEMA_VERSION)
+//                        .waitForInitialRemoteData()
+//
+//                        //.waitForRemoteInitialData()
+//                        .build()
+//                //               Realm.deleteRealm(config);
+//                Realm.getInstanceAsync(config, object : Realm.Callback() {
+//                    override fun onSuccess(incRealm: Realm) {
+////                        realm = incRealm
+//                        val pm = user.permissionManager
+//                        val condition = UserCondition.noExistingPermissions()
+//                        val accessLevel = AccessLevel.WRITE
+//                        val request = PermissionRequest(condition, "realm://91.240.84.213:9080" + REALM_SERVER_DISCUSSION_REALM, accessLevel)
+//
+//                        pm.applyPermissions(request, object : PermissionManager.ApplyPermissionsCallback {
+//                            override fun onSuccess() {
+//                                println("Hooray")
+//                                // throw new RuntimeException("Horray");
+//                            }
+//
+//                            override fun onError(error: ObjectServerError) {
+//                                throw RuntimeException(error)
+//                            }
+//                        })
+//                    }
+//                })
+//            }
+//
+//            override fun onError(error: ObjectServerError) {
+//                throw RuntimeException(error)
+//            }
+//        })
+//
+//    }
+
     fun initDiscussionsRealm(account: GoogleSignInAccount, realmCallBack: DiscussionRealmCallBack) {
         if (discussionsConfig == null) {
             SyncUser.loginAsync(SyncCredentials.google(account.idToken), REALM_SERVER_URL + REALM_SERVER_AUTH, object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
@@ -63,8 +105,33 @@ class RealmContainer {
                     realmCallBack.realmConfigCallback(error?.errorCode?.intValue() ?: REALM_FAIL_CONNECT_CODE)
                 }
             })
-        }else {
+        } else {
             realmCallBack.realmConfigCallback(REALM_SUCCESS_CONNECT_CODE)
+        }
+    }
+
+    private fun getDiscussionRealm(): Realm{
+        if (discussionsRealm == null){
+            discussionsRealm = Realm.getInstance(discussionsConfig)
+        }
+        return discussionsRealm!!
+    }
+
+    fun testRealm(){
+//        val testRealm = getDiscussionRealm()
+        getDiscussionRealm().beginTransaction()
+        val discussion = DiscussionQuestionDto()
+        discussion.id = UUID.randomUUID().toString()
+        discussion.questionId = "1.1.1"
+        discussion.questionType = 0
+        discussion.text = "hardcodetest"
+        discussion.discussionCreator = "TEST"
+        getDiscussionRealm().commitTransaction()
+    }
+
+    fun closeTestRealm(){
+        if (discussionsRealm != null){
+            discussionsRealm!!.close()
         }
     }
 
@@ -78,6 +145,55 @@ class RealmContainer {
             }
             return ExamStatisticAndInfo(getAverageGrade(examId), getAverageRightAnswersCount(examId), chapterCount ?: 0, questionsCount ?: 0, favouriteQuestionsCount ?: 0)
 
+        }
+    }
+
+    fun createDiscussion(user: String, text: String, questionCode: String, questionType: Int, createDiscussionCallback: CreateDiscussionCallback) {
+        if (discussionsConfig != null) {
+            Realm.getInstanceAsync(discussionsConfig, object : Realm.Callback() {
+                override fun onSuccess(realm: Realm?) {
+                    realm.use {
+                        val discussion = DiscussionQuestionDto()
+                        discussion.id = UUID.randomUUID().toString()
+                        discussion.questionId = questionCode
+                        discussion.questionType = questionType
+                        discussion.text = text
+                        discussion.discussionCreator = user
+                        it?.executeTransaction({
+                            realm ->
+                            realm.copyToRealm(discussion)
+                            createDiscussionCallback.success()
+                        })
+                    }
+                }
+
+                override fun onError(exception: Throwable?) {
+                    createDiscussionCallback.error(REALM_FAIL_CONNECT_CODE)
+                }
+
+            })
+        }
+    }
+
+    fun getDiscussions(questionCode: String, questionType: Int, discussionsCallback: DiscussionsCallback) {
+        if (discussionsConfig != null) {
+            Realm.getInstanceAsync(discussionsConfig, object : Realm.Callback() {
+                override fun onSuccess(realm: Realm?) {
+                    realm.use {
+                        it?.where(DiscussionQuestionDto::class.java)
+                                ?.equalTo("questionId", questionCode)
+                                ?.equalTo("questionType", questionType)
+                                ?.findAll()
+                                ?.let { it1 -> discussionsCallback.handleDiscussions(it1) }
+                    }
+                }
+
+                override fun onError(exception: Throwable?) {
+                    println("Realm Error ${exception?.message} ${exception?.cause}")
+                }
+            })
+        } else {
+            println("Discussions config == null")
         }
     }
 
@@ -286,6 +402,15 @@ class RealmContainer {
 
     interface DiscussionRealmCallBack {
         fun realmConfigCallback(code: Int)
+    }
+
+    interface DiscussionsCallback {
+        fun handleDiscussions(discussions: List<DiscussionQuestionDto>)
+    }
+
+    interface CreateDiscussionCallback {
+        fun success()
+        fun error(code: Int)
     }
 
     @RealmModule(classes = arrayOf(ExamDto::class, TestingDto::class, ChapterRealm::class, AnswersDto::class))

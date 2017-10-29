@@ -1,6 +1,7 @@
 package com.fintrainer.fintrainer.di.contracts
 
 import android.content.Intent
+import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 
 /**
  * Created by krotk on 28.10.2017.
@@ -12,7 +13,7 @@ interface DiscussionsContract {
     }
 
     interface DiscussionsView: IView{
-        fun showDiscussions()
+        fun showDiscussions(discussions: List<DiscussionQuestionDto>)
     }
 
     interface CommentsView: IView{
@@ -20,7 +21,8 @@ interface DiscussionsContract {
     }
 
     interface AddDiscussionView : IView{
-        fun addDiscussionStatus(code: Int)
+        fun createDiscussionResult(code: Int)
+        fun onCreateDiscussionClicked()
     }
 
     interface Presenter: IPresenter{
@@ -32,5 +34,9 @@ interface DiscussionsContract {
         fun unbindAddDiscussionsView()
         fun initDiscussionsRealm()
         fun handleAuthResult(requestCode: Int, resultCode: Int, data: Intent)
+
+        fun getDiscussions(code: String, questionType: Int)
+        fun onCreateDiscussionClicked()
+        fun createDiscussion(text: String, questionCode: String, questionType: Int)
     }
 }
