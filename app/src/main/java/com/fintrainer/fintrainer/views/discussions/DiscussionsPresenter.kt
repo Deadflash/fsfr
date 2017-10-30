@@ -41,6 +41,7 @@ class DiscussionsPresenter(private val realmContainer: RealmContainer,
 
     override fun bindAddDiscussionsView(iView: IView) {
         addDiscussionsView = iView as? FragmentAddDiscussion
+//        realmContainer.testRealm()
     }
 
     override fun initDiscussionsRealm() {
@@ -84,6 +85,10 @@ class DiscussionsPresenter(private val realmContainer: RealmContainer,
         }
     }
 
+    fun closeRealm(){
+        realmContainer.closeDiscussionRealm()
+    }
+
     override fun getDiscussions(code: String, questionType: Int) {
         realmContainer.getDiscussions(code, questionType, object : RealmContainer.DiscussionsCallback {
             override fun handleDiscussions(discussions: List<DiscussionQuestionDto>) {
@@ -110,5 +115,6 @@ class DiscussionsPresenter(private val realmContainer: RealmContainer,
 
     override fun unbindAddDiscussionsView() {
         addDiscussionsView = null
+//        realmContainer.closeDiscussionRealm()
     }
 }
