@@ -9,7 +9,7 @@ import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
-import com.fintrainer.fintrainer.utils.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 

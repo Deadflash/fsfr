@@ -47,4 +47,6 @@ object Constants {
     val EXAM_SERIAL_5 = 5
     val EXAM_SERIAL_6 = 6
     val EXAM_SERIAL_7 = 7
+
+    val DISLIKES_TO_HIDE_COMMENT: Int = -3
 }

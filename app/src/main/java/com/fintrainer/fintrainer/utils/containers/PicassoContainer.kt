@@ -1,4 +1,4 @@
-package com.fintrainer.fintrainer.utils
+package com.fintrainer.fintrainer.utils.containers
 
 import android.content.Context
 import android.widget.ImageView

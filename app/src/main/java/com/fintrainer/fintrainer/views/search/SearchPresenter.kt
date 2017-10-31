@@ -3,7 +3,7 @@ package com.fintrainer.fintrainer.views.search
 import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.di.contracts.SearchContract
 import com.fintrainer.fintrainer.structure.TestingDto
-import com.fintrainer.fintrainer.utils.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 

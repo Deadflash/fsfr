@@ -1,23 +1,12 @@
-package com.fintrainer.fintrainer.utils
+package com.fintrainer.fintrainer.utils.containers
 
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
-import com.fintrainer.fintrainer.utils.Constants.REALM_FAIL_CONNECT_CODE
-import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_AUTH
-import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_DISCUSSION_REALM
-import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_HTTP_URL
-import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER_SCHEMA_VERSION
-import com.fintrainer.fintrainer.utils.Constants.REALM_SERVER__REALM_URL
-import com.fintrainer.fintrainer.utils.Constants.REALM_SUCCESS_CONNECT_CODE
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.annotations.RealmModule
-import io.realm.permissions.AccessLevel
-import io.realm.permissions.PermissionRequest
-import io.realm.permissions.UserCondition
-import org.jetbrains.anko.doAsync
 import java.util.*
 
 /**
@@ -52,145 +41,6 @@ class RealmContainer {
                 .schemaVersion(2)
                 .migration(Migration())
                 .build()
-    }
-
-    fun createRealm() {
-        val myCredentials = SyncCredentials.usernamePassword("fcpunlimited@gmail.com", " 3535583q", false)
-        SyncUser.loginAsync(myCredentials, "http://91.240.84.213:9080/auth", object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
-            override fun onSuccess(user: SyncUser) {
-
-                val config = SyncConfiguration.Builder(user, "realm://91.240.84.213:9080" + REALM_SERVER_DISCUSSION_REALM)
-                        .schemaVersion(REALM_SERVER_SCHEMA_VERSION)
-                        .waitForInitialRemoteData()
-
-                        //.waitForRemoteInitialData()
-                        .build()
-                //               Realm.deleteRealm(config);
-                Realm.getInstanceAsync(config, object : Realm.Callback() {
-                    override fun onSuccess(incRealm: Realm) {
-//                        realm = incRealm
-                        val pm = user.permissionManager
-                        val condition = UserCondition.noExistingPermissions()
-                        val accessLevel = AccessLevel.WRITE
-                        val request = PermissionRequest(condition, "realm://91.240.84.213:9080" + REALM_SERVER_DISCUSSION_REALM, accessLevel)
-
-                        pm.applyPermissions(request, object : PermissionManager.ApplyPermissionsCallback {
-                            override fun onSuccess() {
-                                println("Hooray")
-                                // throw new RuntimeException("Horray");
-                            }
-
-                            override fun onError(error: ObjectServerError) {
-                                throw RuntimeException(error)
-                            }
-                        })
-                    }
-                })
-            }
-
-            override fun onError(error: ObjectServerError) {
-                throw RuntimeException(error)
-            }
-        })
-
-    }
-
-    fun initDiscussionsRealm(account: GoogleSignInAccount, realmCallBack: DiscussionRealmCallBack) {
-        if (discussionsConfig == null) {
-            SyncUser.loginAsync(SyncCredentials.google(account.idToken), REALM_SERVER_HTTP_URL + REALM_SERVER_AUTH, object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
-
-                override fun onSuccess(result: SyncUser?) {
-                    discussionsConfig = SyncConfiguration.Builder(result, REALM_SERVER__REALM_URL + REALM_SERVER_DISCUSSION_REALM)
-                            .schemaVersion(REALM_SERVER_SCHEMA_VERSION)
-                            .waitForInitialRemoteData()
-                            .build()
-                    realmCallBack.realmConfigCallback(REALM_SUCCESS_CONNECT_CODE)
-                }
-
-                override fun onError(error: ObjectServerError?) {
-                    realmCallBack.realmConfigCallback(error?.errorCode?.intValue() ?: REALM_FAIL_CONNECT_CODE)
-                }
-            })
-        } else {
-            realmCallBack.realmConfigCallback(REALM_SUCCESS_CONNECT_CODE)
-        }
-    }
-
-    private fun getDiscussionsRealmInstance(realmInstanceCallback: RealmInstanceCallback) {
-        if (discussionsRealm == null) {
-            Realm.getInstanceAsync(discussionsConfig, object : Realm.Callback() {
-                override fun onSuccess(realm: Realm?) {
-                    discussionsRealm = realm
-
-//                    doAsync {
-//                        //                    SyncManager.getSession(discussionsConfig as SyncConfiguration).uploadAllLocalChanges()
-//                        val change = Realm.getInstance(discussionsConfig).waitForChange()
-//                        println("Change: $change")
-//                    }
-//                    SyncManager.getSession(discussionsConfig as SyncConfiguration).addUploadProgressListener(ProgressMode.INDEFINITELY, ProgressListener {
-//                        println("Progress listener: $it")
-//                    })
-
-//                realm?.waitForChange()
-                    realmInstanceCallback.successCallback()
-                }
-
-                override fun onError(exception: Throwable?) {
-                    realmInstanceCallback.errorCallBack()
-                }
-            })
-        } else {
-            realmInstanceCallback.successCallback()
-        }
-    }
-
-    fun closeDiscussionRealm() {
-        if (discussionsRealm != null) {
-            discussionsRealm!!.close()
-            discussionsRealm = null
-        }
-    }
-
-    fun createDiscussion(user: String, text: String, questionCode: String, questionType: Int, createDiscussionCallback: CreateDiscussionCallback) {
-        getDiscussionsRealmInstance(object : RealmInstanceCallback {
-            override fun successCallback() {
-
-                discussionsRealm?.beginTransaction()
-                val disc = discussionsRealm?.createObject(DiscussionQuestionDto::class.java, UUID.randomUUID().toString())
-                disc?.text = text
-                disc?.questionId = questionCode
-                disc?.questionType = questionType
-                disc?.text = text
-                disc?.discussionCreator = user
-                discussionsRealm?.commitTransaction()
-                createDiscussionCallback.success()
-            }
-
-            override fun errorCallBack() {
-
-            }
-        })
-    }
-
-    fun getDiscussions(questionCode: String, questionType: Int, discussionsCallback: DiscussionsCallback) {
-        getDiscussionsRealmInstance(object : RealmInstanceCallback {
-
-            override fun successCallback() {
-                discussionsCallback.handleDiscussions(discussionsRealm?.where(DiscussionQuestionDto::class.java)
-                        ?.equalTo("questionId", questionCode)
-                        ?.equalTo("questionType", questionType)
-                        ?.findAll()?.toList() ?: emptyList())
-            }
-
-            override fun errorCallBack() {
-                discussionsCallback.handleDiscussions(emptyList())
-            }
-        })
-    }
-
-    interface RealmInstanceCallback {
-        fun successCallback()
-        fun errorCallBack()
     }
 
     fun getExamInformation(examId: Int): ExamStatisticAndInfo {

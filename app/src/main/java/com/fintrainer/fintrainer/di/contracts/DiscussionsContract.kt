@@ -2,6 +2,7 @@ package com.fintrainer.fintrainer.di.contracts
 
 import android.content.Intent
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 /**
  * Created by krotk on 28.10.2017.
@@ -13,7 +14,7 @@ interface DiscussionsContract {
     }
 
     interface DiscussionsView: IView{
-        fun showDiscussions(discussions: List<DiscussionQuestionDto>)
+        fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?)
     }
 
     interface CommentsView: IView{

@@ -11,6 +11,7 @@ import com.fintrainer.fintrainer.utils.Constants.DISCUSSIONS_FRAGMENT_TAG
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseFragment
 import com.fintrainer.fintrainer.views.discussions.DiscussionsPresenter
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import kotlinx.android.synthetic.main.fragment_discussions.*
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
@@ -35,14 +36,14 @@ class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView 
         presenter.getDiscussions(questionCode, testType)
     }
 
-    override fun showDiscussions(discussions: List<DiscussionQuestionDto>) {
+    override fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?) {
         if (discussions.isEmpty()) {
             tvEmptyDiscussions.visibility = View.VISIBLE
             toast("Discussions is empty")
         } else {
             tvEmptyDiscussions.visibility = View.GONE
             recycler.layoutManager = LinearLayoutManager(context)
-            recycler.adapter = DiscussionsAdapter()
+            recycler.adapter = DiscussionsAdapter(discussions,account)
         }
     }
 

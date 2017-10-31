@@ -11,7 +11,7 @@ import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_FRAGMENT_TAG
 import com.fintrainer.fintrainer.utils.IPageSelector
-import com.fintrainer.fintrainer.utils.PicassoContainer
+import com.fintrainer.fintrainer.utils.containers.PicassoContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseFragment
 import com.fintrainer.fintrainer.views.testing.TestingActivity

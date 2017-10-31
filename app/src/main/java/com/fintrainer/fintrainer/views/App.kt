@@ -3,7 +3,8 @@ package com.fintrainer.fintrainer.views
 import android.app.Application
 import com.fintrainer.fintrainer.di.components.*
 import com.fintrainer.fintrainer.di.modules.*
-import com.fintrainer.fintrainer.utils.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
+import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import io.realm.Realm
 import javax.inject.Inject
 
@@ -108,5 +109,6 @@ class App : Application() {
         appComponent.inject(this)
         realmContainer.initRealm()
         realmContainer.initStatisticsRealm()
+
     }
 }

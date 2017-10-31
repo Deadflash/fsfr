@@ -7,9 +7,6 @@ import android.view.Menu
 import android.view.MenuItem
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
-import com.fintrainer.fintrainer.utils.Constants.ADD_DISCUSSIONS_FRAGMENT_TAG
-import com.fintrainer.fintrainer.utils.Constants.COMMENTS_FRAGMENT_TAG
-import com.fintrainer.fintrainer.utils.Constants.DISCUSSIONS_FRAGMENT_TAG
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.utils.Constants.REALM_AUTH_TOKEN_ERROR
 import com.fintrainer.fintrainer.utils.Constants.REALM_FAIL_CONNECT_CODE
@@ -18,9 +15,7 @@ import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.BaseFragment
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentAddDiscussion
-import com.fintrainer.fintrainer.views.discussions.fragments.FragmentComments
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentDiscussions
-import icepick.State
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.toast
 import javax.inject.Inject
@@ -65,7 +60,6 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
                     fragment = FragmentDiscussions()
                     replaceFragment(fragment as FragmentDiscussions)
                     setMenuIconsVisibility(fragment as FragmentDiscussions)
-//                    supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
                 } else {
                     when (fragment) {
                         fragment as? FragmentDiscussions -> {
@@ -85,7 +79,6 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
             }
             REALM_AUTH_TOKEN_ERROR -> {
                 toast("Realm auth token error")
-//                presenter.initDiscussionsRealm()
             }
             else -> {
                 toast(R.string.something_went_wrong)
@@ -119,9 +112,6 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
             true
         }
         R.id.menu_create_discussion -> {
-//            fragment = FragmentDiscussions()
-//            replaceFragment(fragment as FragmentDiscussions)
-//            setMenuIconsVisibility(fragment as FragmentDiscussions)
             presenter.onCreateDiscussionClicked()
             true
         }
@@ -142,7 +132,7 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
     }
 
     override fun onBackPressed() {
-        if ((fragment as? FragmentDiscussions)?.isVisible == true) {
+        if ((fragment as? FragmentDiscussions)?.isVisible == true || fragment == null) {
             super.onBackPressed()
         } else {
             fragment = FragmentDiscussions()

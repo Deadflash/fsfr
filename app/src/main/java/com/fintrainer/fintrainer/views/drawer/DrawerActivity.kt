@@ -38,7 +38,7 @@ import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
-import com.fintrainer.fintrainer.utils.GoogleAuthContainer
+import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity

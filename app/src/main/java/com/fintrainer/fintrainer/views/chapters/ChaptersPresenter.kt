@@ -3,7 +3,7 @@ package com.fintrainer.fintrainer.views.chapters
 import com.fintrainer.fintrainer.di.contracts.ChaptersContract
 import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.structure.ChapterRealm
-import com.fintrainer.fintrainer.utils.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 

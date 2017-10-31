@@ -2,7 +2,7 @@ package com.fintrainer.fintrainer.di.contracts
 
 import android.content.Intent
 import android.net.Uri
-import com.fintrainer.fintrainer.utils.GoogleAuthContainer
+import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
 
 /**

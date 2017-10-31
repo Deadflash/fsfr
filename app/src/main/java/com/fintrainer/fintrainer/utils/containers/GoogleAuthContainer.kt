@@ -1,13 +1,11 @@
-package com.fintrainer.fintrainer.utils
+package com.fintrainer.fintrainer.utils.containers
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.AuthContract
 import com.fintrainer.fintrainer.di.contracts.IView
-import com.fintrainer.fintrainer.utils.Constants.ACCOUNT_ERROR_CODE
 import com.fintrainer.fintrainer.utils.Constants.AUTH_INTERNET_CONNECTION_ERROR
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
@@ -28,7 +26,6 @@ import org.jetbrains.anko.uiThread
 
 class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthContract.AuthContainer {
 
-    //    private var activity: AppCompatActivity? = null
     private var mGoogleApiClient: GoogleApiClient? = null
     private var view: AuthContract.View? = null
     private var account: GoogleSignInAccount? = null
@@ -38,7 +35,6 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
     override fun bind(iView: IView) {
         if (iView is DrawerActivity) {
             view = iView
-//            activity = iView
         }
     }
 
@@ -178,7 +174,6 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
 
     override fun unBind() {
         view = null
-//        activity = null
     }
 
     interface AccountCallback {

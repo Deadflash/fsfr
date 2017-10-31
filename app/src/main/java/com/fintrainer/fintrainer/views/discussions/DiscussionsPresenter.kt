@@ -6,8 +6,9 @@ import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 import com.fintrainer.fintrainer.utils.Constants.REALM_ERROR_CODE
 import com.fintrainer.fintrainer.utils.Constants.REALM_SUCCES_CODE
-import com.fintrainer.fintrainer.utils.GoogleAuthContainer
-import com.fintrainer.fintrainer.utils.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
+import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
+import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentAddDiscussion
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentComments
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentDiscussions
@@ -16,7 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 /**
  * Created by krotk on 28.10.2017.
  */
-class DiscussionsPresenter(private val realmContainer: RealmContainer,
+class DiscussionsPresenter(private val discussionsSyncRealmContainer: DiscussionsSyncRealmContainer,
                            private val authContainer: GoogleAuthContainer)
     : DiscussionsContract.Presenter, RealmContainer.DiscussionRealmCallBack {
 
@@ -53,7 +54,7 @@ class DiscussionsPresenter(private val realmContainer: RealmContainer,
             override fun onSuccess(account: GoogleSignInAccount?) {
                 account?.let {
                     this@DiscussionsPresenter.account = it
-                    realmContainer.initDiscussionsRealm(it, this@DiscussionsPresenter)
+                    discussionsSyncRealmContainer.initDiscussionsRealm(it, this@DiscussionsPresenter)
                 }
 //                account?.let { realmContainer.createRealm() }
             }
@@ -71,7 +72,7 @@ class DiscussionsPresenter(private val realmContainer: RealmContainer,
     override fun createDiscussion(text: String, questionCode: String, questionType: Int) {
         if (account != null) {
             account!!.displayName?.let {
-                realmContainer.createDiscussion(it, text, questionCode, questionType, object : RealmContainer.CreateDiscussionCallback {
+                discussionsSyncRealmContainer.createDiscussion(it, text, questionCode, questionType, object : RealmContainer.CreateDiscussionCallback {
                     override fun success() {
                         addDiscussionsView?.createDiscussionResult(REALM_SUCCES_CODE)
                     }
@@ -85,14 +86,36 @@ class DiscussionsPresenter(private val realmContainer: RealmContainer,
         }
     }
 
-    fun closeRealm(){
-        realmContainer.closeDiscussionRealm()
+    fun closeRealm() {
+        discussionsSyncRealmContainer.closeDiscussionRealm()
     }
 
     override fun getDiscussions(code: String, questionType: Int) {
-        realmContainer.getDiscussions(code, questionType, object : RealmContainer.DiscussionsCallback {
+        discussionsSyncRealmContainer.getDiscussions(code, questionType, object : RealmContainer.DiscussionsCallback {
             override fun handleDiscussions(discussions: List<DiscussionQuestionDto>) {
-                discussionsView?.showDiscussions(discussions)
+
+                discussions.sortedWith(Comparator { t1, t2 ->
+                    var o1Rate = 0
+                    var o2Rate = 0
+
+                    t1.rateList?.let {
+                        it.forEach { rateElem ->
+                            rateElem.direction?.let {
+                                o1Rate = if (it) o1Rate.plus(1) else o1Rate.minus(1)
+                            }
+                        }
+                    }
+                    t2.rateList?.let {
+                        it.forEach { rateElem ->
+                            rateElem.direction?.let {
+                                o2Rate = if (it) o2Rate.plus(1) else o2Rate.minus(1)
+                            }
+                        }
+                    }
+
+                    return@Comparator o2Rate - o1Rate
+                })
+                discussionsView?.showDiscussions(discussions, account)
             }
         })
     }

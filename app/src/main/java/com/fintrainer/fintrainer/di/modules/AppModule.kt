@@ -1,9 +1,10 @@
 package com.fintrainer.fintrainer.di.modules
 
 import android.content.Context
-import com.fintrainer.fintrainer.utils.GoogleAuthContainer
-import com.fintrainer.fintrainer.utils.PicassoContainer
-import com.fintrainer.fintrainer.utils.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
+import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
+import com.fintrainer.fintrainer.utils.containers.PicassoContainer
+import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -17,6 +18,10 @@ class AppModule(val context: Context) {
     @Provides
     @Singleton
     fun provideRealm(): RealmContainer = RealmContainer()
+
+    @Provides
+    @Singleton
+    fun provideDiscussionsRealm(): DiscussionsSyncRealmContainer = DiscussionsSyncRealmContainer()
 
     @Provides
     @Singleton
