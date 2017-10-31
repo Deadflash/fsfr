@@ -9,24 +9,27 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
  */
 interface DiscussionsContract {
 
-    interface View:IView{
+    interface View : IView {
+//        fun realmStatus(code: Int)
+    }
+
+    interface DiscussionsView : IView {
+        fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?)
         fun realmStatus(code: Int)
     }
 
-    interface DiscussionsView: IView{
-        fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?)
+    interface CommentsView : IView {
+        fun showComments(discussion: DiscussionQuestionDto, account: GoogleSignInAccount?)
+        fun showError()
+        fun onCommentCreated()
     }
 
-    interface CommentsView: IView{
-        fun showComments()
-    }
-
-    interface AddDiscussionView : IView{
+    interface AddDiscussionView : IView {
         fun createDiscussionResult(code: Int)
         fun onCreateDiscussionClicked()
     }
 
-    interface Presenter: IPresenter{
+    interface Presenter : IPresenter {
         fun bindDiscussionsView(iView: IView)
         fun unbindDiscussionsView()
         fun bindDiscussionsCommentsView(iView: IView)
@@ -36,7 +39,10 @@ interface DiscussionsContract {
         fun initDiscussionsRealm()
         fun handleAuthResult(requestCode: Int, resultCode: Int, data: Intent)
 
-        fun getDiscussions(code: String, questionType: Int)
+        fun addComment(discussion: DiscussionQuestionDto, comment: String)
+        fun rateDiscussion(discussion: DiscussionQuestionDto, rate: Boolean)
+        fun getDiscussions(questionId: String, questionType: Int)
+        fun getDiscussionComments(questionId: String, questionType: Int, realmId: String)
         fun onCreateDiscussionClicked()
         fun createDiscussion(text: String, questionCode: String, questionType: Int)
     }

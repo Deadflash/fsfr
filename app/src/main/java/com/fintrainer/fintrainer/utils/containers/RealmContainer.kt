@@ -259,19 +259,6 @@ class RealmContainer {
         }
     }
 
-    interface DiscussionRealmCallBack {
-        fun realmConfigCallback(code: Int)
-    }
-
-    interface DiscussionsCallback {
-        fun handleDiscussions(discussions: List<DiscussionQuestionDto>)
-    }
-
-    interface CreateDiscussionCallback {
-        fun success()
-        fun error(code: Int)
-    }
-
     @RealmModule(classes = arrayOf(ExamDto::class, TestingDto::class, ChapterRealm::class, AnswersDto::class))
     private inner class Default
 

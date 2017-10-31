@@ -3,7 +3,6 @@ package com.fintrainer.fintrainer.views
 import android.app.Application
 import com.fintrainer.fintrainer.di.components.*
 import com.fintrainer.fintrainer.di.modules.*
-import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
 import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import io.realm.Realm
 import javax.inject.Inject
@@ -86,15 +85,15 @@ class App : Application() {
         }
 
         @JvmStatic
-        fun initDiscussionsComponent(): DiscussionComponent?{
-            if (discussionComponent == null){
+        fun initDiscussionsComponent(): DiscussionComponent? {
+            if (discussionComponent == null) {
                 discussionComponent = appComponent.subDiscussionsComponent(DiscussionsModule())
             }
             return discussionComponent
         }
 
         @JvmStatic
-        fun releaseDiscussionsComponent(){
+        fun releaseDiscussionsComponent() {
             discussionComponent = null
         }
     }

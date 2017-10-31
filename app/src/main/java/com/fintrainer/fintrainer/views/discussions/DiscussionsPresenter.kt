@@ -8,7 +8,6 @@ import com.fintrainer.fintrainer.utils.Constants.REALM_ERROR_CODE
 import com.fintrainer.fintrainer.utils.Constants.REALM_SUCCES_CODE
 import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
 import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
-import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentAddDiscussion
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentComments
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentDiscussions
@@ -19,7 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
  */
 class DiscussionsPresenter(private val discussionsSyncRealmContainer: DiscussionsSyncRealmContainer,
                            private val authContainer: GoogleAuthContainer)
-    : DiscussionsContract.Presenter, RealmContainer.DiscussionRealmCallBack {
+    : DiscussionsContract.Presenter, DiscussionsSyncRealmContainer.DiscussionRealmCallBack {
 
     private var activityView: DiscussionsContract.View? = null
     private var discussionsView: DiscussionsContract.DiscussionsView? = null
@@ -42,13 +41,12 @@ class DiscussionsPresenter(private val discussionsSyncRealmContainer: Discussion
 
     override fun bindAddDiscussionsView(iView: IView) {
         addDiscussionsView = iView as? FragmentAddDiscussion
-//        realmContainer.testRealm()
     }
 
     override fun initDiscussionsRealm() {
         authContainer.getAccount(object : GoogleAuthContainer.AccountCallback {
             override fun onError(code: Int) {
-                activityView?.realmStatus(code)
+                discussionsView?.realmStatus(code)
             }
 
             override fun onSuccess(account: GoogleSignInAccount?) {
@@ -62,17 +60,46 @@ class DiscussionsPresenter(private val discussionsSyncRealmContainer: Discussion
     }
 
     override fun realmConfigCallback(code: Int) {
-        activityView?.realmStatus(code)
+        discussionsView?.realmStatus(code)
     }
 
     override fun onCreateDiscussionClicked() {
         addDiscussionsView?.onCreateDiscussionClicked()
     }
 
+    override fun addComment(discussion: DiscussionQuestionDto, comment: String) {
+        account?.let {
+            if (it.displayName != null) {
+                discussionsSyncRealmContainer.addComment(discussion, comment, it, object : DiscussionsSyncRealmContainer.RealmCallback {
+                    override fun success() {
+                        commentsView?.onCommentCreated()
+                    }
+
+                    override fun error(code: Int) {
+                        commentsView?.showError()
+                    }
+
+                })
+            }
+        }
+    }
+
+    override fun rateDiscussion(discussion: DiscussionQuestionDto, rate: Boolean) {
+        account?.let { discussionsSyncRealmContainer.rateDiscussion(discussion,it,rate , object : DiscussionsSyncRealmContainer.RealmCallback {
+            override fun success() {
+
+            }
+
+            override fun error(code: Int) {
+
+            }
+        }) }
+    }
+
     override fun createDiscussion(text: String, questionCode: String, questionType: Int) {
         if (account != null) {
             account!!.displayName?.let {
-                discussionsSyncRealmContainer.createDiscussion(it, text, questionCode, questionType, object : RealmContainer.CreateDiscussionCallback {
+                discussionsSyncRealmContainer.createDiscussion(it, text, questionCode, questionType, object : DiscussionsSyncRealmContainer.RealmCallback {
                     override fun success() {
                         addDiscussionsView?.createDiscussionResult(REALM_SUCCES_CODE)
                     }
@@ -90,32 +117,23 @@ class DiscussionsPresenter(private val discussionsSyncRealmContainer: Discussion
         discussionsSyncRealmContainer.closeDiscussionRealm()
     }
 
-    override fun getDiscussions(code: String, questionType: Int) {
-        discussionsSyncRealmContainer.getDiscussions(code, questionType, object : RealmContainer.DiscussionsCallback {
+    override fun getDiscussions(questionId: String, questionType: Int) {
+        discussionsSyncRealmContainer.getDiscussions(questionId, questionType, object : DiscussionsSyncRealmContainer.DiscussionsCallback {
             override fun handleDiscussions(discussions: List<DiscussionQuestionDto>) {
-
-                discussions.sortedWith(Comparator { t1, t2 ->
-                    var o1Rate = 0
-                    var o2Rate = 0
-
-                    t1.rateList?.let {
-                        it.forEach { rateElem ->
-                            rateElem.direction?.let {
-                                o1Rate = if (it) o1Rate.plus(1) else o1Rate.minus(1)
-                            }
-                        }
-                    }
-                    t2.rateList?.let {
-                        it.forEach { rateElem ->
-                            rateElem.direction?.let {
-                                o2Rate = if (it) o2Rate.plus(1) else o2Rate.minus(1)
-                            }
-                        }
-                    }
-
-                    return@Comparator o2Rate - o1Rate
-                })
                 discussionsView?.showDiscussions(discussions, account)
+            }
+        })
+    }
+
+    override fun getDiscussionComments(questionId: String, questionType: Int, realmId: String) {
+        discussionsSyncRealmContainer.getDiscussionComments(questionId, questionType, realmId, object : DiscussionsSyncRealmContainer.DiscussionsCallback {
+            override fun handleDiscussions(discussions: List<DiscussionQuestionDto>) {
+                if (discussions.isEmpty()) {
+                    commentsView?.showError()
+                } else {
+                    val discussion = discussions[0]
+                    commentsView?.showComments(discussion, account)
+                }
             }
         })
     }
@@ -138,6 +156,5 @@ class DiscussionsPresenter(private val discussionsSyncRealmContainer: Discussion
 
     override fun unbindAddDiscussionsView() {
         addDiscussionsView = null
-//        realmContainer.closeDiscussionRealm()
     }
 }

@@ -15,6 +15,7 @@ import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.BaseFragment
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentAddDiscussion
+import com.fintrainer.fintrainer.views.discussions.fragments.FragmentComments
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentDiscussions
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.toast
@@ -41,50 +42,56 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
         val testType = intent.getIntExtra("testType", -1)
 
         fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as BaseFragment?
+
+        if (fragment == null) {
+            fragment = FragmentDiscussions()
+            replaceFragment(fragment as FragmentDiscussions)
+            setMenuIconsVisibility(fragment as FragmentDiscussions)
+        }
     }
 
     override fun onStart() {
         super.onStart()
         presenter.bind(this)
-        presenter.initDiscussionsRealm()
+//        presenter.initDiscussionsRealm()
     }
 
-    override fun realmStatus(code: Int) {
-
-        when (code) {
-            Activity.RESULT_CANCELED -> {
-                toast(R.string.action_canceled)
-            }
-            REALM_SUCCESS_CONNECT_CODE -> {
-                if (fragment == null) {
-                    fragment = FragmentDiscussions()
-                    replaceFragment(fragment as FragmentDiscussions)
-                    setMenuIconsVisibility(fragment as FragmentDiscussions)
-                } else {
-                    when (fragment) {
-                        fragment as? FragmentDiscussions -> {
-                            toast("DISCUSSION")
-                        }
-                        fragment as? FragmentAddDiscussion -> {
-                            toast("ADD DISCUSSION")
-                        }
-                        else -> {
-                            toast("Error fragment")
-                        }
-                    }
-                }
-            }
-            REALM_FAIL_CONNECT_CODE -> {
-                toast(R.string.error_realm_config)
-            }
-            REALM_AUTH_TOKEN_ERROR -> {
-                toast("Realm auth token error")
-            }
-            else -> {
-                toast(R.string.something_went_wrong)
-            }
-        }
-    }
+//    override fun realmStatus(code: Int) {
+//
+//        when (code) {
+//            Activity.RESULT_CANCELED -> {
+//                toast(R.string.action_canceled)
+//            }
+//            REALM_SUCCESS_CONNECT_CODE -> {
+//                if (fragment == null) {
+//                    fragment = FragmentDiscussions()
+//                    replaceFragment(fragment as FragmentDiscussions)
+//                    setMenuIconsVisibility(fragment as FragmentDiscussions)
+//                } else {
+//                    when (fragment) {
+//                        fragment as? FragmentDiscussions -> {
+//                            toast("DISCUSSION")
+//                        }
+//                        fragment as? FragmentAddDiscussion -> {
+//                            toast("ADD DISCUSSION")
+//                        }
+//                        else -> {
+//                            toast("Error fragment")
+//                        }
+//                    }
+//                }
+//            }
+//            REALM_FAIL_CONNECT_CODE -> {
+//                toast(R.string.error_realm_config)
+//            }
+//            REALM_AUTH_TOKEN_ERROR -> {
+//                toast("Realm auth token error")
+//            }
+//            else -> {
+//                toast(R.string.something_went_wrong)
+//            }
+//        }
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.discussions_menu, menu)
@@ -118,7 +125,7 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
         else -> false
     }
 
-    private fun setMenuIconsVisibility(fragment: BaseFragment) {
+    fun setMenuIconsVisibility(fragment: BaseFragment) {
         when (fragment) {
             fragment as? FragmentDiscussions -> {
                 createDiscussionMenu?.isVisible = true
@@ -127,6 +134,10 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
             fragment as? FragmentAddDiscussion -> {
                 createDiscussionMenu?.isVisible = false
                 addDiscussionMenu?.isVisible = true
+            }
+            fragment as? FragmentComments -> {
+                createDiscussionMenu?.isVisible = false
+                addDiscussionMenu?.isVisible = false
             }
         }
     }
@@ -142,7 +153,7 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
 
     }
 
-    private fun replaceFragment(fragment: BaseFragment) {
+    fun replaceFragment(fragment: BaseFragment) {
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
     }
 

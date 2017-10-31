@@ -1,6 +1,8 @@
 package com.fintrainer.fintrainer.utils.containers
 
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
+import com.fintrainer.fintrainer.structure.DiscussionRateDto
 import com.fintrainer.fintrainer.utils.Constants
 import com.fintrainer.fintrainer.utils.Constants.REALM_FAIL_CONNECT_CODE
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -59,7 +61,7 @@ class DiscussionsSyncRealmContainer {
 
     }
 
-    fun initDiscussionsRealm(account: GoogleSignInAccount, realmCallBack: RealmContainer.DiscussionRealmCallBack) {
+    fun initDiscussionsRealm(account: GoogleSignInAccount, realmCallBack: DiscussionRealmCallBack) {
         if (discussionsConfig == null) {
             SyncUser.loginAsync(SyncCredentials.google(account.idToken), Constants.REALM_SERVER_HTTP_URL + Constants.REALM_SERVER_AUTH, object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
 
@@ -106,7 +108,7 @@ class DiscussionsSyncRealmContainer {
         }
     }
 
-    fun createDiscussion(user: String, text: String, questionCode: String, questionType: Int, createDiscussionCallback: RealmContainer.CreateDiscussionCallback) {
+    fun createDiscussion(user: String, text: String, questionCode: String, questionType: Int, realmCallback: RealmCallback) {
         getDiscussionsRealmInstance(object : RealmInstanceCallback {
             override fun successCallback() {
 
@@ -118,7 +120,7 @@ class DiscussionsSyncRealmContainer {
                 disc?.text = text
                 disc?.discussionCreator = user
                 discussionsRealm?.commitTransaction()
-                createDiscussionCallback.success()
+                realmCallback.success()
             }
 
             override fun errorCallBack() {
@@ -127,20 +129,161 @@ class DiscussionsSyncRealmContainer {
         })
     }
 
-    fun getDiscussions(questionCode: String, questionType: Int, discussionsCallback: RealmContainer.DiscussionsCallback) {
+    fun getDiscussions(questionId: String, questionType: Int, discussionsCallback: DiscussionsCallback) {
         getDiscussionsRealmInstance(object : RealmInstanceCallback {
 
             override fun successCallback() {
-                discussionsCallback.handleDiscussions(discussionsRealm?.where(DiscussionQuestionDto::class.java)
-                        ?.equalTo("questionId", questionCode)
+
+                val discussions = discussionsRealm?.where(DiscussionQuestionDto::class.java)
+                        ?.equalTo("questionId", questionId)
                         ?.equalTo("questionType", questionType)
-                        ?.findAll()?.toList() ?: emptyList())
+                        ?.findAll()?.toList() ?: emptyList()
+
+                if (!discussions.isEmpty()) {
+                    discussionsRealm?.beginTransaction()
+                    discussions.sortedWith(Comparator { t1, t2 ->
+                        var o1Rate = 0
+                        var o2Rate = 0
+
+                        t1.rateList?.let {
+                            it.forEach { rateElem ->
+                                rateElem.direction?.let {
+                                    o1Rate = if (it) o1Rate.plus(1) else o1Rate.minus(1)
+                                }
+                            }
+                        }
+                        t2.rateList?.let {
+                            it.forEach { rateElem ->
+                                rateElem.direction?.let {
+                                    o2Rate = if (it) o2Rate.plus(1) else o2Rate.minus(1)
+                                }
+                            }
+                        }
+                        return@Comparator o2Rate - o1Rate
+                    })
+                    discussionsRealm?.commitTransaction()
+                }
+                discussionsCallback.handleDiscussions(discussions)
             }
 
             override fun errorCallBack() {
                 discussionsCallback.handleDiscussions(emptyList())
             }
         })
+    }
+
+    fun rateDiscussion(discussion: DiscussionQuestionDto, account: GoogleSignInAccount, rate: Boolean, realmCallback: RealmCallback) {
+        getDiscussionsRealmInstance(object : RealmInstanceCallback {
+            override fun successCallback() {
+                val result = discussion.rateList!!.where().equalTo("userId", account.email).findAll()
+                result?.let {
+                    if (result.size == 0) {
+                        discussionsRealm?.beginTransaction()
+                        val rateResult = discussionsRealm?.createObject(DiscussionRateDto::class.java, UUID.randomUUID().toString())
+                        rateResult?.parent = discussion
+                        rateResult?.userId = account.email
+                        rateResult?.direction = rate
+                        discussion.rateList?.add(rateResult)
+                        discussionsRealm?.commitTransaction()
+
+                        realmCallback.success()
+                    } else {
+                        val discussionRate = result[0]
+                        discussionsRealm?.beginTransaction()
+                        discussionRate.direction?.let {
+                            if (it) {
+                                discussionRate.deleteFromRealm()
+                            } else {
+                                discussionRate.direction = rate
+                            }
+                        }
+                        discussionsRealm?.commitTransaction()
+                        realmCallback.success()
+                    }
+                }
+            }
+
+            override fun errorCallBack() {
+
+            }
+
+        })
+    }
+
+    fun addComment(discussion: DiscussionQuestionDto, commentMessage: String, account: GoogleSignInAccount, realmCallBack: RealmCallback) {
+        getDiscussionsRealmInstance(object : RealmInstanceCallback {
+            override fun successCallback() {
+                discussionsRealm?.beginTransaction()
+                val comment = discussionsRealm?.createObject(DiscussionCommentDto::class.java, UUID.randomUUID().toString())
+                comment?.text = commentMessage
+                comment?.parent = discussion
+                comment?.commentCreator = account.displayName
+                discussion.commentList?.add(comment)
+                discussionsRealm?.commitTransaction()
+                realmCallBack.success()
+            }
+
+            override fun errorCallBack() {
+                realmCallBack.error(-1)
+            }
+        })
+    }
+
+    fun getDiscussionComments(questionId: String, questionType: Int, realmId: String, commentsCallback: DiscussionsCallback) {
+        getDiscussionsRealmInstance(object : RealmInstanceCallback {
+            override fun successCallback() {
+
+                val discussions = discussionsRealm?.where(DiscussionQuestionDto::class.java)
+                        ?.equalTo("questionId", questionId)
+                        ?.equalTo("questionType", questionType)
+                        ?.equalTo("id", realmId)
+                        ?.findAll()?.toList() ?: emptyList()
+
+                if (!discussions.isEmpty()) {
+                    discussionsRealm?.beginTransaction()
+                    discussions[0].commentList?.sortedWith(Comparator { t1, t2 ->
+                        var o1Rate = 0
+                        var o2Rate = 0
+
+                        t1.rateList?.let {
+                            it.forEach { rateElem ->
+                                rateElem.direction?.let {
+                                    o1Rate = if (it) o1Rate.plus(1) else o1Rate.minus(1)
+                                }
+                            }
+                        }
+                        t2.rateList?.let {
+                            it.forEach { rateElem ->
+                                rateElem.direction?.let {
+                                    o2Rate = if (it) o2Rate.plus(1) else o2Rate.minus(1)
+                                }
+                            }
+                        }
+
+                        return@Comparator o2Rate - o1Rate
+                    })
+                    discussionsRealm?.commitTransaction()
+                }
+                commentsCallback.handleDiscussions(discussions)
+            }
+
+            override fun errorCallBack() {
+                commentsCallback.handleDiscussions(emptyList())
+            }
+        })
+    }
+
+    interface DiscussionRealmCallBack {
+        fun realmConfigCallback(code: Int)
+    }
+
+    interface DiscussionsCallback {
+        fun handleDiscussions(discussions: List<DiscussionQuestionDto>)
+    }
+
+    interface RealmCallback {
+        fun success()
+        fun error(code: Int)
     }
 
     interface RealmInstanceCallback {

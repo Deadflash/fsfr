@@ -31,7 +31,11 @@
     <string name="ask_question">Задайте вопрос</string>
     <string name="error_realm_config">Не удалось подключиться к базе данных</string>
     <string name="action_canceled">Действие отменено</string>
+    <string name="discussion_add_comment_hint">Введите комментарий</string>
+    <string name="discussion_negative_like_comment_text">Комментарий набрал большое количество отрицательных оценок и был скрыт</string>
+    <string name="comments">Коментарии:</string>
     <string name="Answers">Ответы:</string>
+    <string name="message_error_text">Поле не может быть пустым</string>
     <string name="results">Результаты</string>
     <string name="mail_to">Задать вопрос</string>
     <string name="like">Оставить отзыв</string>
