@@ -23,6 +23,8 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         var superRate = 0
+//        var likeClicked = false
+//        var dislikeClicked = false
 
         holder?.userName?.text = discussions[position].discussionCreator ?: ""
         holder?.discussionText?.text = discussions[position].text ?: ""
@@ -35,15 +37,19 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
                 superRate = if (rateElem.direction!!) superRate.plus(1) else superRate.minus(1)
                 if (account?.email.equals(rateElem.userId)) {
                     if (rateElem.direction!!) {
+//                        likeClicked = true
                         holder?.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.green_300))
                         holder?.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
                     } else {
+//                        dislikeClicked = true
                         holder?.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.red_300))
                         holder?.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
                     }
                 }
             }
         }
+
+
 
         holder?.ivStartDiscussion?.onClick {
             discussions[position].questionId?.let { it1 ->
@@ -56,26 +62,87 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
         }
 
         holder?.likes?.onClick {
-            var finded = false
-            discussions[position].rateList?.forEach {
-                if (it?.userId == account?.email) {
-                    it?.direction?.let {
-                        if (it) {
-                            holder.likes.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
-                        } else {
-                            holder.likes.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.green_300))
-                            holder.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.red_300))
-                        }
-                    }
-                    finded = true
-                    return@forEach
-                }
-            }
-            if (!finded){
-                holder.likes.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.green_300))
-                holder.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
-            }
-            discussionsButtonsClickListener.onRateClick(discussions[position],true)
+//            var finded = false
+////            likeClicked = !likeClicked
+//            discussions[position].rateList?.forEach {
+//                if (it?.userId == account?.email) {
+//                    it?.direction?.let {
+//                        if (it) {
+//                            holder.likes.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+//                        } else {
+//                            holder.likes.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.green_300))
+//                            holder.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+//                        }
+//                    }
+//                    finded = true
+//                    return@forEach
+//                }
+//            }
+//            if (!finded) {
+//                holder.likes.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.green_300))
+//                holder.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+////                holder.rateCount?.text = (superRate + 1).toString()
+//            } else {
+////                if (dislikeClicked) {
+////                    holder.rateCount?.text = (superRate + 2).toString()
+////                } else {
+////                    holder.rateCount?.text = (superRate - 1).toString()
+////                }
+//            }
+            discussionsButtonsClickListener.onRateClick(discussions[position], true)
+        }
+
+        holder?.dislike?.onClick {
+//            var finded = false
+//            dislikeClicked = !dislikeClicked
+//            discussions[position].rateList?.forEach {
+//                if (it?.userId == account?.email) {
+//                    it?.direction?.let {
+//                        if (!it) {
+//                            holder.dislike.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+//                        } else {
+////                            dislikeClicked = true
+//                            holder.dislike.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.red_300))
+//                            holder.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+//                        }
+//                    }
+//                    finded = true
+//                    return@forEach
+//                }
+//            }
+//            if (!finded) {
+//                holder.dislike.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.red_300))
+//                holder.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+////                holder.rateCount?.text = (superRate - 1).toString()
+//            } else {
+////                if (likeClicked) {
+////                    likeClicked = false
+////                    holder.rateCount?.text = (superRate - 2).toString()
+////                } else {
+////                    holder.rateCount?.text = (superRate + 1).toString()
+////                }
+//            }
+            discussionsButtonsClickListener.onRateClick(discussions[position], false)
+
+//            var finded = false
+//
+//            for (rateElem in data.get(position).rateList!!) {
+//                if (rateElem.userId == RealmSyncContainerSingleton.getContainer().getUserEmail()) {
+//                    if ((!rateElem.direction)!!) {
+//                        holder.dUnrate.setColorFilter(ContextCompat.getColor(parent.getContext(), R.color.grey))
+//                    } else {
+//                        holder.dUnrate.setColorFilter(ContextCompat.getColor(parent.getContext(), R.color.red))
+//                        holder.dRate.setColorFilter(ContextCompat.getColor(parent.getContext(), R.color.grey))
+//                    }
+//                    finded = true
+//                    break
+//                }
+//            }
+//            if (!finded) {
+//                holder.dUnrate.setColorFilter(ContextCompat.getColor(parent.getContext(), R.color.red))
+//                holder.dRate.setColorFilter(ContextCompat.getColor(parent.getContext(), R.color.grey))
+//            }
+
         }
 
         holder?.rateCount?.text = superRate.toString()

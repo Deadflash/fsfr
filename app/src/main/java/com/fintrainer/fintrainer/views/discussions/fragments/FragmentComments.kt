@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.CommentsAdapter
 import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 import com.fintrainer.fintrainer.utils.Constants.COMMENTS_FRAGMENT_TAG
 import com.fintrainer.fintrainer.views.App
@@ -53,12 +54,12 @@ class FragmentComments : BaseFragment(), DiscussionsContract.CommentsView, Comme
         presenter.getDiscussionComments(arguments.getString("questionId"), arguments.getInt("questionType"), arguments.getString("realmId"))
     }
 
-    override fun likeClick(position: Int) {
-
+    override fun onClick(comment: DiscussionCommentDto, rate: Boolean) {
+        presenter.rateComment(comment, rate)
     }
 
-    override fun dislikeClick(position: Int) {
-
+    override fun onSuccessRate() {
+        recycler.adapter.notifyDataSetChanged()
     }
 
     override fun onCommentCreated() {

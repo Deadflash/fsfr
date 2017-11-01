@@ -1,7 +1,9 @@
 package com.fintrainer.fintrainer.views.discussions.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
 import com.fintrainer.fintrainer.utils.Constants.ADD_DISCUSSIONS_FRAGMENT_TAG
@@ -45,6 +47,8 @@ class FragmentAddDiscussion : BaseFragment(), DiscussionsContract.AddDiscussionV
         when (code){
             REALM_SUCCES_CODE -> {
                 activity.onBackPressed()
+                val imm = view?.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view?.windowToken, 0)
             }
             REALM_ERROR_CODE -> {
                 toast("ERROR CREATE")

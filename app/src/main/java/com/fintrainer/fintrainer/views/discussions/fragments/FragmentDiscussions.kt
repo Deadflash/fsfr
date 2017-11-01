@@ -59,6 +59,10 @@ class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView 
         }
     }
 
+    override fun onSuccessRate() {
+        recycler.adapter.notifyDataSetChanged()
+    }
+
     override fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?) {
         if (discussions.isEmpty()) {
             tvEmptyDiscussions.visibility = View.VISIBLE

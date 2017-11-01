@@ -177,7 +177,7 @@ class DiscussionsSyncRealmContainer {
             override fun successCallback() {
                 val result = discussion.rateList!!.where().equalTo("userId", account.email).findAll()
                 result?.let {
-                    if (result.size == 0) {
+                    if (it.size == 0) {
                         discussionsRealm?.beginTransaction()
                         val rateResult = discussionsRealm?.createObject(DiscussionRateDto::class.java, UUID.randomUUID().toString())
                         rateResult?.parent = discussion
@@ -191,7 +191,7 @@ class DiscussionsSyncRealmContainer {
                         val discussionRate = result[0]
                         discussionsRealm?.beginTransaction()
                         discussionRate.direction?.let {
-                            if (it) {
+                            if (it == rate) {
                                 discussionRate.deleteFromRealm()
                             } else {
                                 discussionRate.direction = rate
@@ -207,6 +207,42 @@ class DiscussionsSyncRealmContainer {
 
             }
 
+        })
+    }
+
+    fun rateComment(comment: DiscussionCommentDto, account: GoogleSignInAccount, rate: Boolean, realmCallback: RealmCallback) {
+        getDiscussionsRealmInstance(object : RealmInstanceCallback {
+            override fun successCallback() {
+                val result = comment.rateList?.where()?.equalTo("userId", account.email)?.findAll()
+                result?.let {
+                    if (it.size == 0) {
+                        discussionsRealm?.beginTransaction()
+                        val rateResult = discussionsRealm?.createObject(DiscussionRateDto::class.java, UUID.randomUUID().toString())
+                        rateResult?.parent = comment.parent
+                        rateResult?.userId = account.email
+                        rateResult?.direction = rate
+                        comment.rateList?.add(rateResult)
+                        discussionsRealm?.commitTransaction()
+                        realmCallback.success()
+                    } else {
+                        val commentRate = result[0]
+                        discussionsRealm?.beginTransaction()
+                        commentRate.direction?.let {
+                            if (it == rate) {
+                                commentRate.deleteFromRealm()
+                            } else {
+                                commentRate.direction = rate
+                            }
+                        }
+                        discussionsRealm?.commitTransaction()
+                        realmCallback.success()
+                    }
+                }
+            }
+
+            override fun errorCallBack() {
+
+            }
         })
     }
 

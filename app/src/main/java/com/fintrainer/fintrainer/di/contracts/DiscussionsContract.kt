@@ -1,6 +1,7 @@
 package com.fintrainer.fintrainer.di.contracts
 
 import android.content.Intent
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
@@ -16,12 +17,14 @@ interface DiscussionsContract {
     interface DiscussionsView : IView {
         fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?)
         fun realmStatus(code: Int)
+        fun onSuccessRate()
     }
 
     interface CommentsView : IView {
         fun showComments(discussion: DiscussionQuestionDto, account: GoogleSignInAccount?)
         fun showError()
         fun onCommentCreated()
+        fun onSuccessRate()
     }
 
     interface AddDiscussionView : IView {
@@ -41,6 +44,7 @@ interface DiscussionsContract {
 
         fun addComment(discussion: DiscussionQuestionDto, comment: String)
         fun rateDiscussion(discussion: DiscussionQuestionDto, rate: Boolean)
+        fun rateComment(comment: DiscussionCommentDto, rate: Boolean)
         fun getDiscussions(questionId: String, questionType: Int)
         fun getDiscussionComments(questionId: String, questionType: Int, realmId: String)
         fun onCreateDiscussionClicked()

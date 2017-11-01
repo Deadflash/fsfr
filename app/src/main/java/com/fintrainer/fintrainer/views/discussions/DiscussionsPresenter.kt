@@ -3,6 +3,7 @@ package com.fintrainer.fintrainer.views.discussions
 import android.content.Intent
 import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
 import com.fintrainer.fintrainer.di.contracts.IView
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 import com.fintrainer.fintrainer.utils.Constants.REALM_ERROR_CODE
 import com.fintrainer.fintrainer.utils.Constants.REALM_SUCCES_CODE
@@ -85,20 +86,36 @@ class DiscussionsPresenter(private val discussionsSyncRealmContainer: Discussion
     }
 
     override fun rateDiscussion(discussion: DiscussionQuestionDto, rate: Boolean) {
-        account?.let { discussionsSyncRealmContainer.rateDiscussion(discussion,it,rate , object : DiscussionsSyncRealmContainer.RealmCallback {
-            override fun success() {
+        account?.let {
+            discussionsSyncRealmContainer.rateDiscussion(discussion, it, rate, object : DiscussionsSyncRealmContainer.RealmCallback {
+                override fun success() {
+                    discussionsView?.onSuccessRate()
+                }
 
-            }
+                override fun error(code: Int) {
 
-            override fun error(code: Int) {
+                }
+            })
+        }
+    }
 
-            }
-        }) }
+    override fun rateComment(comment: DiscussionCommentDto, rate: Boolean) {
+        account?.let {
+            discussionsSyncRealmContainer.rateComment(comment, it, rate,object : DiscussionsSyncRealmContainer.RealmCallback{
+                override fun success() {
+                    commentsView?.onSuccessRate()
+                }
+
+                override fun error(code: Int) {
+
+                }
+            })
+        }
     }
 
     override fun createDiscussion(text: String, questionCode: String, questionType: Int) {
-        if (account != null) {
-            account!!.displayName?.let {
+        account?.let {
+            it.displayName?.let {
                 discussionsSyncRealmContainer.createDiscussion(it, text, questionCode, questionType, object : DiscussionsSyncRealmContainer.RealmCallback {
                     override fun success() {
                         addDiscussionsView?.createDiscussionResult(REALM_SUCCES_CODE)

@@ -20,14 +20,11 @@ class CommentsAdapter(private val account: GoogleSignInAccount?, private val com
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         var superRate = 0
 
-        holder?.like?.onClick { onRateClick.likeClick(position) }
-        holder?.dislike?.onClick { onRateClick.dislikeClick(position) }
-
         holder?.userName?.text = comments[position].commentCreator ?: ""
         holder?.comment?.text = comments[position].text ?: ""
 
         comments[position].rateList?.forEach {
-            it?.let {comment ->
+            it?.let { comment ->
                 comment.direction?.let {
                     superRate = if (it) superRate.plus(1) else superRate.minus(1)
 
@@ -42,6 +39,13 @@ class CommentsAdapter(private val account: GoogleSignInAccount?, private val com
                     }
                 }
             }
+        }
+
+        holder?.like?.onClick {
+            onRateClick.onClick(comments[position],true)
+        }
+        holder?.dislike?.onClick {
+            onRateClick.onClick(comments[position],false)
         }
 
         if (superRate < DISLIKES_TO_HIDE_COMMENT) {
@@ -72,7 +76,6 @@ class CommentsAdapter(private val account: GoogleSignInAccount?, private val com
     }
 
     interface OnRateClick {
-        fun likeClick(position: Int)
-        fun dislikeClick(position: Int)
+        fun onClick(comment: DiscussionCommentDto, rate: Boolean)
     }
 }
