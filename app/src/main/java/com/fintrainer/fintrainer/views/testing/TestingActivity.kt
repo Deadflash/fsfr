@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
 import com.fintrainer.fintrainer.R
+import com.fintrainer.fintrainer.adapters.TestingTabbarAdapter
 import com.fintrainer.fintrainer.di.contracts.TestingContract
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
@@ -32,7 +34,6 @@ import com.fintrainer.fintrainer.views.testing.fragments.TestingFragment
 import icepick.State
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
 import java.lang.reflect.Field
@@ -80,9 +81,9 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun showTest(tests: List<TestingDto>) {
         this.tests = tests
-        if (tests.isEmpty()){
+        if (tests.isEmpty()) {
             toast(R.string.something_went_wrong)
-        }else {
+        } else {
             checkIsFavourite(false)
             setupViewPager()
         }
@@ -107,6 +108,16 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     }
 
     private fun setupViewPager() {
+        recycler.visibility = View.VISIBLE
+        recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recycler.adapter = tests?.let {
+            TestingTabbarAdapter(it, object : TestingTabbarAdapter.OnItemClick {
+                override fun onTabClicked(position: Int) {
+                    changePage(position)
+                }
+            }, intent.getIntExtra("intentId", -1))
+        }
+
         view_pager.adapter = SectionsPagerAdapter(supportFragmentManager)
         try {
             val mScroller: Field = ViewPager::class.java.getDeclaredField("mScroller")
@@ -118,14 +129,16 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         }
 
         view_pager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {
-            }
+            override fun onPageScrollStateChanged(state: Int) {}
 
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
             override fun onPageSelected(position: Int) {
                 currentPagerPosition = position
                 checkIsFavourite(false)
+                (recycler.adapter as? TestingTabbarAdapter)?.setSelectedPosition(position)
+                recycler.adapter.notifyDataSetChanged()
+                recycler.scrollToPosition(position)
             }
 
         })
@@ -167,7 +180,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode){
+        when (requestCode) {
             DISCUSSION_INTENT -> {
                 App.releaseDiscussionsComponent()
             }

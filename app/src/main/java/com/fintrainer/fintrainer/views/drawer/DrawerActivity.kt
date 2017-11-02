@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -62,23 +63,23 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     @State
     @JvmField
-    var examProgress: Int? = null
+    var examProgress: Int = 0
 
     @State
     @JvmField
-    var trainingProgress: Int? = null
+    var trainingProgress: Int = 0
 
     @State
     @JvmField
-    var chaptersCountProgress: Int? = null
+    var chaptersCountProgress: Int = 0
 
     @State
     @JvmField
-    var questionsCountProgress: Int? = null
+    var questionsCountProgress: Int = 0
 
     @State
     @JvmField
-    var favouriteCountProgress: Int? = null
+    var favouriteCountProgress: Int = 0
 
     @State
     @JvmField
@@ -91,6 +92,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     @State
     @JvmField
     var isAuthClicked: Boolean = false
+
 
     @Inject
     lateinit var presenter: DrawerPresenter
@@ -210,7 +212,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                     .centerInside()
                     .error(R.mipmap.ic_launcher)
                     .into(navView?.ivAvatar)
-        }else{
+        } else {
             navView?.ivAvatar?.setImageResource(R.mipmap.ic_launcher)
         }
 //        navView.ivLogout.setImageResource(if (isLoggedIn) R.drawable.ic_account_box_white_24dp else R.drawable.ic_exit_to_app_white_24dp)
@@ -438,6 +440,11 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     override fun showStatistics(statistics: ExamStatisticAndInfo, showFullAnim: Boolean) {
+        favouriteCountProgress = statistics.favouriteQuestionsCount
+        examProgress =  statistics.averageGrade
+        trainingProgress = statistics.averageRightAnswers
+        chaptersCountProgress = statistics.chaptersCount
+        questionsCountProgress = statistics.questionsCount
         setupStatisticsAnimation(statistics.averageGrade, statistics.averageRightAnswers, statistics.chaptersCount, statistics.questionsCount, statistics.favouriteQuestionsCount)
         if (!cardViewAnimSet.isRunning) {
             if (showFullAnim) {
@@ -464,7 +471,11 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
         }
         favourite_layout.id -> {
-            startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
+            if (favouriteCountProgress == 0) {
+                Snackbar.make(findViewById(R.id.main_drawer_layout), "Нет избранных вопросов", Snackbar.LENGTH_SHORT).show()
+            } else {
+                startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
+            }
         }
         else -> println("miss click")
     }
@@ -493,7 +504,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 if (resultCode == Activity.RESULT_CANCELED) {
                     toast(R.string.action_canceled)
                     setLoginLogoutButtonsClickable()
-                }else{
+                } else {
                     auth.onAuthResult(requestCode, resultCode, data!!)
                 }
             }
@@ -537,11 +548,11 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 true
             }
             R.id.nav_mail -> {
-                email("fcpunlimited@gmail.com", "Вопрос", "")
+                email(getString(R.string.fcp_mail), "Вопрос", "")
                 true
             }
             R.id.nav_favourite -> {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + APP_PNAME)))
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.play_store_url) + APP_PNAME)))
                 true
             }
             R.id.nav_options -> {

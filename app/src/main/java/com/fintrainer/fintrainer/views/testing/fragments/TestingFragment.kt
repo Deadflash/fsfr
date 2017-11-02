@@ -83,9 +83,14 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
                 }
                 onUiThread {
                     pageSelector?.changePage(moveTo)
+                    (activity as? TestingActivity)?.recycler?.adapter?.notifyDataSetChanged()
                 }
             }
         }
+    }
+
+    override fun refreshTabLayout() {
+        (activity as? TestingActivity)?.recycler?.adapter?.notifyDataSetChanged()
     }
 
     private fun checkIfClicked(position: Int): Int {

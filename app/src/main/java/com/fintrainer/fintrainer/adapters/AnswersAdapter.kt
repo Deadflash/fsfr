@@ -13,6 +13,9 @@ import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
+import com.fintrainer.fintrainer.views.testing.TestingActivity
+import com.fintrainer.fintrainer.views.testing.fragments.TestingFragment
+import kotlinx.android.synthetic.main.fragment_testing.*
 import kotlinx.android.synthetic.main.item_answers.view.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
@@ -45,9 +48,13 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
                     } else {
                         setAnswerLayoutBg(position, holder)
                     }
+                    test.rightAnswer = test.answers?.get(position)?.status == true
                     iAnswers.addTestProgress(test.answers?.get(position)?.status ?: false, test.weight ?: 0, test.chapter ?: 0)
                     if (intentId == EXAM_INTENT || intentId == -1) {
                         iAnswers.onAnswerClicked()
+                    }
+                    if (intentId != EXAM_INTENT) {
+                        iAnswers.refreshTabLayout()
                     }
                 } else {
                     iAnswers.onAnswerClicked()
@@ -85,5 +92,6 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
     interface IAnswers {
         fun onAnswerClicked()
         fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int)
+        fun refreshTabLayout()
     }
 }
