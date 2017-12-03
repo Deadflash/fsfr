@@ -3,10 +3,13 @@ package com.fintrainer.fintrainer.views.testing.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.view.ViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.ScrollView
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.AnswersAdapter
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_FRAGMENT_TAG
@@ -18,6 +21,7 @@ import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.fintrainer.fintrainer.views.testing.TestingPresenter
 import kotlinx.android.synthetic.main.fragment_testing.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.onUiThread
 import org.jetbrains.anko.support.v4.toast
 import javax.inject.Inject
@@ -65,6 +69,28 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
                 recycler.clearFocus()
                 recycler.isNestedScrollingEnabled = false
             }
+        }
+
+        val comment = if (!presenter.getHints().isEmpty()) presenter.getHints()[position] else null
+        if (comment?.text != null) {
+            solutionCardView.visibility = View.VISIBLE
+            tvSolution.text = comment.text
+
+            showHintLayout.onClick {
+                if (solutionLayout.visibility == View.VISIBLE) {
+                    solutionLayout.visibility = View.GONE
+                    tvShowHint.text = getString(R.string.show_solution)
+                    ivHintIndicator.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp)
+
+                } else {
+                    solutionLayout.visibility = View.VISIBLE
+                    tvShowHint.text = getString(R.string.hide_hint)
+                    ivHintIndicator.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp)
+                }
+                scrollView.post({ scrollView.fullScroll(View.FOCUS_DOWN) })
+            }
+        }else{
+            solutionCardView.visibility = View.GONE
         }
     }
 

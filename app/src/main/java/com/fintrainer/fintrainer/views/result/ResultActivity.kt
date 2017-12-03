@@ -83,15 +83,17 @@ class ResultActivity : BaseActivity() {
         }
 
         btShowFailedQuestions.onClick {
+            finish()
             startActivityForResult<TestingActivity>(FAILED_TESTS_INTENT,"intentId" to FAILED_TESTS_INTENT)
         }
         btToMenu.onClick {
+            onBackPressed()
             //            resultCardView.visibility = View.GONE
-            progressbar_layout.alpha = 0F
-            purchaseCardView.visibility = View.GONE
-            tvTitle.alpha = 0F
-            tvAdvise.alpha = 0F
-            startAnimation()
+//            progressbar_layout.alpha = 0F
+//            purchaseCardView.visibility = View.GONE
+//            tvTitle.alpha = 0F
+//            tvAdvise.alpha = 0F
+//            startAnimation()
         }
         if (!isResultsSave && intentId == EXAM_INTENT || intentId == TESTING_INTENT){
             isResultsSave = true
@@ -100,9 +102,6 @@ class ResultActivity : BaseActivity() {
     }
 
     private fun setViews() {
-        if (worthChapter ?: 0 > 0) {
-            tvAdvise.text = "Советуем повторить $worthChapter главу"
-        }
         when (intentId) {
             EXAM_INTENT -> {
                 progressValue = weight
@@ -112,6 +111,7 @@ class ResultActivity : BaseActivity() {
                 } else {
                     tvTitle.text = "Экзамен не сдан!"
                 }
+                showAdvise()
             }
             TESTING_INTENT -> {
                 progressValue = rightAnswers
@@ -120,6 +120,7 @@ class ResultActivity : BaseActivity() {
                 } else {
                     tvTitle.text = "Тренеруйтесь больше!"
                 }
+                showAdvise()
             }
             else -> {
                 progressValue = rightAnswers
@@ -128,7 +129,14 @@ class ResultActivity : BaseActivity() {
                 } else {
                     tvTitle.text = "Попробуйте еще раз!"
                 }
+                tvAdvise.visibility = View.GONE
             }
+        }
+    }
+
+    private fun showAdvise(){
+        if (worthChapter ?: 0 > 0) {
+            tvAdvise.text = "Советуем повторить $worthChapter главу"
         }
     }
 

@@ -2,45 +2,72 @@ package com.fintrainer.fintrainer.views.testing
 
 import com.fintrainer.fintrainer.di.contracts.IView
 import com.fintrainer.fintrainer.di.contracts.TestingContract
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
+import com.fintrainer.fintrainer.utils.Constants
 import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
+import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
+import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
 import com.fintrainer.fintrainer.utils.containers.RealmContainer
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 /**
  * Created by krotk on 24.10.2017.
  */
-class TestingPresenter(private val realmContainer: RealmContainer) : TestingContract.Presenter {
+class TestingPresenter(private val realmContainer: RealmContainer,
+                       private val discussionRealmContainer: DiscussionsSyncRealmContainer,
+                       private val authContainer: GoogleAuthContainer) : TestingContract.Presenter,
+        DiscussionsSyncRealmContainer.DiscussionRealmCallBack {
 
     private var view: TestingContract.View? = null
     private var tests: List<TestingDto> = emptyList()
+    private var hints: List<DiscussionCommentDto> = emptyList()
     private var failedTests = mutableListOf<TestingDto>()
     private val results: TestingResultsDto = TestingResultsDto(0, 0, 0, 0, 0)
     private val worstChapters = mutableMapOf<Int, Int>()
     private var isShown: Boolean = false
+    private var account: GoogleSignInAccount? = null
+    private var examId: Int? = null
+    private var intentId: Int? = null
+    private var chapter: Int? = null
 
     override fun bind(iView: IView) {
         view = iView as TestingContract.View
+//        authContainer.bindTestingActivityView(iView as TestingActivity)
     }
 
     override fun loadTests(examId: Int, intentId: Int, chapter: Int) {
+        this.examId = examId
+        this.intentId = intentId
+        this.chapter = chapter
         if (tests.isEmpty()) {
-            doAsync {
-                when (intentId) {
-                    EXAM_INTENT -> tests = realmContainer.getExamAsync(examId)
-                    TESTING_INTENT -> tests = realmContainer.getTestsAsync(examId)
-                    CHAPTER_INTENT -> tests = realmContainer.getByChapterAsync(chapter, examId)
-                    FAVOURITE_INTENT -> tests = realmContainer.getFavouriteQuestionsAsync(examId)
+            if (intentId != EXAM_INTENT) {
+                if (authContainer.isAuthenticated()) {
+                    authContainer.getAccount(object : GoogleAuthContainer.AccountCallback {
+                        override fun onError(code: Int) {
+                            println("need authorize")
+                        }
+
+                        override fun onSuccess(account: GoogleSignInAccount?) {
+                            account?.let {
+                                this@TestingPresenter.account = it
+                                discussionRealmContainer.initDiscussionsRealm(it, this@TestingPresenter)
+                            }
+                        }
+                    })
+                }else{
+                    showTestsWithoutAuth()
+                    view?.showNeedAuth()
                 }
-                uiThread {
-                    view?.showTest(tests)
-                }
+            } else {
+                getTests(intentId, examId, chapter)
             }
         } else {
             if (intentId == FAILED_TESTS_INTENT) {
@@ -48,6 +75,56 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
             } else {
                 view?.showTest(tests)
             }
+        }
+    }
+
+    override fun showTestsWithoutAuth() {
+        getTests(intentId, examId, chapter)
+    }
+
+    private fun getTests(intentId: Int?, examId: Int?, chapter: Int?) {
+        doAsync {
+            when (intentId) {
+                EXAM_INTENT -> tests = realmContainer.getExamAsync(examId!!)
+                TESTING_INTENT ->
+                    tests = realmContainer.getTestsAsync(examId!!)
+                CHAPTER_INTENT ->
+                    tests = realmContainer.getByChapterAsync(chapter!!, examId!!)
+                FAVOURITE_INTENT ->
+                    tests = realmContainer.getFavouriteQuestionsAsync(examId!!)
+            }
+            uiThread {
+                if (intentId != EXAM_INTENT) {
+                    if (account == null) {
+                        view?.showTest(tests)
+                    } else {
+                        loadHints()
+                    }
+                } else {
+                    view?.showTest(tests)
+                }
+            }
+        }
+    }
+
+    private fun loadHints() {
+        discussionRealmContainer.getApprovedHints(tests, object : DiscussionsSyncRealmContainer.HintsCallback {
+            override fun showHints(hints: List<DiscussionCommentDto>) {
+                this@TestingPresenter.hints = hints
+                view?.showTest(tests)
+            }
+
+        })
+    }
+
+    override fun getHints(): List<DiscussionCommentDto> = hints
+
+    override fun realmConfigCallback(code: Int) {
+        if (code == Constants.REALM_SUCCESS_CONNECT_CODE) {
+            println("ok")
+            getTests(intentId, examId, chapter)
+        } else {
+            println("error")
         }
     }
 
@@ -112,5 +189,6 @@ class TestingPresenter(private val realmContainer: RealmContainer) : TestingCont
 
     override fun unBind() {
         view = null
+//        authContainer.unbindTestingActivityView()
     }
 }

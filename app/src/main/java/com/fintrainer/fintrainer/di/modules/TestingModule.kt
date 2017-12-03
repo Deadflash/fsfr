@@ -1,8 +1,11 @@
 package com.fintrainer.fintrainer.di.modules
 
 import com.fintrainer.fintrainer.di.scopes.PerActivity
+import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
+import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
 import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import com.fintrainer.fintrainer.views.testing.TestingPresenter
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import dagger.Module
 import dagger.Provides
 
@@ -14,5 +17,7 @@ class TestingModule {
 
     @Provides
     @PerActivity
-    fun addTestingPresenter(realmContainer: RealmContainer): TestingPresenter = TestingPresenter(realmContainer)
+    fun addTestingPresenter(realmContainer: RealmContainer,
+                            discussionsSyncRealmContainer: DiscussionsSyncRealmContainer,
+                            googleAuthContainer: GoogleAuthContainer): TestingPresenter = TestingPresenter(realmContainer,discussionsSyncRealmContainer,googleAuthContainer)
 }

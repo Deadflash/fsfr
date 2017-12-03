@@ -3,6 +3,7 @@ package com.fintrainer.fintrainer.utils.containers
 import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.DiscussionQuestionDto
 import com.fintrainer.fintrainer.structure.DiscussionRateDto
+import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.Constants
 import com.fintrainer.fintrainer.utils.Constants.REALM_FAIL_CONNECT_CODE
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -172,6 +173,32 @@ class DiscussionsSyncRealmContainer {
         })
     }
 
+    fun getApprovedHints(tests: List<TestingDto>, callback: HintsCallback) {
+        getDiscussionsRealmInstance(object : RealmInstanceCallback {
+            override fun successCallback() {
+                val hints = mutableListOf<DiscussionCommentDto>()
+                tests.forEach {
+                    val question = discussionsRealm?.where(DiscussionQuestionDto::class.java)?.equalTo("questionType", it.type)?.equalTo("questionId", it.code)?.findAll()
+                    question?.let {
+                        if (!it.isEmpty() && !it[0].commentList?.isEmpty()!!) {
+                            it[0]?.commentList?.let { hints.add(it[0]) }
+                        }else{
+                            val comment = DiscussionCommentDto()
+                            comment.text = null
+                            hints.add(comment)
+                        }
+                    }
+                }
+                callback.showHints(hints)
+            }
+
+            override fun errorCallBack() {
+                callback.showHints(emptyList())
+            }
+
+        })
+    }
+
     fun rateDiscussion(discussion: DiscussionQuestionDto, account: GoogleSignInAccount, rate: Boolean, realmCallback: RealmCallback) {
         getDiscussionsRealmInstance(object : RealmInstanceCallback {
             override fun successCallback() {
@@ -311,6 +338,10 @@ class DiscussionsSyncRealmContainer {
 
     interface DiscussionRealmCallBack {
         fun realmConfigCallback(code: Int)
+    }
+
+    interface HintsCallback {
+        fun showHints(hints: List<DiscussionCommentDto>)
     }
 
     interface DiscussionsCallback {

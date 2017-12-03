@@ -7,6 +7,7 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
+import android.widget.TextView
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.AuthContract
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
@@ -472,7 +474,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         }
         favourite_layout.id -> {
             if (favouriteCountProgress == 0) {
-                Snackbar.make(findViewById(R.id.main_drawer_layout), "Нет избранных вопросов", Snackbar.LENGTH_SHORT).show()
+                val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Нет избранных вопросов", Snackbar.LENGTH_SHORT)
+                snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
+                snack.show()
             } else {
                 startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
             }

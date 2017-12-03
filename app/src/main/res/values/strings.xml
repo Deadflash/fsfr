@@ -48,4 +48,7 @@
     <string name="discussion_add_menu">Добавить</string>
     <string name="add_discussion_text">Задайте интересующий вас вопрос, этот вопрос будет виден всем пользователям.</string>
     <string name="discussion_add_question_hint">Введите вопрос</string>
+    <string name="show_solution">Показать решение</string>
+    <string name="solution">Решение</string>
+    <string name="hide_hint">Скрыть решение</string>
 </resources>
