@@ -9,7 +9,7 @@ import android.widget.Scroller
  */
 class CustomViewPagerScroller(context: Context?, interpolator: Interpolator?) : Scroller(context, interpolator) {
 
-    private val mDuration = 300
+    private val mDuration = 200
 
     override fun startScroll(startX: Int, startY: Int, dx: Int, dy: Int, duration: Int) {
         // Ignore received duration, use fixed one instead

@@ -2,7 +2,9 @@ package com.fintrainer.fintrainer.views.testing
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
@@ -12,9 +14,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.TextView
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.TestingTabbarAdapter
 import com.fintrainer.fintrainer.di.contracts.TestingContract
+import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
 import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
@@ -34,6 +38,8 @@ import com.fintrainer.fintrainer.views.testing.fragments.TestingFragment
 import icepick.State
 import kotlinx.android.synthetic.main.activity_testing.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.okButton
 import org.jetbrains.anko.startActivityForResult
 import org.jetbrains.anko.toast
 import java.lang.reflect.Field
@@ -45,6 +51,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     lateinit var presenter: TestingPresenter
 
     private var tests: List<TestingDto>? = null
+    private var hints: List<DiscussionCommentDto>? = null
     private var menuItem: MenuItem? = null
 
     @State
@@ -79,6 +86,12 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         return true
     }
 
+    override fun showNeedAuth() {
+        val dialog = alert("Чтобы видеть решение некоторых задач необходима авторизация. ", "Авторизация")
+        dialog.okButton {  }
+        dialog.show()
+    }
+
     override fun showTest(tests: List<TestingDto>) {
         this.tests = tests
         if (tests.isEmpty()) {
@@ -87,6 +100,11 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
             checkIsFavourite(false)
             setupViewPager()
         }
+    }
+
+    override fun showHints(hints: List<DiscussionCommentDto>) {
+        this.hints = hints
+        toast("hints ${hints.size}")
     }
 
     override fun showIsFavouriteQuestion(isFavourite: Boolean) {
@@ -100,6 +118,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun showResults(results: TestingResultsDto) {
         if (tests != null) {
+            finish()
             startActivityForResult<ResultActivity>(RESULT_INTENT, "weight" to results.weight,
                     "right" to results.right, "wrong" to results.wrong, "worthChapter" to results.worthChapter,
                     "intentId" to intent.getIntExtra("intentId", -1), "standaloned" to intent.getBooleanExtra("standaloned", false),
@@ -153,6 +172,10 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (intent.getIntExtra("intentId", -1) == EXAM_INTENT){
+            menu?.getItem(0)?.isVisible = false
+            menu?.getItem(1)?.isVisible = false
+        }
         menuItem = menu!!.getItem(1)
         setFavouriteIcon(isFavourite)
 //        menu.getItem(1).icon = ContextCompat.getDrawable(this, if (isFavourite) R.drawable.ic_bookmark_white_24dp else R.drawable.ic_bookmark_border_white_24dp)
@@ -216,4 +239,3 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         presenter.unBind()
     }
 }
-

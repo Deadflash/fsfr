@@ -10,6 +10,7 @@ import com.fintrainer.fintrainer.utils.Constants.AUTH_INTERNET_CONNECTION_ERROR
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.views.discussions.DiscussionsActivity
 import com.fintrainer.fintrainer.views.drawer.DrawerActivity
+import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -46,6 +47,14 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
         discussionActivity = null
     }
 
+//    override fun bindTestingActivityView(testingActivity: TestingActivity) {
+//        this.testingActivity = testingActivity
+//    }
+//
+//    override fun unbindTestingActivityView() {
+//        this.testingActivity = null
+//    }
+
     override fun getAccount(accountCallback: AccountCallback) {
         this.accountCallBack = accountCallback
         if (account != null) {
@@ -54,6 +63,8 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
             login()
         }
     }
+
+    override fun isAuthenticated() : Boolean = account != null
 
     override fun removeAccountCallback() {
         accountCallBack = null
@@ -147,6 +158,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
                 val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
                 (view as? DrawerActivity)?.startActivityForResult(signInIntent, RC_SIGN_IN)
                 discussionActivity?.startActivityForResult(signInIntent, RC_SIGN_IN)
+//                testingActivity?.showNeedAuth()
             }
         }
     }
