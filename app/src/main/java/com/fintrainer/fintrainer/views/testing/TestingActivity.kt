@@ -172,6 +172,10 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (intent.getIntExtra("intentId", -1) == EXAM_INTENT){
+            menu?.getItem(0)?.isVisible = false
+            menu?.getItem(1)?.isVisible = false
+        }
         menuItem = menu!!.getItem(1)
         setFavouriteIcon(isFavourite)
 //        menu.getItem(1).icon = ContextCompat.getDrawable(this, if (isFavourite) R.drawable.ic_bookmark_white_24dp else R.drawable.ic_bookmark_border_white_24dp)
