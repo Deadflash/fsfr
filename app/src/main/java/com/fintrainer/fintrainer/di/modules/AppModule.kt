@@ -1,10 +1,7 @@
 package com.fintrainer.fintrainer.di.modules
 
 import android.content.Context
-import com.fintrainer.fintrainer.utils.containers.DiscussionsSyncRealmContainer
-import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
-import com.fintrainer.fintrainer.utils.containers.PicassoContainer
-import com.fintrainer.fintrainer.utils.containers.RealmContainer
+import com.fintrainer.fintrainer.utils.containers.*
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -34,4 +31,8 @@ class AppModule(val context: Context) {
     @Provides
     @Singleton
     fun provideGoogleAuth(): GoogleAuthContainer = GoogleAuthContainer()
+
+    @Provides
+    @Singleton
+    fun provideInAppPurchaiseContainer(): InAppPurchaseContainer = InAppPurchaseContainer()
 }
