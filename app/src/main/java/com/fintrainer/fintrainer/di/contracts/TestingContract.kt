@@ -17,6 +17,7 @@ interface TestingContract {
     }
 
     interface Presenter : IPresenter {
+        fun checkIsAuthenticatedUser(): Boolean
         fun loadTests(examId: Int, intentId: Int, chapter: Int)
         fun showTestsWithoutAuth()
         fun getLoadedTests(): List<TestingDto>

@@ -10,7 +10,7 @@ import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
-class Splash : AppCompatActivity() {
+class Splash : AppCompatActivity(), InAppPurchaseContainer.SplashStartApp {
 
     @Inject
     lateinit var inAppPurchaseContainer: InAppPurchaseContainer
@@ -19,12 +19,16 @@ class Splash : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         App.appComponent.inject(this)
 
-        doAsync {
-            Thread.sleep(100)
-            uiThread {
-//                startActivity<DrawerActivity>()
-                inAppPurchaseContainer.initPurchases(this@Splash)
-            }
-        }
+        inAppPurchaseContainer.initSplash(this@Splash)
+        inAppPurchaseContainer.initPurchases(this@Splash)
+    }
+
+    override fun startApp() {
+        startActivity<DrawerActivity>()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        inAppPurchaseContainer.releaseSplash()
     }
 }

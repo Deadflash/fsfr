@@ -2,9 +2,7 @@ package com.fintrainer.fintrainer.views.testing
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
@@ -14,7 +12,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.LinearInterpolator
-import android.widget.TextView
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.TestingTabbarAdapter
 import com.fintrainer.fintrainer.di.contracts.TestingContract
@@ -87,7 +84,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     }
 
     override fun showNeedAuth() {
-        val dialog = alert("Чтобы видеть решение некоторых задач необходима авторизация. ", "Авторизация")
+        val dialog = alert(getString(R.string.need_auth_message), getString(R.string.authentication))
         dialog.okButton {  }
         dialog.show()
     }
@@ -192,10 +189,15 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
             true
         }
         R.id.menu_discussions -> {
-            startActivityForResult<DiscussionsActivity>(DISCUSSION_INTENT,
-                    "purchased" to intent.getBooleanExtra("purchased", false),
-                    "questionCode" to (tests?.get(currentPagerPosition)?.code.toString()),
-                    "testType" to (tests?.get(currentPagerPosition)?.type ?: -1))
+
+            if (presenter.checkIsAuthenticatedUser()) {
+                startActivityForResult<DiscussionsActivity>(DISCUSSION_INTENT,
+                        "purchased" to intent.getBooleanExtra("purchased", false),
+                        "questionCode" to (tests?.get(currentPagerPosition)?.code.toString()),
+                        "testType" to (tests?.get(currentPagerPosition)?.type ?: -1))
+            }else{
+                showNeedAuth()
+            }
             true
         }
         else -> false

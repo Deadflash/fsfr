@@ -49,7 +49,7 @@ class TestingPresenter(private val realmContainer: RealmContainer,
         this.chapter = chapter
         if (tests.isEmpty()) {
             if (intentId != EXAM_INTENT) {
-                if (authContainer.isAuthenticated()) {
+                if (checkIsAuthenticatedUser()) {
                     authContainer.getAccount(object : GoogleAuthContainer.AccountCallback {
                         override fun onError(code: Int) {
                             println("need authorize")
@@ -77,6 +77,8 @@ class TestingPresenter(private val realmContainer: RealmContainer,
             }
         }
     }
+
+    override fun checkIsAuthenticatedUser(): Boolean = authContainer.isAuthenticated()
 
     override fun showTestsWithoutAuth() {
         getTests(intentId, examId, chapter)

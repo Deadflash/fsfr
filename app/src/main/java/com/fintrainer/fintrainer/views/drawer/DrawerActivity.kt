@@ -8,6 +8,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.DecelerateInterpolator
 import android.widget.TextView
+import collections.forEach
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.AuthContract
 import com.fintrainer.fintrainer.di.contracts.DrawerContract
@@ -42,6 +44,7 @@ import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
+import com.fintrainer.fintrainer.utils.containers.InAppPurchaseContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity
@@ -54,14 +57,14 @@ import kotlinx.android.synthetic.main.activity_drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
-import org.jetbrains.anko.email
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startActivityForResult
-import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 
-class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener, AuthContract.View {
+class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener, AuthContract.View, InAppPurchaseContainer.DrawerInterface {
+
+    private val TAG = DrawerActivity::class.java.name
 
     @State
     @JvmField
@@ -102,6 +105,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     @Inject
     lateinit var auth: GoogleAuthContainer
 
+    @Inject
+    lateinit var inAppPurchaseContainer: InAppPurchaseContainer
+
     private val statisticsAnimSet = AnimatorSet()
     private val cardViewAnimSet = AnimatorSet()
     private val cardViewReverseAnimSet = AnimatorSet()
@@ -141,7 +147,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     override fun onResume() {
         super.onResume()
-
+        inAppPurchaseContainer.initDrawer(this)
     }
 
     private fun initStatusBar() {
@@ -163,7 +169,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         setSupportActionBar(toolbar)
         val toggle = object : ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            override fun onDrawerClosed(drawerView: View?) {
+            override fun onDrawerClosed(drawerView: View) {
                 super.onDrawerClosed(drawerView)
                 if (currentExam != selectedExam) {
                     currentExam = selectedExam
@@ -180,6 +186,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     private fun setupNavigationView() {
+
         navigation_view.setNavigationItemSelectedListener(this)
         val navView = navigation_view.getHeaderView(0)
         navView?.ivLogout?.isClickable = !isAuthClicked
@@ -195,6 +202,22 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             navView.ivLogin?.isClickable = false
         }
         navigation_view.menu?.getItem(0)?.isChecked = true
+
+        setupPurchasedIcons()
+    }
+
+    fun setupPurchasedIcons() {
+        val purchases = inAppPurchaseContainer.getPurchases()
+        purchases.forEach(action = { i, purchaseStructDto ->
+            run {
+                if (purchaseStructDto.hasPurchased) {
+                    navigation_view.menu?.getItem(i)?.setIcon(R.drawable.ic_check_black_24dp)
+                    navigation_view.menu?.getItem(i)?.icon?.setColorFilter(ContextCompat.getColor(this@DrawerActivity, R.color.green_300), PorterDuff.Mode.SRC_IN)
+                } else {
+                    navigation_view.menu?.getItem(i)?.setIcon(R.drawable.ic_shopping_cart_black_24dp)
+                }
+            }
+        })
     }
 
     override fun setLoginLogoutButtonsClickable() {
@@ -221,13 +244,13 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         if (isLoggedIn) {
             navView?.ivLogout?.visibility = View.VISIBLE
             navView?.ivLogin?.visibility = View.INVISIBLE
-            navView.ivLogin.isClickable = false
-            navView.ivLogout.isClickable = true
+            navView?.ivLogin?.isClickable = false
+            navView?.ivLogout?.isClickable = true
         } else {
             navView?.ivLogout?.visibility = View.INVISIBLE
             navView?.ivLogin?.visibility = View.VISIBLE
             navView?.ivLogin?.isClickable = true
-            navView.ivLogout.isClickable = false
+            navView?.ivLogout?.isClickable = false
         }
     }
 
@@ -424,13 +447,13 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     }
 
     private fun setupUserProgress() {
-        tvExamProgressCount.text = "Средний бал: ${examProgress?.toString() ?: "0"}"
+        tvExamProgressCount.text = "Средний бал: ${examProgress.toString() ?: "0"}"
         examProgressBar.progress = examProgress ?: 0
-        tvTrainingProgressCount.text = "В среднем ${trainingProgress?.toString() ?: "0"} балов"
+        tvTrainingProgressCount.text = "В среднем ${trainingProgress.toString() ?: "0"} балов"
         trainingProgressBar.progress = trainingProgress ?: 0
-        tvChaptersProgressCount.text = "Глав: ${chaptersCountProgress?.toString() ?: "0"}"
-        tvQuestionsProgressCount.text = "Всего вопросов: ${questionsCountProgress?.toString() ?: "0"}"
-        tvFavouriteProgressCount.text = "Добавлено ${favouriteCountProgress?.toString() ?: "0"} вопросов"
+        tvChaptersProgressCount.text = "Глав: ${chaptersCountProgress.toString() ?: "0"}"
+        tvQuestionsProgressCount.text = "Всего вопросов: ${questionsCountProgress.toString() ?: "0"}"
+        tvFavouriteProgressCount.text = "Добавлено ${favouriteCountProgress.toString() ?: "0"} вопросов"
     }
 
     private fun setupClickListeners() {
@@ -443,7 +466,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     override fun showStatistics(statistics: ExamStatisticAndInfo, showFullAnim: Boolean) {
         favouriteCountProgress = statistics.favouriteQuestionsCount
-        examProgress =  statistics.averageGrade
+        examProgress = statistics.averageGrade
         trainingProgress = statistics.averageRightAnswers
         chaptersCountProgress = statistics.chaptersCount
         questionsCountProgress = statistics.questionsCount
@@ -458,30 +481,52 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 //        startStatisticAnimation()
     }
 
-    override fun onClick(p0: View?) = when (p0?.id) {
-        exam_Layout.id -> {
-            startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam)
-        }
-        training_layout.id -> {
-            startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam)
-        }
-        chapters_layout.id -> {
-            presenter.onLayoutClick(0, 2, false)
-            startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam)
-        }
-        search_layout.id -> {
-            startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
-        }
-        favourite_layout.id -> {
-            if (favouriteCountProgress == 0) {
-                val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Нет избранных вопросов", Snackbar.LENGTH_SHORT)
-                snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
-                snack.show()
+    override fun onClick(p0: View?) {
+        val id = p0?.id
+        id?.let {
+            if (it == exam_Layout.id || inAppPurchaseContainer.checkIsPurchasedExam(selectedExam)) {
+                showExam(it)
             } else {
-                startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
+                showTrialDialog(getString(R.string.trial_message), it)
             }
         }
-        else -> println("miss click")
+    }
+
+    private fun showExam(id: Int) {
+        when (id) {
+            exam_Layout.id -> {
+                startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam)
+            }
+            training_layout.id -> {
+                startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam)
+            }
+            chapters_layout.id -> {
+//            presenter.onLayoutClick(0, 2, false)
+                startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam)
+            }
+            search_layout.id -> {
+                startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
+            }
+            favourite_layout.id -> {
+                if (favouriteCountProgress == 0) {
+                    val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Нет избранных вопросов", Snackbar.LENGTH_SHORT)
+                    snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
+                    snack.show()
+                } else {
+                    startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
+                }
+            }
+            else -> print("Miss click")
+        }
+    }
+
+    private fun showTrialDialog(message: String, id: Int?) {
+        val dialog = alert(message, getString(R.string.trial_version))
+        dialog.positiveButton(getString(R.string.buy), onClicked = {
+            inAppPurchaseContainer.purchase(this, selectedExam)
+        })
+        dialog.negativeButton(getString(R.string.cancel), onClicked = { id?.let { it -> showExam(it) } })
+        dialog.show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -512,8 +557,15 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                     auth.onAuthResult(requestCode, resultCode, data!!)
                 }
             }
+            10001 -> {
+                data?.let { inAppPurchaseContainer.handlePurchaseResult(requestCode, resultCode, it) }
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun showPurchaseMessage() {
+        toast("Уже куплено")
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -569,6 +621,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onPause() {
         super.onPause()
         statisticsAnimSet.cancel()
+        inAppPurchaseContainer.releaseDrawer()
     }
 
     override fun onStop() {

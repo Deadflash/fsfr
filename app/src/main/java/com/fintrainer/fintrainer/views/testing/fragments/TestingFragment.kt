@@ -44,10 +44,10 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
         pageSelector = context as TestingActivity
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         App.initTestingComponent()?.inject(this)
-        tests = if (activity.intent.getIntExtra("intentId", -1) != -1 && activity.intent.getIntExtra("intentId", -1) == FAILED_TESTS_INTENT) {
+        tests = if (activity?.intent?.getIntExtra("intentId", -1) != -1 && activity?.intent?.getIntExtra("intentId", -1) == FAILED_TESTS_INTENT) {
             presenter.getFailedTests()
         } else {
             presenter.getLoadedTests()
@@ -55,17 +55,17 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
         recycler.layoutManager = object : LinearLayoutManager(context) {
             override fun canScrollVertically(): Boolean = false
         }
-        val position: Int = arguments.getInt("position", -1)
+        val position: Int = arguments?.getInt("position", -1)!!
         if (!tests.isEmpty()) {
             if (position != -1) {
                 tvQuestionCode.text = tests[position].code ?: ""
                 tvQuestion.text = tests[position].task ?: ""
-                if (tests[position].image != null && activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName) != 0) {
+                if (tests[position].image != null && activity?.resources?.getIdentifier(tests[position].image, "drawable", activity?.packageName) != 0) {
                     ivTestingImg.visibility = View.VISIBLE
-                    picasso.loadImage(ivTestingImg, activity.resources.getIdentifier(tests[position].image, "drawable", activity.packageName))
+                    activity?.resources?.getIdentifier(tests[position].image, "drawable", activity?.packageName)?.let { picasso.loadImage(ivTestingImg, it) }
                 }
 
-                recycler.adapter = AnswersAdapter(this, tests[position], activity.intent.getIntExtra("intentId", -1))
+                recycler.adapter = activity?.intent?.getIntExtra("intentId", -1)?.let { AnswersAdapter(this, tests[position], it) }
                 recycler.clearFocus()
                 recycler.isNestedScrollingEnabled = false
             }
@@ -95,11 +95,11 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
     }
 
     override fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int) {
-        presenter.updateTestStatistics(isRight, weight, chapter, arguments.getInt("position", 0))
+        arguments?.getInt("position", 0)?.let { presenter.updateTestStatistics(isRight, weight, chapter, it) }
     }
 
     override fun onAnswerClicked() {
-        val position: Int = arguments.getInt("position", -1)
+        val position: Int = arguments?.getInt("position", -1)!!
         if (position != -1) {
             var moveTo: Int
             doAsync {

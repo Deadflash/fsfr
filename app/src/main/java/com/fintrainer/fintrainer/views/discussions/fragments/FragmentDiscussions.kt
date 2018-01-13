@@ -29,13 +29,13 @@ class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView 
     @Inject
     lateinit var presenter: DiscussionsPresenter
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         App.initDiscussionsComponent()?.inject(this)
 
-        val purchased = activity.intent.getBooleanExtra("purchased", false)
-        val questionCode = activity.intent.getStringExtra("questionCode")
-        val testType = activity.intent.getIntExtra("testType", -1)
+//        val purchased = activity!!.intent.getBooleanExtra("purchased", false)
+//        val questionCode = activity!!.intent.getStringExtra("questionCode")
+//        val testType = activity!!.intent.getIntExtra("testType", -1)
 
         presenter.bindDiscussionsView(this)
         presenter.initDiscussionsRealm()
@@ -46,7 +46,7 @@ class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView 
             toast("canceled")
         }
         REALM_SUCCESS_CONNECT_CODE -> {
-            presenter.getDiscussions(activity.intent.getStringExtra("questionCode"), activity.intent.getIntExtra("testType", -1))
+            presenter.getDiscussions(activity!!.intent.getStringExtra("questionCode"), activity!!.intent.getIntExtra("testType", -1))
         }
         REALM_FAIL_CONNECT_CODE -> {
             toast(R.string.error_realm_config)

@@ -24,7 +24,7 @@ class FragmentAddDiscussion : BaseFragment(), DiscussionsContract.AddDiscussionV
     @Inject
     lateinit var presenter: DiscussionsPresenter
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         App.initDiscussionsComponent()?.inject(this)
 
@@ -33,20 +33,20 @@ class FragmentAddDiscussion : BaseFragment(), DiscussionsContract.AddDiscussionV
 
     override fun onCreateDiscussionClicked() {
         if (!etQuestion?.text.toString().trim().isEmpty()) {
-            if (activity.intent.getIntExtra("testType", -1) != -1) {
-                presenter.createDiscussion(etQuestion?.text.toString(), activity.intent.getStringExtra("questionCode"), activity.intent.getIntExtra("testType", -1))
+            if (activity!!.intent.getIntExtra("testType", -1) != -1) {
+                presenter.createDiscussion(etQuestion?.text.toString(), activity!!.intent.getStringExtra("questionCode"), activity!!.intent.getIntExtra("testType", -1))
             }else{
                 toast(R.string.something_went_wrong)
             }
         } else {
-            etQuestion.error = activity.getString(R.string.ask_question)
+            etQuestion.error = activity!!.getString(R.string.ask_question)
         }
     }
 
     override fun createDiscussionResult(code: Int) {
         when (code){
             REALM_SUCCES_CODE -> {
-                activity.onBackPressed()
+                activity!!.onBackPressed()
                 val imm = view?.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(view?.windowToken, 0)
             }

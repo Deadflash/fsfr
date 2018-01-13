@@ -37,9 +37,9 @@ class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val purchased = intent.getBooleanExtra("purchased", false)
-        val questionId = intent.getStringExtra("questionCode")
-        val testType = intent.getIntExtra("testType", -1)
+//        val purchased = intent.getBooleanExtra("purchased", false)
+//        val questionId = intent.getStringExtra("questionCode")
+//        val testType = intent.getIntExtra("testType", -1)
 
         fragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as BaseFragment?
 

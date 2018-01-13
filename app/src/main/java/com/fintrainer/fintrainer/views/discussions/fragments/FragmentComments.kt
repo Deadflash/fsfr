@@ -30,7 +30,7 @@ class FragmentComments : BaseFragment(), DiscussionsContract.CommentsView, Comme
 
     private lateinit var discussion: DiscussionQuestionDto
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         App.initDiscussionsComponent()?.inject(this)
         presenter.bindDiscussionsCommentsView(this)
@@ -51,7 +51,7 @@ class FragmentComments : BaseFragment(), DiscussionsContract.CommentsView, Comme
             }
         }
 
-        presenter.getDiscussionComments(arguments.getString("questionId"), arguments.getInt("questionType"), arguments.getString("realmId"))
+        presenter.getDiscussionComments(arguments!!.getString("questionId"), arguments!!.getInt("questionType"), arguments!!.getString("realmId"))
     }
 
     override fun onClick(comment: DiscussionCommentDto, rate: Boolean) {
@@ -63,7 +63,7 @@ class FragmentComments : BaseFragment(), DiscussionsContract.CommentsView, Comme
     }
 
     override fun onCommentCreated() {
-        presenter.getDiscussionComments(arguments.getString("questionId"), arguments.getInt("questionType"), arguments.getString("realmId"))
+        presenter.getDiscussionComments(arguments!!.getString("questionId"), arguments!!.getInt("questionType"), arguments!!.getString("realmId"))
     }
 
     override fun showComments(discussion: DiscussionQuestionDto, account: GoogleSignInAccount?) {

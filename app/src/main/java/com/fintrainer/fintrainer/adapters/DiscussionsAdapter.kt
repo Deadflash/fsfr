@@ -29,8 +29,8 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
         holder?.userName?.text = discussions[position].discussionCreator ?: ""
         holder?.discussionText?.text = discussions[position].text ?: ""
         holder?.tvCommentsCount?.text = discussions[position].commentList?.size.toString()
-        holder?.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
-        holder?.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+        holder?.itemView?.context?.let { ContextCompat.getColor(it, R.color.blue_grey_300) }?.let { holder.dislike?.setColorFilter(it) }
+        holder?.itemView?.context?.let { ContextCompat.getColor(it, R.color.blue_grey_300) }?.let { holder.likes?.setColorFilter(it) }
 
         discussions[position].rateList?.let {
             for (rateElem in it) {
@@ -38,12 +38,12 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
                 if (account?.email.equals(rateElem.userId)) {
                     if (rateElem.direction!!) {
 //                        likeClicked = true
-                        holder?.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.green_300))
-                        holder?.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.green_300) }?.let { it1 -> holder.likes?.setColorFilter(it1) }
+                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.blue_grey_300) }?.let { it1 -> holder.dislike?.setColorFilter(it1) }
                     } else {
 //                        dislikeClicked = true
-                        holder?.dislike?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.red_300))
-                        holder?.likes?.setColorFilter(ContextCompat.getColor(holder.itemView?.context, R.color.blue_grey_300))
+                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.red_300) }?.let { it1 -> holder.dislike?.setColorFilter(it1) }
+                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.blue_grey_300) }?.let { it1 -> holder.likes?.setColorFilter(it1) }
                     }
                 }
             }
