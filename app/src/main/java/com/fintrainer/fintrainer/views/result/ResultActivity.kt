@@ -14,19 +14,20 @@ import android.view.WindowManager
 import android.view.animation.BounceInterpolator
 import android.view.animation.DecelerateInterpolator
 import com.fintrainer.fintrainer.R
-import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
+import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
+import com.fintrainer.fintrainer.views.drawer.DrawerActivity
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.fintrainer.fintrainer.views.testing.TestingPresenter
 import icepick.State
 import kotlinx.android.synthetic.main.activity_result.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
+import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.startActivityForResult
 import javax.inject.Inject
 
 
@@ -76,10 +77,13 @@ class ResultActivity : BaseActivity() {
         purchaised = intent.getBooleanExtra("purchased", false)
         weight = intent.getIntExtra("weight", 0)
 
+        resultProgressbar.max = rightAnswers!! + wrongAnswers!!
+
         setViews()
 
         purchase_layout.onClick {
-
+            startActivity(intentFor<DrawerActivity>("buy" to true).clearTop())
+            finish()
         }
 
         btShowFailedQuestions.onClick {
@@ -88,12 +92,6 @@ class ResultActivity : BaseActivity() {
         }
         btToMenu.onClick {
             onBackPressed()
-            //            resultCardView.visibility = View.GONE
-//            progressbar_layout.alpha = 0F
-//            purchaseCardView.visibility = View.GONE
-//            tvTitle.alpha = 0F
-//            tvAdvise.alpha = 0F
-//            startAnimation()
         }
         if (!isResultsSave && intentId == EXAM_INTENT || intentId == TESTING_INTENT){
             isResultsSave = true
@@ -101,7 +99,15 @@ class ResultActivity : BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        resultProgressbar.progress = 0
+    }
+
     private fun setViews() {
+        if (wrongAnswers == 0){
+            btShowFailedQuestions.visibility = View.GONE
+        }
         when (intentId) {
             EXAM_INTENT -> {
                 progressValue = weight
@@ -122,6 +128,11 @@ class ResultActivity : BaseActivity() {
                 }
                 showAdvise()
             }
+
+            FAVOURITE_INTENT -> {
+                progressValue = rightAnswers
+                tvTitle.text = "Результаты"
+            }
             else -> {
                 progressValue = rightAnswers
                 if (rightAnswers ?: 0 > 80) {
@@ -141,7 +152,7 @@ class ResultActivity : BaseActivity() {
     }
 
     private fun setupAnimations() {
-        progressLayoutAnim.duration = 800
+        progressLayoutAnim.duration = 400
         progressLayoutAnim.startDelay = 500
         progressLayoutAnim.addUpdateListener { progressbar_layout.alpha = progressLayoutAnim.animatedValue as Float }
         progressLayoutAnim.addListener(object : Animator.AnimatorListener {
@@ -154,7 +165,7 @@ class ResultActivity : BaseActivity() {
             override fun onAnimationEnd(p0: Animator?) {
 
                 val resultProgressBarAnimator = ObjectAnimator.ofInt(resultProgressbar, "progress", 0, progressValue ?: 0)
-                resultProgressBarAnimator.duration = 1500
+                resultProgressBarAnimator.duration = 800
                 resultProgressBarAnimator.interpolator = DecelerateInterpolator()
                 resultProgressBarAnimator.addUpdateListener { tvResult.text = resultProgressBarAnimator.animatedValue.toString() }
                 resultProgressBarAnimator.addListener(object : Animator.AnimatorListener {
@@ -174,7 +185,7 @@ class ResultActivity : BaseActivity() {
                         val purchaseAnimator: ObjectAnimator = ObjectAnimator.ofFloat(purchaseCardView, "translationX", translationX, 0F)
                         purchaseAnimator.addUpdateListener { purchaseCardView.visibility = View.VISIBLE }
                         purchaseAnimator.duration = 900
-                        purchaseAnimator.startDelay = 800
+                        purchaseAnimator.startDelay = 600
                         purchaseAnimator.interpolator = BounceInterpolator()
 
                         val animSet = AnimatorSet()

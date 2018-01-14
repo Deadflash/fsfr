@@ -12,6 +12,7 @@ import com.fintrainer.fintrainer.views.testing.TestingActivity
 interface AuthContract {
     interface View : IView {
         fun showUserInfo(userName: String, userAvatarUri: Uri, isLoggedIn: Boolean)
+        fun refreshStatistics()
         fun setLoginLogoutButtonsClickable()
     }
 

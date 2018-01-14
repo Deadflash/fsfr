@@ -147,7 +147,14 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     override fun onResume() {
         super.onResume()
+        clearStatisticView()
         inAppPurchaseContainer.initDrawer(this)
+        if (intent.getBooleanExtra("buy",false)){
+            intent.removeExtra("buy")
+            inAppPurchaseContainer.purchase(this, selectedExam)
+            App.releaseChapterComponent()
+            App.releaseTestingComponent()
+        }
     }
 
     private fun initStatusBar() {
@@ -436,6 +443,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         })
     }
 
+    override fun refreshStatistics() {
+        statisticsAnimSet.start()
+    }
+
     private fun clearStatisticView() {
         tvExamProgressCount.text = "Средний бал: 0"
         examProgressBar.progress = 0
@@ -525,7 +536,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         dialog.positiveButton(getString(R.string.buy), onClicked = {
             inAppPurchaseContainer.purchase(this, selectedExam)
         })
-        dialog.negativeButton(getString(R.string.cancel), onClicked = { id?.let { it -> showExam(it) } })
+        id?.let { if (it != search_layout.id && it != favourite_layout.id) dialog.negativeButton(getString(R.string.cancel), onClicked = { id.let { it -> showExam(it) } }) }
         dialog.show()
     }
 
@@ -544,7 +555,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 App.releaseTestingComponent()
                 presenter.getStatistics(selectedExam, false)
             }
-            SEARCH_INTENT -> App.releaseSearchComponent()
+            SEARCH_INTENT -> {
+                App.releaseSearchComponent()
+                presenter.getStatistics(selectedExam, false)
+            }
             FAVOURITE_INTENT -> {
                 App.releaseTestingComponent()
                 presenter.getStatistics(selectedExam, false)

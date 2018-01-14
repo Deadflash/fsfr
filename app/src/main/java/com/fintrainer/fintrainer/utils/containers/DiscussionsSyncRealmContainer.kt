@@ -181,7 +181,8 @@ class DiscussionsSyncRealmContainer {
                     val question = discussionsRealm?.where(DiscussionQuestionDto::class.java)?.equalTo("questionType", it.type)?.equalTo("questionId", it.code)?.findAll()
                     question?.let {
                         if (!it.isEmpty() && !it[0].commentList?.isEmpty()!!) {
-                            it[0]?.commentList?.let { hints.add(it[0]) }
+                            val questionDto = discussionsRealm?.copyFromRealm(it)
+                            questionDto?.let { it[0]?.commentList?.let { hints.add(it[0]) } }
                         }else{
                             val comment = DiscussionCommentDto()
                             comment.text = null

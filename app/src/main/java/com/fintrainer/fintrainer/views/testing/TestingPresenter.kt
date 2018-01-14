@@ -123,7 +123,6 @@ class TestingPresenter(private val realmContainer: RealmContainer,
 
     override fun realmConfigCallback(code: Int) {
         if (code == Constants.REALM_SUCCESS_CONNECT_CODE) {
-            println("ok")
             getTests(intentId, examId, chapter)
         } else {
             println("error")

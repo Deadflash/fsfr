@@ -151,6 +151,7 @@ class GoogleAuthContainer : GoogleApiClient.OnConnectionFailedListener, AuthCont
             account = result.signInAccount
             accountCallBack?.onSuccess(result.signInAccount!!)
             showUserInfo(account?.displayName!!, account?.photoUrl!!, true)
+            view?.refreshStatistics()
         } else {
             if (result.status.statusCode == AUTH_INTERNET_CONNECTION_ERROR) {
                 showInternetConnectionError()

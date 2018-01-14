@@ -81,7 +81,7 @@ class InAppPurchaseContainer {
                             return@QueryInventoryFinishedListener
                         }
                         purchases.run {
-                            put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, false))
+                            put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, inv.hasPurchase("full_basic_test")))
                             put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", inv.getSkuDetails("full_serial_1_test").description, inv.getSkuDetails("full_serial_1_test").price, inv.hasPurchase("full_serial_1_test")))
                             put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", inv.getSkuDetails("full_serial_2_test").description, inv.getSkuDetails("full_serial_2_test").price, inv.hasPurchase("full_serial_2_test")))
                             put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", inv.getSkuDetails("full_serial_3_test").description, inv.getSkuDetails("full_serial_3_test").price, inv.hasPurchase("full_serial_3_test")))
