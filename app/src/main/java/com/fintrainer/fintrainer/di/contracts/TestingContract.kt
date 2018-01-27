@@ -3,6 +3,7 @@ package com.fintrainer.fintrainer.di.contracts
 import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
+import com.fintrainer.fintrainer.structure.chapters.ChapterStatistics
 
 /**
  * Created by krotk on 24.10.2017.
@@ -17,6 +18,9 @@ interface TestingContract {
     }
 
     interface Presenter : IPresenter {
+        fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int)
+        fun deleteChapterStatistics(index: Int, chapter: Int)
+        fun getChapterStatistics(index: Int, chapter: Int): List<ChapterStatistics>?
         fun checkIsAuthenticatedUser(): Boolean
         fun loadTests(examId: Int, intentId: Int, chapter: Int)
         fun showTestsWithoutAuth()

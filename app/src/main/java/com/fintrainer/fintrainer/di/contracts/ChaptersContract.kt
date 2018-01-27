@@ -11,6 +11,8 @@ interface ChaptersContract {
     }
 
     interface Presenter : IPresenter {
+        fun checkChapterStatisticsForExist(index: Int, chapter: Int): Boolean
+        fun deleteChapterStatistics(index: Int, chapter: Int)
         fun loadChapters(examId: Int)
     }
 }

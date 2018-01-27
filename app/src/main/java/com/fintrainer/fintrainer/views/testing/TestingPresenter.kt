@@ -5,6 +5,7 @@ import com.fintrainer.fintrainer.di.contracts.TestingContract
 import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.structure.TestingResultsDto
+import com.fintrainer.fintrainer.structure.chapters.ChapterStatistics
 import com.fintrainer.fintrainer.utils.Constants
 import com.fintrainer.fintrainer.utils.Constants.CHAPTER_INTENT
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
@@ -32,11 +33,12 @@ class TestingPresenter(private val realmContainer: RealmContainer,
     private var failedTests = mutableListOf<TestingDto>()
     private val results: TestingResultsDto = TestingResultsDto(0, 0, 0, 0, 0)
     private val worstChapters = mutableMapOf<Int, Int>()
-    private var isShown: Boolean = false
+    //    private var isShown: Boolean = false
     private var account: GoogleSignInAccount? = null
     private var examId: Int? = null
     private var intentId: Int? = null
     private var chapter: Int? = null
+    private var chapterStatistics: List<ChapterStatistics>? = null
 
     override fun bind(iView: IView) {
         view = iView as TestingContract.View
@@ -62,7 +64,7 @@ class TestingPresenter(private val realmContainer: RealmContainer,
                             }
                         }
                     })
-                }else{
+                } else {
                     showTestsWithoutAuth()
                     view?.showNeedAuth()
                 }
@@ -76,6 +78,18 @@ class TestingPresenter(private val realmContainer: RealmContainer,
                 view?.showTest(tests)
             }
         }
+    }
+
+    override fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int) {
+        realmContainer.addChapterStatisticsForChapter(code, index, clickedAnswer, chapter)
+    }
+
+    override fun deleteChapterStatistics(index: Int, chapter: Int) {
+        realmContainer.deleteChapterStatistics(index, chapter)
+    }
+
+    override fun getChapterStatistics(index: Int, chapter: Int): List<ChapterStatistics>? {
+        return realmContainer.getChapterStatisticsForExam(index, chapter)
     }
 
     override fun checkIsAuthenticatedUser(): Boolean = authContainer.isAuthenticated()
@@ -97,10 +111,37 @@ class TestingPresenter(private val realmContainer: RealmContainer,
             }
             uiThread {
                 if (intentId != EXAM_INTENT) {
-                    if (account == null) {
-                        view?.showTest(tests)
+                    if (intentId == CHAPTER_INTENT) {
+                        doAsync {
+                            chapterStatistics = realmContainer.getChapterStatisticsForExam(examId!!, chapter!!)
+                            chapterStatistics.let {
+                                for (i in 0 until tests.size) {
+                                    it?.forEach(action = { chapterStatistics ->
+                                        if (tests[i].code.equals(chapterStatistics.code)) {
+                                            tests[i].clicked = true
+                                            chapterStatistics.clickedAnswer?.let {
+                                                tests[i].rightAnswer = tests[i].answers?.get(it)?.status!!
+                                                tests[i].answers?.get(it)?.clicked = true
+                                                updateTestStatistics(tests[i].answers?.get(it)?.status!!, tests[i].weight!!, tests[i].chapter!!, i)
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                            uiThread {
+                                if (account == null) {
+                                    view?.showTest(tests)
+                                } else {
+                                    loadHints()
+                                }
+                            }
+                        }
                     } else {
-                        loadHints()
+                        if (account == null) {
+                            view?.showTest(tests)
+                        } else {
+                            loadHints()
+                        }
                     }
                 } else {
                     view?.showTest(tests)
@@ -138,7 +179,8 @@ class TestingPresenter(private val realmContainer: RealmContainer,
         } else {
             failedTests.add(tests[testPosition])
             results.wrong = results.wrong + 1
-            worstChapters.put(chapter, if (worstChapters[chapter] == null) 1 else worstChapters[chapter]?.plus(1) ?: 0)
+            worstChapters.put(chapter, if (worstChapters[chapter] == null) 1 else worstChapters[chapter]?.plus(1)
+                    ?: 0)
         }
     }
 
@@ -176,10 +218,10 @@ class TestingPresenter(private val realmContainer: RealmContainer,
                 results.worthChapter = chapter.key
             }
         }
-        if (!isShown) {
-            isShown = true
-            view?.showResults(results)
-        }
+//        if (!isShown) {
+//            isShown = true
+        view?.showResults(results)
+//        }
     }
 
     override fun saveTestsResult(intentId: Int, weight: Int, testType: Int, rightAnswers: Int) {

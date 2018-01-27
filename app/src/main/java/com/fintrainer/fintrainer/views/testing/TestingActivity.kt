@@ -85,7 +85,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun showNeedAuth() {
         val dialog = alert(getString(R.string.need_auth_message), getString(R.string.authentication))
-        dialog.okButton {  }
+        dialog.okButton { }
         dialog.show()
     }
 
@@ -115,11 +115,20 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
 
     override fun showResults(results: TestingResultsDto) {
         if (tests != null) {
-            finish()
-            startActivityForResult<ResultActivity>(RESULT_INTENT, "weight" to results.weight,
-                    "right" to results.right, "wrong" to results.wrong, "worthChapter" to results.worthChapter,
-                    "intentId" to intent.getIntExtra("intentId", -1), "standaloned" to intent.getBooleanExtra("standaloned", false),
-                    "testType" to (tests!![0].type ?: 0), "purchased" to intent.getBooleanExtra("purchased", false))
+            val dialog = alert("Вы ответили на все вопросы! Показать результаты?", "Показать результаты")
+            dialog.positiveButton("Результаты", onClicked = {
+                if (intent.getIntExtra("intentId", -1) == CHAPTER_INTENT) {
+                    presenter.deleteChapterStatistics(tests!![0].type!!, tests!![0].chapter!!)
+                }
+                finish()
+                startActivityForResult<ResultActivity>(RESULT_INTENT, "weight" to results.weight,
+                        "right" to results.right, "wrong" to results.wrong, "worthChapter" to results.worthChapter,
+                        "intentId" to intent.getIntExtra("intentId", -1), "standaloned" to intent.getBooleanExtra("standaloned", false),
+                        "testType" to (tests!![0].type
+                                ?: 0), "purchased" to intent.getBooleanExtra("purchased", false))
+            })
+            dialog.negativeButton("Позже", onClicked = {})
+            dialog.show()
         }
     }
 
@@ -169,7 +178,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        if (intent.getIntExtra("intentId", -1) == EXAM_INTENT){
+        if (intent.getIntExtra("intentId", -1) == EXAM_INTENT) {
             menu?.getItem(0)?.isVisible = false
             menu?.getItem(1)?.isVisible = false
         }
@@ -195,7 +204,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
                         "purchased" to intent.getBooleanExtra("purchased", false),
                         "questionCode" to (tests?.get(currentPagerPosition)?.code.toString()),
                         "testType" to (tests?.get(currentPagerPosition)?.type ?: -1))
-            }else{
+            } else {
                 showNeedAuth()
             }
             true
@@ -213,8 +222,18 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        setResult(Activity.RESULT_OK)
+        if (intent.getIntExtra("intentId", -1) != CHAPTER_INTENT && intent.getIntExtra("intentId", -1) != FAILED_TESTS_INTENT) {
+            val dialog = alert("Если вы выйдете из теста, то весь текущий прогресс будет потерян!", "Выход")
+            dialog.positiveButton("выйти", onClicked = {
+                super.onBackPressed()
+                setResult(Activity.RESULT_OK)
+            })
+            dialog.negativeButton("остаться", onClicked = {})
+            dialog.show()
+        } else {
+            super.onBackPressed()
+            setResult(Activity.RESULT_OK)
+        }
     }
 
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {

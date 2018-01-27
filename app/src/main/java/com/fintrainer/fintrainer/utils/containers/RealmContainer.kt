@@ -1,6 +1,7 @@
 package com.fintrainer.fintrainer.utils.containers
 
 import com.fintrainer.fintrainer.structure.*
+import com.fintrainer.fintrainer.structure.chapters.ChapterStatistics
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
@@ -18,8 +19,9 @@ class RealmContainer {
     private val fk2 = "{b����\\u0002"
 
     private lateinit var statisticConf: RealmConfiguration
-    private var discussionsConfig: RealmConfiguration? = null
-    private var discussionsRealm: Realm? = null
+    private lateinit var chapterStatisticsConf: RealmConfiguration
+//    private var discussionsConfig: RealmConfiguration? = null
+//    private var discussionsRealm: Realm? = null
 
     fun initRealm() {
         val config = RealmConfiguration.Builder()
@@ -32,6 +34,14 @@ class RealmContainer {
 
 //        Realm.compactRealm(config);
         Realm.setDefaultConfiguration(config)
+    }
+
+    fun initChapterStatisticsConf() {
+        chapterStatisticsConf = RealmConfiguration.Builder()
+                .name("csc")
+                .modules(ChapterStatisticsModule())
+                .schemaVersion(1)
+                .build()
     }
 
     fun initStatisticsRealm() {
@@ -51,7 +61,8 @@ class RealmContainer {
             Realm.getInstance(statisticConf).use {
                 favouriteQuestionsCount = it.where(FavouriteQuestionsDto::class.java).equalTo("type", examId).count().toInt()
             }
-            return ExamStatisticAndInfo(getAverageGrade(examId), getAverageRightAnswersCount(examId), chapterCount ?: 0, questionsCount ?: 0, favouriteQuestionsCount ?: 0)
+            return ExamStatisticAndInfo(getAverageGrade(examId), getAverageRightAnswersCount(examId), chapterCount
+                    ?: 0, questionsCount ?: 0, favouriteQuestionsCount ?: 0)
 
         }
     }
@@ -259,9 +270,68 @@ class RealmContainer {
         }
     }
 
-    @RealmModule(classes = arrayOf(ExamDto::class, TestingDto::class, ChapterRealm::class, AnswersDto::class))
+    fun getChapterStatisticsForExam(index: Int, chapter: Int): List<ChapterStatistics>? {
+        var chapterStatistics: List<ChapterStatistics>? = emptyList()
+        Realm.getInstance(chapterStatisticsConf).use {
+            chapterStatistics = it.copyFromRealm(it.where(ChapterStatistics::class.java)
+                    .equalTo("index", index)
+                    .equalTo("chapter", chapter)
+                    .findAll())
+        }
+        return chapterStatistics
+    }
+
+    fun addChapterStatisticsForChapter(code: String, index: Int, clickedAnswer: Int, chapter: Int) {
+        Realm.getInstance(chapterStatisticsConf).use {
+            it.executeTransaction({ realm ->
+                var chapterStatistics = realm.where(ChapterStatistics::class.java)
+                        .equalTo("index", index)
+                        .equalTo("chapter", chapter)
+                        .equalTo("code", code)
+                        .findFirst()
+
+                if (chapterStatistics == null) {
+                    chapterStatistics = ChapterStatistics()
+                }
+                chapterStatistics.chapter = chapter
+                chapterStatistics.index = index
+                chapterStatistics.clickedAnswer = clickedAnswer
+                chapterStatistics.code = code
+
+                realm.copyToRealm(chapterStatistics)
+            })
+        }
+    }
+
+    fun checkChapterStatisticForExist(index: Int, chapter: Int): Boolean {
+        var isExist = false
+        Realm.getInstance(chapterStatisticsConf).use {
+            isExist = it.where(ChapterStatistics::class.java)
+                    .equalTo("index", index)
+                    .equalTo("chapter", chapter).count() > 0
+        }
+        return isExist
+    }
+
+    fun deleteChapterStatistics(index: Int, chapter: Int) {
+        Realm.getInstance(chapterStatisticsConf).use {
+            it.executeTransaction({ realm ->
+                val chapterStatistics = realm.where(ChapterStatistics::class.java)
+                        .equalTo("index", index)
+                        .equalTo("chapter", chapter)
+                        .findAll()
+
+                chapterStatistics?.deleteAllFromRealm()
+            })
+        }
+    }
+
+    @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class)])
     private inner class Default
 
-    @RealmModule(classes = arrayOf(CorrectedTestDto::class, AverageGradeStatisticDto::class, FavouriteQuestionsDto::class))
-    inner class Statistics
+    @RealmModule(classes = [(CorrectedTestDto::class), (AverageGradeStatisticDto::class), (FavouriteQuestionsDto::class)])
+    private inner class Statistics
+
+    @RealmModule(classes = [(ChapterStatistics::class)])
+    private inner class ChapterStatisticsModule
 }

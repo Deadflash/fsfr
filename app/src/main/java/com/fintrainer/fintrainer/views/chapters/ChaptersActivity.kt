@@ -17,6 +17,7 @@ import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import kotlinx.android.synthetic.main.activity_chapters.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.startActivityForResult
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ class ChaptersActivity : BaseActivity(), ChaptersContract.View, ChaptersAdapter.
     @Inject
     lateinit var presenter: ChaptersPresenter
 
-    private lateinit var tests: List<TestingDto>
+//    private lateinit var tests: List<TestingDto>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,24 +44,41 @@ class ChaptersActivity : BaseActivity(), ChaptersContract.View, ChaptersAdapter.
 
     override fun showChapters(chapters: List<ChapterRealm>) {
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = ChaptersAdapter(chapters,this)
+        recycler.adapter = ChaptersAdapter(chapters, this)
         recycler.clearAnimation()
         recycler.visibility = View.VISIBLE
         recycler.animate()
     }
 
     override fun onChapterSelected(chapter: Int) {
-        startActivityForResult<TestingActivity>(CHAPTER_INTENT,"intentId" to CHAPTER_INTENT ,"examId" to intent.getIntExtra("examId",0),"chapter" to chapter)
+        if (presenter.checkChapterStatisticsForExist(intent.getIntExtra("examId", 0), chapter)) {
+            val dialog = alert("В прошлый раз вы не завершили прохождение главы $chapter. Хотите продолжить или начать новый тест?","Глава $chapter")
+            dialog.positiveButton("продолжить", onClicked = {
+                startChapterTest(chapter)
+            })
+            dialog.negativeButton("новый тест",onClicked = {
+                presenter.deleteChapterStatistics(intent.getIntExtra("examId", 0),chapter)
+                startChapterTest(chapter)
+            })
+            dialog.show()
+        } else {
+            startChapterTest(chapter)
+        }
+    }
+
+    private fun startChapterTest(chapter: Int) {
+        startActivityForResult<TestingActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to intent.getIntExtra("examId", 0), "chapter" to chapter)
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CHAPTER_INTENT){
+        if (requestCode == CHAPTER_INTENT) {
             App.releaseTestingComponent()
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId){
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
         android.R.id.home -> {
             onBackPressed()
             true

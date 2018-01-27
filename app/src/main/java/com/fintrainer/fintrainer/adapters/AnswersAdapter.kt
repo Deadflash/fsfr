@@ -56,6 +56,9 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
                     if (intentId != EXAM_INTENT) {
                         iAnswers.refreshTabLayout()
                     }
+                    if (intentId == CHAPTER_INTENT){
+                        iAnswers.addChapterStatistics(test.type!!,test.code!!,test.chapter!!,position)
+                    }
                 } else {
                     iAnswers.onAnswerClicked()
                 }
@@ -93,5 +96,6 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
         fun onAnswerClicked()
         fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int)
         fun refreshTabLayout()
+        fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int)
     }
 }

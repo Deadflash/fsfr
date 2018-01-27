@@ -27,10 +27,15 @@ class ChaptersPresenter(private val realmContainer: RealmContainer) : ChaptersCo
                     view?.showChapters(chapters)
                 }
             }
-        }else{
+        } else {
             view?.showChapters(chapters)
         }
     }
+
+    override fun deleteChapterStatistics(index: Int, chapter: Int) = realmContainer.deleteChapterStatistics(index, chapter)
+
+    override fun checkChapterStatisticsForExist(index: Int, chapter: Int): Boolean =
+            realmContainer.checkChapterStatisticForExist(index, chapter)
 
     override fun unBind() {
         view = null

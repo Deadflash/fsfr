@@ -107,6 +107,7 @@ class App : Application() {
         appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
         appComponent.inject(this)
         realmContainer.initRealm()
+        realmContainer.initChapterStatisticsConf()
         realmContainer.initStatisticsRealm()
 
     }

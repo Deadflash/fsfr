@@ -3,13 +3,10 @@ package com.fintrainer.fintrainer.views.testing.fragments
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.view.ViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import android.widget.ScrollView
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.AnswersAdapter
-import com.fintrainer.fintrainer.structure.DiscussionCommentDto
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_FRAGMENT_TAG
@@ -113,6 +110,10 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
                 }
             }
         }
+    }
+
+    override fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int) {
+        presenter.addChapterStatistics(index,code,chapter,clickedAnswer)
     }
 
     override fun refreshTabLayout() {
