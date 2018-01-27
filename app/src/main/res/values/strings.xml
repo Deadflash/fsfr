@@ -58,4 +58,34 @@
     <string name="trial_search_message">В выбранной версии экзамена режим \"Избранное\" и поиск по вопросам недоступен.\n\nДля снятия всех ограничений в текущем экзамене купите полную версию.</string>
     <string name="buy">Купить</string>
     <string name="cancel">Пропустить</string>
+    <string name="pref_favourite">Избранное</string>
+    <string name="pref_statistics">Статистика</string>
+    <string name="pref_other">Прочее</string>
+    <string name="shuffle_answers_description">Перемешивание ответов во всех режимах</string>
+    <string name="add_wrong_answers_to_favourite">Автодобавление в избранное</string>
+    <string name="add_wrong_answers_to_favourite_description">При неправильном ответе, вопрос добавится в избранное</string>
+    <string name="remove_right_answers_from_favourite">Автоудаление из избранного</string>
+    <string name="remove_right_answers_from_favourite_description">При правильном ответе вопрос удалится из избранного</string>
+    <string name="remove_statistics">Сбросить статистику</string>
+    <string name="clear_favourite">Очистить \"Избранное\"</string>
+    <string name="clear_favourite_description">Удаление всех вопросов из избранного в текущем типе экзамена</string>
+    <string name="remove_statistics_description">Сброс статистики в текущем типе экзамена</string>
+    <string name="shuffle_answers">Перемешать ответы</string>
+    <string name="like_description">Напишите, что бы вы хотели улучшить в приложении</string>
+    <string name="info_description">Описание приложения</string>
+    <string name="info">Информация</string>
+    <string name="clear_favourite_dialog">Вы действительно хотите удалить все вопросы из избранного</string>
+    <string name="clear_statistic_dialog">Вы действительно хотите очистить статистику</string>
+    <string name="clear_base_exam_description">\  базового экзамна?</string>
+    <string name="clear_serial_exam_description">\  серии\" экзамена?</string>
+    <string name="favourite_cleared">Все вопросы удалены</string>
+    <string name="statistics_cleared">Статистика сброшена</string>
+    <string name="statistics_is_empty">Статистики еще нет</string>
+    <string name="favourite_is_empty">В избранном нет вопросов</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="ok">Ок</string>
+    <string name="programDescription">- В режиме \"Экзамен\" вам необходимо набрать минимум 80 баллов для успешного завершения экзамена. Вопросы подбираются случайным образом на общую сумму в 100 баллов.\n\n- В режиме \"Тренировка\" вам будет предложено 100 случайных вопросов, также будут показаны правильные ответы.\n\n- В режиме \"По главам\" вам будут предложены все вопросы выбранной главы, также будут показаны правильные ответы.\n\n- В режиме \"Поиск по вопросу\" вам будут показаны правильные ответы на все вопросы с возможностью найти вопрос по ключевым словам.</string>
+
+
 </resources>

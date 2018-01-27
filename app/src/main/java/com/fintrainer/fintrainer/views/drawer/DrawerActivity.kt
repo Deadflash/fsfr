@@ -42,6 +42,7 @@ import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_7
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
+import com.fintrainer.fintrainer.utils.Constants.SETTINGS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
 import com.fintrainer.fintrainer.utils.containers.InAppPurchaseContainer
@@ -49,6 +50,7 @@ import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.chapters.ChaptersActivity
 import com.fintrainer.fintrainer.views.search.SearchActivity
+import com.fintrainer.fintrainer.views.settings.Settings
 import com.fintrainer.fintrainer.views.testing.TestingActivity
 import com.readystatesoftware.systembartint.SystemBarTintManager
 import com.squareup.picasso.Picasso
@@ -149,7 +151,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         super.onResume()
         clearStatisticView()
         inAppPurchaseContainer.initDrawer(this)
-        if (intent.getBooleanExtra("buy",false)){
+        if (intent.getBooleanExtra("buy", false)) {
             intent.removeExtra("buy")
             inAppPurchaseContainer.purchase(this, selectedExam)
             App.releaseChapterComponent()
@@ -463,8 +465,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         tvTrainingProgressCount.text = "В среднем ${trainingProgress.toString() ?: "0"} балов"
         trainingProgressBar.progress = trainingProgress ?: 0
         tvChaptersProgressCount.text = "Глав: ${chaptersCountProgress.toString() ?: "0"}"
-        tvQuestionsProgressCount.text = "Всего вопросов: ${questionsCountProgress.toString() ?: "0"}"
-        tvFavouriteProgressCount.text = "Добавлено ${favouriteCountProgress.toString() ?: "0"} вопросов"
+        tvQuestionsProgressCount.text = "Всего вопросов: ${questionsCountProgress.toString()
+                ?: "0"}"
+        tvFavouriteProgressCount.text = "Добавлено ${favouriteCountProgress.toString()
+                ?: "0"} вопросов"
     }
 
     private fun setupClickListeners() {
@@ -571,6 +575,9 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                     auth.onAuthResult(requestCode, resultCode, data!!)
                 }
             }
+            SETTINGS_INTENT -> {
+                presenter.getStatistics(selectedExam, false)
+            }
             10001 -> {
                 data?.let { inAppPurchaseContainer.handlePurchaseResult(requestCode, resultCode, it) }
             }
@@ -626,6 +633,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 true
             }
             R.id.nav_options -> {
+                startActivityForResult<Settings>(SETTINGS_INTENT)
                 true
             }
             else -> return false

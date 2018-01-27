@@ -22,9 +22,9 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder?.recycler?.layoutManager = LinearLayoutManager(holder?.itemView?.context)
         holder?.recycler?.adapter = AnswersAdapter(object : AnswersAdapter.IAnswers {
-            override fun refreshTabLayout() {
+            override fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int) {}
 
-            }
+            override fun refreshTabLayout() {}
 
             override fun onAnswerClicked() {}
 

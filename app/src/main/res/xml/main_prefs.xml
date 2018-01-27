@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/pref_favourite"
+        android:key="pref_key_storage_settings">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="key_add_wrong_answers_to_favourite"
+        android:summary="@string/add_wrong_answers_to_favourite_description"
+        android:title="@string/add_wrong_answers_to_favourite" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="key_remove_right_answers_from_favourite"
+        android:summary="@string/remove_right_answers_from_favourite_description"
+        android:title="@string/remove_right_answers_from_favourite" />
+
+        <Preference
+            android:key="key_clear_favourite"
+            android:summary="@string/clear_favourite_description"
+            android:title="@string/clear_favourite" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_statistics"
+        android:key="pref_key_storage_settings">
+
+    <Preference
+        android:key="key_remove_statistics"
+        android:summary="@string/remove_statistics_description"
+        android:title="@string/remove_statistics" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_other"
+        android:key="pref_key_storage_settings">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="key_shuffle_answers"
+        android:summary="@string/shuffle_answers_description"
+        android:title="@string/shuffle_answers" />
+
+        <Preference
+            android:key="key_like"
+            android:summary="@string/like_description"
+            android:title="@string/like" />
+
+        <Preference
+            android:key="key_information"
+            android:summary="@string/info_description"
+            android:title="@string/info" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
