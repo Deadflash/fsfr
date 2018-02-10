@@ -68,27 +68,27 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
             }
         }
 
-        val comment = if (!presenter.getHints().isEmpty()) presenter.getHints()[position] else null
-        if (comment?.text != null) {
-            solutionCardView.visibility = View.VISIBLE
-            tvSolution.text = comment.text
-
-            showHintLayout.onClick {
-                if (solutionLayout.visibility == View.VISIBLE) {
-                    solutionLayout.visibility = View.GONE
-                    tvShowHint.text = getString(R.string.show_solution)
-                    ivHintIndicator.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp)
-
-                } else {
-                    solutionLayout.visibility = View.VISIBLE
-                    tvShowHint.text = getString(R.string.hide_hint)
-                    ivHintIndicator.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp)
-                }
-                scrollView.post({ scrollView.fullScroll(View.FOCUS_DOWN) })
-            }
-        } else {
-            solutionCardView.visibility = View.GONE
-        }
+//        val comment = if (!presenter.getHints().isEmpty()) presenter.getHints()[position] else null
+//        if (comment?.text != null) {
+//            solutionCardView.visibility = View.VISIBLE
+//            tvSolution.text = comment.text
+//
+//            showHintLayout.onClick {
+//                if (solutionLayout.visibility == View.VISIBLE) {
+//                    solutionLayout.visibility = View.GONE
+//                    tvShowHint.text = getString(R.string.show_solution)
+//                    ivHintIndicator.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp)
+//
+//                } else {
+//                    solutionLayout.visibility = View.VISIBLE
+//                    tvShowHint.text = getString(R.string.hide_hint)
+//                    ivHintIndicator.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp)
+//                }
+//                scrollView.post({ scrollView.fullScroll(View.FOCUS_DOWN) })
+//            }
+//        } else {
+//            solutionCardView.visibility = View.GONE
+//        }
     }
 
     override fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int) {
