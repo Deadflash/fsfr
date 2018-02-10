@@ -633,7 +633,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 true
             }
             R.id.nav_options -> {
-                startActivityForResult<Settings>(SETTINGS_INTENT)
+                startActivityForResult<Settings>(SETTINGS_INTENT, "type" to selectedExam)
                 true
             }
             else -> return false

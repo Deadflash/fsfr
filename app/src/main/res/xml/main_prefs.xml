@@ -45,15 +45,15 @@
         android:summary="@string/shuffle_answers_description"
         android:title="@string/shuffle_answers" />
 
-        <Preference
-            android:key="key_like"
-            android:summary="@string/like_description"
-            android:title="@string/like" />
+        <!--<Preference-->
+            <!--android:key="key_like"-->
+            <!--android:summary="@string/like_description"-->
+            <!--android:title="@string/like" />-->
 
-        <Preference
-            android:key="key_information"
-            android:summary="@string/info_description"
-            android:title="@string/info" />
+        <!--<Preference-->
+            <!--android:key="key_information"-->
+            <!--android:summary="@string/info_description"-->
+            <!--android:title="@string/info" />-->
 
     </PreferenceCategory>
 

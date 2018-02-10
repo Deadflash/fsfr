@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:orientation="horizontal"
+        android:background="@color/blue_grey_100"
         android:visibility="gone"
         android:id="@+id/recycler">
 

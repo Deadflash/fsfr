@@ -52,7 +52,7 @@ class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView 
             toast(R.string.error_realm_config)
         }
         REALM_AUTH_TOKEN_ERROR -> {
-            toast("Realm auth token error")
+            toast("token error")
         }
         else -> {
             toast(R.string.something_went_wrong)
@@ -67,7 +67,7 @@ class FragmentDiscussions : BaseFragment(), DiscussionsContract.DiscussionsView 
         if (discussions.isEmpty()) {
             tvEmptyDiscussions.visibility = View.VISIBLE
             recycler.visibility = View.GONE
-            toast("Discussions is empty")
+//            toast("Discussions is empty")
         } else {
             tvEmptyDiscussions.visibility = View.GONE
             recycler.visibility = View.VISIBLE

@@ -1,6 +1,5 @@
 package com.fintrainer.fintrainer.views.discussions
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -8,9 +7,6 @@ import android.view.MenuItem
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.di.contracts.DiscussionsContract
 import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
-import com.fintrainer.fintrainer.utils.Constants.REALM_AUTH_TOKEN_ERROR
-import com.fintrainer.fintrainer.utils.Constants.REALM_FAIL_CONNECT_CODE
-import com.fintrainer.fintrainer.utils.Constants.REALM_SUCCESS_CONNECT_CODE
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.BaseFragment
@@ -18,7 +14,6 @@ import com.fintrainer.fintrainer.views.discussions.fragments.FragmentAddDiscussi
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentComments
 import com.fintrainer.fintrainer.views.discussions.fragments.FragmentDiscussions
 import kotlinx.android.synthetic.main.toolbar_layout.*
-import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 class DiscussionsActivity : BaseActivity(), DiscussionsContract.View {

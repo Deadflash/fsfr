@@ -10,6 +10,7 @@ import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.SearchAdapter
 import com.fintrainer.fintrainer.di.contracts.SearchContract
 import com.fintrainer.fintrainer.structure.TestingDto
+import com.fintrainer.fintrainer.utils.containers.PicassoContainer
 import com.fintrainer.fintrainer.views.App
 import kotlinx.android.synthetic.main.activity_search.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
@@ -19,6 +20,9 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
 
     @Inject
     lateinit var presenter: SearchPresenter
+
+    @Inject
+    lateinit var picasso: PicassoContainer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +44,7 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
         progressBar.visibility = View.GONE
         search.visibility = View.VISIBLE
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = SearchAdapter(intent.getIntExtra("intentId", -1), questions)
+        recycler.adapter = SearchAdapter(intent.getIntExtra("intentId", -1), questions, picasso, this)
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 

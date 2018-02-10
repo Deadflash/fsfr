@@ -44,29 +44,37 @@
             android:layout_height="1dp"
             android:background="@color/blue_grey_300"/>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/discussion_comment_rate"
-            android:layout_width="wrap_content"
+            android:layout_width="115dp"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_gravity="end"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginRight="10dp">
 
             <ImageView
                 android:id="@+id/rate_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
                 android:src="@drawable/ic_thumb_up_black_24dp"
-                android:tint="@color/blue_grey_300" />
+                android:tint="@color/blue_grey_600" />
 
             <TextView
                 android:id="@+id/rate_view"
                 fontPath="fonts/RobotoRegular.ttf"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@id/rate_btn"
+                android:layout_toLeftOf="@+id/unrate_btn"
+                android:layout_toRightOf="@+id/rate_btn"
+                android:layout_toStartOf="@+id/unrate_btn"
                 android:gravity="center"
                 android:text="0"
                 android:textSize="@dimen/medium_text" />
@@ -75,10 +83,13 @@
                 android:id="@+id/unrate_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:padding="8dp"
                 android:src="@drawable/ic_thumb_down_black_24dp"
-                android:tint="@color/blue_grey_300" />
-        </LinearLayout>
+                android:tint="@color/blue_grey_600" />
+        </RelativeLayout>
 
     </LinearLayout>
 

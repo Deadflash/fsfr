@@ -46,7 +46,7 @@
     <ImageView
         android:id="@+id/ivQuestionImg"
         android:layout_width="match_parent"
-        android:src="@color/blue_grey_500"
+        android:visibility="gone"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:layout_height="200dp" />

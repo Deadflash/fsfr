@@ -49,15 +49,26 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
                         setAnswerLayoutBg(position, holder)
                     }
                     test.rightAnswer = test.answers?.get(position)?.status == true
-                    iAnswers.addTestProgress(test.answers?.get(position)?.status ?: false, test.weight ?: 0, test.chapter ?: 0)
+                    iAnswers.addTestProgress(test.answers?.get(position)?.status
+                            ?: false, test.weight ?: 0, test.chapter ?: 0)
                     if (intentId == EXAM_INTENT || intentId == -1) {
                         iAnswers.onAnswerClicked()
                     }
                     if (intentId != EXAM_INTENT) {
                         iAnswers.refreshTabLayout()
                     }
-                    if (intentId == CHAPTER_INTENT){
-                        iAnswers.addChapterStatistics(test.type!!,test.code!!,test.chapter!!,position)
+                    if (intentId == CHAPTER_INTENT) {
+                        iAnswers.addChapterStatistics(test.type!!, test.code!!, test.chapter!!, position)
+                    }
+                    if (intentId == TESTING_INTENT || intentId == CHAPTER_INTENT) {
+                        if (test.answers?.get(position)?.status != true) {
+                            iAnswers.autoAddToFavourite()
+                        }
+                    }
+                    if (intentId == TESTING_INTENT || intentId == CHAPTER_INTENT || intentId == FAVOURITE_INTENT) {
+                        if (test.answers?.get(position)?.status == true) {
+                            iAnswers.autoRemoveFromFavourite()
+                        }
                     }
                 } else {
                     iAnswers.onAnswerClicked()
@@ -97,5 +108,7 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
         fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int)
         fun refreshTabLayout()
         fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int)
+        fun autoAddToFavourite()
+        fun autoRemoveFromFavourite()
     }
 }

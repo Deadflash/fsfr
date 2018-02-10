@@ -204,8 +204,16 @@ class TestingPresenter(private val realmContainer: RealmContainer,
 
     }
 
-    override fun removeFromFavourite() {
-
+    override fun removeFromFavourite(type: Int, index: Int) {
+        doAsync {
+            val isFavourite = realmContainer.checkQuestionIsFavouriteAsync(index, type)
+            if (isFavourite) {
+                realmContainer.autoRemoveFromFavourite(type, index)
+                uiThread {
+                    view?.showIsFavouriteQuestion(false)
+                }
+            }
+        }
     }
 
     override fun getFailedTests(): List<TestingDto> = failedTests

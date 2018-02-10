@@ -86,7 +86,7 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
                 }
                 scrollView.post({ scrollView.fullScroll(View.FOCUS_DOWN) })
             }
-        }else{
+        } else {
             solutionCardView.visibility = View.GONE
         }
     }
@@ -113,11 +113,19 @@ class TestingFragment : BaseFragment(), AnswersAdapter.IAnswers {
     }
 
     override fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int) {
-        presenter.addChapterStatistics(index,code,chapter,clickedAnswer)
+        presenter.addChapterStatistics(index, code, chapter, clickedAnswer)
     }
 
     override fun refreshTabLayout() {
         (activity as? TestingActivity)?.recycler?.adapter?.notifyDataSetChanged()
+    }
+
+    override fun autoAddToFavourite() {
+        (activity as TestingActivity).autoAddToFavourite()
+    }
+
+    override fun autoRemoveFromFavourite() {
+        (activity as TestingActivity).autoRemoveFromFavourite()
     }
 
     private fun checkIfClicked(position: Int): Int {

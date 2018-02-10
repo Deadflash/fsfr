@@ -61,7 +61,7 @@
     <string name="pref_favourite">Избранное</string>
     <string name="pref_statistics">Статистика</string>
     <string name="pref_other">Прочее</string>
-    <string name="shuffle_answers_description">Перемешивание ответов во всех режимах</string>
+    <string name="shuffle_answers_description">Перемешивание ответов в \"Экзамене\", \"Тренировке\" и Избранном</string>
     <string name="add_wrong_answers_to_favourite">Автодобавление в избранное</string>
     <string name="add_wrong_answers_to_favourite_description">При неправильном ответе, вопрос добавится в избранное</string>
     <string name="remove_right_answers_from_favourite">Автоудаление из избранного</string>
@@ -74,8 +74,8 @@
     <string name="like_description">Напишите, что бы вы хотели улучшить в приложении</string>
     <string name="info_description">Описание приложения</string>
     <string name="info">Информация</string>
-    <string name="clear_favourite_dialog">Вы действительно хотите удалить все вопросы из избранного</string>
-    <string name="clear_statistic_dialog">Вы действительно хотите очистить статистику</string>
+    <string name="clear_favourite_dialog">Вы действительно хотите удалить все вопросы из избранного \  </string>
+    <string name="clear_statistic_dialog">Вы действительно хотите очистить статистику \  </string>
     <string name="clear_base_exam_description">\  базового экзамна?</string>
     <string name="clear_serial_exam_description">\  серии\" экзамена?</string>
     <string name="favourite_cleared">Все вопросы удалены</string>

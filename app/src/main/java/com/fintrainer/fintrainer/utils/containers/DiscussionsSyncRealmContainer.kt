@@ -21,46 +21,46 @@ class DiscussionsSyncRealmContainer {
     private var discussionsConfig: RealmConfiguration? = null
     private var discussionsRealm: Realm? = null
 
-    fun createRealm() {
-        val myCredentials = SyncCredentials.usernamePassword("fcpunlimited@gmail.com", " 3535583q", false)
-        SyncUser.loginAsync(myCredentials, "http://91.240.84.213:9080/auth", object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
-            override fun onSuccess(user: SyncUser) {
-
-                val config = SyncConfiguration.Builder(user, "realm://91.240.84.213:9080" + Constants.REALM_SERVER_DISCUSSION_REALM)
-                        .schemaVersion(Constants.REALM_SERVER_SCHEMA_VERSION)
-                        .waitForInitialRemoteData()
-
-                        //.waitForRemoteInitialData()
-                        .build()
-                //               Realm.deleteRealm(config);
-                Realm.getInstanceAsync(config, object : Realm.Callback() {
-                    override fun onSuccess(incRealm: Realm) {
-//                        realm = incRealm
-                        val pm = user.permissionManager
-                        val condition = UserCondition.noExistingPermissions()
-                        val accessLevel = AccessLevel.WRITE
-                        val request = PermissionRequest(condition, "realm://91.240.84.213:9080" + Constants.REALM_SERVER_DISCUSSION_REALM, accessLevel)
-
-                        pm.applyPermissions(request, object : PermissionManager.ApplyPermissionsCallback {
-                            override fun onSuccess() {
-                                println("Hooray")
-                                // throw new RuntimeException("Horray");
-                            }
-
-                            override fun onError(error: ObjectServerError) {
-                                throw RuntimeException(error)
-                            }
-                        })
-                    }
-                })
-            }
-
-            override fun onError(error: ObjectServerError) {
-                throw RuntimeException(error)
-            }
-        })
-
-    }
+//    fun createRealm() {
+//        val myCredentials = SyncCredentials.usernamePassword("fcpunlimited@gmail.com", " 3535583q", false)
+//        SyncUser.loginAsync(myCredentials, "http://91.240.84.213:9080/auth", object : SyncUser.RequestCallback<SyncUser>, SyncUser.Callback {
+//            override fun onSuccess(user: SyncUser) {
+//
+//                val config = SyncConfiguration.Builder(user, "realm://91.240.84.213:9080" + Constants.REALM_SERVER_DISCUSSION_REALM)
+//                        .schemaVersion(Constants.REALM_SERVER_SCHEMA_VERSION)
+//                        .waitForInitialRemoteData()
+//
+//                        //.waitForRemoteInitialData()
+//                        .build()
+//                //               Realm.deleteRealm(config);
+//                Realm.getInstanceAsync(config, object : Realm.Callback() {
+//                    override fun onSuccess(incRealm: Realm) {
+////                        realm = incRealm
+//                        val pm = user.permissionManager
+//                        val condition = UserCondition.noExistingPermissions()
+//                        val accessLevel = AccessLevel.WRITE
+//                        val request = PermissionRequest(condition, "realm://91.240.84.213:9080" + Constants.REALM_SERVER_DISCUSSION_REALM, accessLevel)
+//
+//                        pm.applyPermissions(request, object : PermissionManager.ApplyPermissionsCallback {
+//                            override fun onSuccess() {
+//                                println("Hooray")
+//                                // throw new RuntimeException("Horray");
+//                            }
+//
+//                            override fun onError(error: ObjectServerError) {
+//                                throw RuntimeException(error)
+//                            }
+//                        })
+//                    }
+//                })
+//            }
+//
+//            override fun onError(error: ObjectServerError) {
+//                throw RuntimeException(error)
+//            }
+//        })
+//
+//    }
 
     fun initDiscussionsRealm(account: GoogleSignInAccount, realmCallBack: DiscussionRealmCallBack) {
         if (discussionsConfig == null) {

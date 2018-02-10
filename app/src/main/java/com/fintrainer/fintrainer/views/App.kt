@@ -109,6 +109,6 @@ class App : Application() {
         realmContainer.initRealm()
         realmContainer.initChapterStatisticsConf()
         realmContainer.initStatisticsRealm()
-
+        realmContainer.initSharedPrefrences(this)
     }
 }

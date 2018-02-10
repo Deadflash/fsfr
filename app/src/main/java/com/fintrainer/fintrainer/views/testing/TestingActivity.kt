@@ -2,7 +2,9 @@ package com.fintrainer.fintrainer.views.testing
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
@@ -50,6 +52,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     private var tests: List<TestingDto>? = null
     private var hints: List<DiscussionCommentDto>? = null
     private var menuItem: MenuItem? = null
+    private lateinit var sharedPreferences: SharedPreferences
 
     @State
     @JvmField
@@ -62,6 +65,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_testing)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         App.initTestingComponent()?.inject(this)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -186,6 +190,18 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         setFavouriteIcon(isFavourite)
 //        menu.getItem(1).icon = ContextCompat.getDrawable(this, if (isFavourite) R.drawable.ic_bookmark_white_24dp else R.drawable.ic_bookmark_border_white_24dp)
         return super.onPrepareOptionsMenu(menu)
+    }
+
+    fun autoAddToFavourite() {
+        if (sharedPreferences.getBoolean("key_add_wrong_answers_to_favourite", false)) {
+            checkIsFavourite(true)
+        }
+    }
+
+    fun autoRemoveFromFavourite() {
+        if (sharedPreferences.getBoolean("key_remove_right_answers_from_favourite", false)) {
+            presenter.removeFromFavourite(tests!![currentPagerPosition].type!!.toInt(), tests!![currentPagerPosition].index!!.toInt())
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

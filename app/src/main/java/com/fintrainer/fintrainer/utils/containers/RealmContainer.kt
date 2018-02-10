@@ -1,5 +1,8 @@
 package com.fintrainer.fintrainer.utils.containers
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.structure.chapters.ChapterStatistics
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
@@ -15,6 +18,8 @@ import java.util.*
  */
 class RealmContainer {
 
+    private lateinit var sharedPreferences: SharedPreferences
+
     private val fk = "�e�\\u001Dj�4\\u0016P\\u0003h:���aa"
     private val fk2 = "{b����\\u0002"
 
@@ -22,6 +27,10 @@ class RealmContainer {
     private lateinit var chapterStatisticsConf: RealmConfiguration
 //    private var discussionsConfig: RealmConfiguration? = null
 //    private var discussionsRealm: Realm? = null
+
+    fun initSharedPrefrences(context: Context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    }
 
     fun initRealm() {
         val config = RealmConfiguration.Builder()
@@ -147,7 +156,6 @@ class RealmContainer {
         var iterationCount = iterationCount
         val count = realmWithExams.where(TestingDto::class.java).equalTo("type", examId).count()
         if (count == 0L) {
-//            Snackbar.make(activity.findViewById(R.id.fragmentContainer), "Ошибка", BaseTransientBottomBar.LENGTH_SHORT).show()
             return emptyList()
         }
         val list = (1 until count).toList()
@@ -185,7 +193,7 @@ class RealmContainer {
                 } else {
                     testingDtos = it.copyFromRealm<TestingDto>(freeTests)
                 }
-                shuffleAnswers(testingDtos)
+//                shuffleAnswers(testingDtos)
                 return testingDtos
             }
         }
@@ -208,16 +216,19 @@ class RealmContainer {
                             .mapTo(questions) { testingDto -> it.copyFromRealm(testingDto) as TestingDto }
                 }
             }
+            shuffleAnswers(questions)
             return questions
         }
     }
 
     private fun shuffleAnswers(testingDtos: List<TestingDto>?) {
-//        if (sharedPreferences.getBoolean("key_shuffle_answers", false)) {
-//            for (testingDto in testingDtos) {
-//                Collections.shuffle(testingDto.answers!!)
-//            }
-//        }
+        if (sharedPreferences.getBoolean("key_shuffle_answers", false)) {
+            if (testingDtos != null) {
+                for (testingDto in testingDtos) {
+                    testingDto.answers!!.shuffle()
+                }
+            }
+        }
     }
 
     fun getAllQuestionsAsync(examId: Int): List<TestingDto> {
@@ -239,6 +250,38 @@ class RealmContainer {
             it.copyToRealm(statistics)
             it.commitTransaction()
         }
+    }
+
+    fun clearStatistics(examType: Int): String {
+        var message = ""
+        Realm.getInstance(statisticConf).use {
+            it.executeTransaction {
+                val results = it.where(AverageGradeStatisticDto::class.java).equalTo("testType", examType).findAll()
+                message = if (results.isEmpty()) {
+                    "Статистика не найдена"
+                } else {
+                    results.deleteAllFromRealm()
+                    "Статистика очищена"
+                }
+            }
+        }
+        return message
+    }
+
+    fun clearFavourite(examType: Int): String {
+        var message = ""
+        Realm.getInstance(statisticConf).use {
+            it.executeTransaction {
+                val results = it.where(FavouriteQuestionsDto::class.java).equalTo("type", examType).findAll()
+                if (results.isEmpty()) {
+                    message = "В избранном ничего не найдено"
+                } else {
+                    results.deleteAllFromRealm()
+                    message = "Избранное очищено"
+                }
+            }
+        }
+        return message
     }
 
     fun checkQuestionIsFavouriteAsync(index: Int, type: Int): Boolean {
@@ -266,6 +309,17 @@ class RealmContainer {
                         questionToRemove.deleteAllFromRealm()
                     }
                 })
+            }
+        }
+    }
+
+    fun autoRemoveFromFavourite(type: Int, index: Int) {
+        Realm.getInstance(statisticConf).use {
+            it.executeTransaction {
+                val results = it.where(FavouriteQuestionsDto::class.java).equalTo("type", type).equalTo("index", index).findAll()
+                if (!results.isEmpty()) {
+                    results.deleteAllFromRealm()
+                }
             }
         }
     }

@@ -4,7 +4,8 @@
     android:id="@+id/mainMenuCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="3dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
     android:paddingBottom="4dp"
     android:paddingTop="4dp"
     app:cardCornerRadius="10dp"
@@ -63,7 +64,7 @@
                 android:id="@+id/ivStartDiscussion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:padding="8dp"
                 android:paddingLeft="8dp"
                 android:src="@drawable/ic_question_answer_white_24dp"
                 android:tint="@color/blue_grey_600" />
@@ -96,7 +97,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
+                    android:padding="8dp"
                     android:src="@drawable/ic_thumb_up_black_24dp"
                     android:tint="@color/blue_grey_600" />
 
@@ -121,7 +122,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_margin="8dp"
+                    android:padding="8dp"
                     android:src="@drawable/ic_thumb_down_black_24dp"
                     android:tint="@color/blue_grey_600" />
             </RelativeLayout>

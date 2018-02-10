@@ -30,8 +30,8 @@ interface TestingContract {
         fun showResults()
         fun getFailedTests(): List<TestingDto>
         fun saveTestsResult(intentId: Int, weight: Int, testType: Int, rightAnswers: Int)
-        fun checkIsQuestionFavourite(index: Int, type: Int,chapter: Int, isAddRemoveAction: Boolean)
+        fun checkIsQuestionFavourite(index: Int, type: Int, chapter: Int, isAddRemoveAction: Boolean)
         fun addToFavourite()
-        fun removeFromFavourite()
+        fun removeFromFavourite(type: Int, index: Int)
     }
 }

@@ -1,5 +1,6 @@
 package com.fintrainer.fintrainer.adapters
 
+import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -9,12 +10,13 @@ import android.widget.Filter
 import android.widget.Filterable
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.structure.TestingDto
+import com.fintrainer.fintrainer.utils.containers.PicassoContainer
 import kotlinx.android.synthetic.main.item_search.view.*
 
 /**
  * Created by krotk on 23.10.2017.
  */
-class SearchAdapter(private val intentId: Int, private val questions: List<TestingDto>) : RecyclerView.Adapter<SearchAdapter.ViewHolder>(), Filterable {
+class SearchAdapter(private val intentId: Int, private val questions: List<TestingDto>, private val picasso: PicassoContainer, private val context: Context) : RecyclerView.Adapter<SearchAdapter.ViewHolder>(), Filterable {
 
     private val itemFilter: ItemFilter = ItemFilter()
     private var filteredQuestions: List<TestingDto> = questions
@@ -22,6 +24,10 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder?.recycler?.layoutManager = LinearLayoutManager(holder?.itemView?.context)
         holder?.recycler?.adapter = AnswersAdapter(object : AnswersAdapter.IAnswers {
+            override fun autoRemoveFromFavourite() {}
+
+            override fun autoAddToFavourite() {}
+
             override fun addChapterStatistics(index: Int, code: String, chapter: Int, clickedAnswer: Int) {}
 
             override fun refreshTabLayout() {}
@@ -31,10 +37,20 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
             override fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int) {}
         }, filteredQuestions[position], intentId)
 
+
+
         holder?.tvQuestion?.text = filteredQuestions[position].task ?: ""
         holder?.tvQuestionCode?.text = filteredQuestions[position].code ?: ""
+        holder?.ivQuestionImage?.visibility = View.GONE
 
-//        holder?.ivQuestionImage
+        filteredQuestions[position].image?.let {
+            context.resources?.getIdentifier(it, "drawable", context.packageName)?.let {
+                holder?.ivQuestionImage?.let { it1 ->
+                    picasso.loadImage(it1, it)
+                    it1.visibility = View.VISIBLE
+                }
+            }
+        }
     }
 
     override fun getItemCount(): Int = filteredQuestions.size
