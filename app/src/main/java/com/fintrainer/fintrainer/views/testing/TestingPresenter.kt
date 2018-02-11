@@ -68,7 +68,7 @@ class TestingPresenter(private val realmContainer: RealmContainer,
                     })
                 } else {
                     showTestsWithoutAuth()
-                    view?.showNeedAuth()
+//                    view?.showNeedAuth()
                 }
             } else {
                 getTests(intentId, examId, chapter, purchased)

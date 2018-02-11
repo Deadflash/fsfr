@@ -7,6 +7,7 @@ import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -59,8 +60,12 @@ import kotlinx.android.synthetic.main.activity_drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.email
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.startActivityForResult
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 
@@ -117,20 +122,29 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     private val reverseDuration: Long = 200
     private val delayDuration: Long = 100
     private var translationX: Float = 0.0f
+    private lateinit var navView: View
+
+    private lateinit var customPrefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawer)
         App.initDrawerComponent()?.inject(this)
 
+        customPrefs = getSharedPreferences("customPrefs", 0)
+        currentExam = customPrefs.getInt("currentExam", 0)
+        if (currentExam > 6) {
+            currentExam = 0
+        }
+        selectedExam = currentExam
+
         val displayMetrics = DisplayMetrics()
         (applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(displayMetrics)
         translationX = -displayMetrics.widthPixels.toFloat()
 
         initStatusBar()
-        setupDrawer()
-
         setupNavigationView()
+        setupDrawer()
 
         setupClickListeners()
         setupCardViewAnimations()
@@ -139,6 +153,21 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         setupUserProgress()
         presenter.bind(this)
         presenter.getStatistics(selectedExam, true)
+
+        if (customPrefs.getBoolean("firstLaunch", true) && !auth.isAuthenticated()) {
+            customPrefs.edit().putBoolean("firstLaunch", false).apply()
+            val welcomeDialog = alert(Appcompat) {
+                title = "Добро пожаловать!"
+                message = "ФСФР Экзаменатор представляет собой бесплатное приложение для эффективной подготовки к сдаче экзаменов для получения квалификационного аттестата специалиста финансового рынка. \n\nХотите авторизироваться для получения возможности смотреть коментарии и задавать вопросы?"
+                positiveButton(getString(R.string.yes), onClicked = {
+                    login(navView)
+                })
+                negativeButton(getString(R.string.no)) {}
+            }.build()
+            welcomeDialog.setCanceledOnTouchOutside(false)
+            welcomeDialog.setCancelable(false)
+            welcomeDialog.show()
+        }
     }
 
     override fun onStart() {
@@ -182,6 +211,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 super.onDrawerClosed(drawerView)
                 if (currentExam != selectedExam) {
                     currentExam = selectedExam
+                    customPrefs.edit().putInt("currentExam", currentExam).apply()
                     cardViewReverseAnimSet.start()
                     presenter.getStatistics(selectedExam, true)
                     setupTitle()
@@ -197,22 +227,30 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     private fun setupNavigationView() {
 
         navigation_view.setNavigationItemSelectedListener(this)
-        val navView = navigation_view.getHeaderView(0)
-        navView?.ivLogout?.isClickable = !isAuthClicked
-        navView?.ivLogin?.isClickable = !isAuthClicked
-        navView?.ivLogout?.onClick {
+        navView = navigation_view.getHeaderView(0)
+        navView.ivLogout?.isClickable = !isAuthClicked
+        navView.ivLogin?.isClickable = !isAuthClicked
+        navView.ivLogout?.onClick {
             auth.logout()
             isAuthClicked = true
             navView.ivLogout?.isClickable = false
         }
-        navView?.ivLogin?.onClick {
-            auth.login()
-            isAuthClicked = true
-            navView.ivLogin?.isClickable = false
+        navView.ivLogin?.onClick {
+            login(navView)
+//            auth.login()
+//            isAuthClicked = true
+//            navView.ivLogin?.isClickable = false
         }
-        navigation_view.menu?.getItem(0)?.isChecked = true
+
+        navigation_view.menu?.getItem(currentExam)?.isChecked = true
 
         setupPurchasedIcons()
+    }
+
+    private fun login(navView: View) {
+        auth.login()
+        isAuthClicked = true
+        navView.ivLogin?.isClickable = false
     }
 
     fun setupPurchasedIcons() {
