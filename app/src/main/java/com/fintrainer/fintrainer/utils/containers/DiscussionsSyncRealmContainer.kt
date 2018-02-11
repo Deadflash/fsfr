@@ -86,16 +86,18 @@ class DiscussionsSyncRealmContainer {
 
     private fun getDiscussionsRealmInstance(realmInstanceCallback: RealmInstanceCallback) {
         if (discussionsRealm == null) {
-            Realm.getInstanceAsync(discussionsConfig, object : Realm.Callback() {
-                override fun onSuccess(realm: Realm?) {
-                    discussionsRealm = realm
-                    realmInstanceCallback.successCallback()
-                }
+            discussionsConfig?.let {
+                Realm.getInstanceAsync(it, object : Realm.Callback() {
+                    override fun onSuccess(realm: Realm?) {
+                        discussionsRealm = realm
+                        realmInstanceCallback.successCallback()
+                    }
 
-                override fun onError(exception: Throwable?) {
-                    realmInstanceCallback.errorCallBack()
-                }
-            })
+                    override fun onError(exception: Throwable?) {
+                        realmInstanceCallback.errorCallBack()
+                    }
+                })
+            }
         } else {
             realmInstanceCallback.successCallback()
         }
@@ -183,7 +185,7 @@ class DiscussionsSyncRealmContainer {
                         if (!it.isEmpty() && !it[0].commentList?.isEmpty()!!) {
                             val questionDto = discussionsRealm?.copyFromRealm(it)
                             questionDto?.let { it[0]?.commentList?.let { hints.add(it[0]) } }
-                        }else{
+                        } else {
                             val comment = DiscussionCommentDto()
                             comment.text = null
                             hints.add(comment)

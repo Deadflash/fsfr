@@ -131,19 +131,19 @@ class TestingPresenter(private val realmContainer: RealmContainer,
                                 }
                             }
                             uiThread {
-                                if (account == null) {
+//                                if (account == null) {
                                     view?.showTest(tests)
-                                } else {
-                                    loadHints()
-                                }
+//                                } else {
+//                                    loadHints()
+//                                }
                             }
                         }
                     } else {
-                        if (account == null) {
+//                        if (account == null) {
                             view?.showTest(tests)
-                        } else {
-                            loadHints()
-                        }
+//                        } else {
+//                            loadHints()
+//                        }
                     }
                 } else {
                     view?.showTest(tests)
@@ -168,6 +168,7 @@ class TestingPresenter(private val realmContainer: RealmContainer,
         if (code == Constants.REALM_SUCCESS_CONNECT_CODE) {
             getTests(intentId, examId, chapter, purchased)
         } else {
+            getTests(intentId, examId, chapter, purchased)
             println("error")
         }
     }

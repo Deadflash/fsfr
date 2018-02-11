@@ -18,6 +18,7 @@ import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
+import com.fintrainer.fintrainer.utils.containers.InAppPurchaseContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.drawer.DrawerActivity
@@ -39,6 +40,9 @@ class ResultActivity : BaseActivity() {
 
     @Inject
     lateinit var presenter: TestingPresenter
+
+    @Inject
+    lateinit var inAppPurchaseContainer: InAppPurchaseContainer
 
     private val progressLayoutAnim = ValueAnimator.ofFloat(0F, 1F)
     private var rightAnswers: Int? = null
@@ -63,10 +67,7 @@ class ResultActivity : BaseActivity() {
 
         val displayMetrics = DisplayMetrics()
         (applicationContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getMetrics(displayMetrics)
-        translationX = displayMetrics.widthPixels.toFloat()/2
-
-        setupAnimations()
-        startAnimation()
+        translationX = displayMetrics.widthPixels.toFloat() / 2
 
         rightAnswers = intent.getIntExtra("right", 0)
         wrongAnswers = intent.getIntExtra("wrong", 0)
@@ -76,6 +77,9 @@ class ResultActivity : BaseActivity() {
         testType = intent.getIntExtra("testType", 0)
         purchaised = intent.getBooleanExtra("purchased", false)
         weight = intent.getIntExtra("weight", 0)
+
+        setupAnimations()
+        startAnimation()
 
         resultProgressbar.max = rightAnswers!! + wrongAnswers!!
 
@@ -88,14 +92,15 @@ class ResultActivity : BaseActivity() {
 
         btShowFailedQuestions.onClick {
             finish()
-            startActivityForResult<TestingActivity>(FAILED_TESTS_INTENT,"intentId" to FAILED_TESTS_INTENT)
+            startActivityForResult<TestingActivity>(FAILED_TESTS_INTENT, "intentId" to FAILED_TESTS_INTENT)
         }
         btToMenu.onClick {
             onBackPressed()
         }
-        if (!isResultsSave && intentId == EXAM_INTENT || intentId == TESTING_INTENT){
+        if (!isResultsSave && intentId == EXAM_INTENT || intentId == TESTING_INTENT) {
             isResultsSave = true
-            presenter.saveTestsResult(intentId ?: -1,weight ?: -1,testType ?: -1,rightAnswers ?: -1)
+            presenter.saveTestsResult(intentId ?: -1, weight ?: -1, testType ?: -1, rightAnswers
+                    ?: -1)
         }
     }
 
@@ -105,7 +110,7 @@ class ResultActivity : BaseActivity() {
     }
 
     private fun setViews() {
-        if (wrongAnswers == 0){
+        if (wrongAnswers == 0) {
             btShowFailedQuestions.visibility = View.GONE
         }
         when (intentId) {
@@ -145,7 +150,7 @@ class ResultActivity : BaseActivity() {
         }
     }
 
-    private fun showAdvise(){
+    private fun showAdvise() {
         if (worthChapter ?: 0 > 0) {
             tvAdvise.text = "Советуем повторить $worthChapter главу"
         }
@@ -164,7 +169,8 @@ class ResultActivity : BaseActivity() {
 
             override fun onAnimationEnd(p0: Animator?) {
 
-                val resultProgressBarAnimator = ObjectAnimator.ofInt(resultProgressbar, "progress", 0, progressValue ?: 0)
+                val resultProgressBarAnimator = ObjectAnimator.ofInt(resultProgressbar, "progress", 0, progressValue
+                        ?: 0)
                 resultProgressBarAnimator.duration = 800
                 resultProgressBarAnimator.interpolator = DecelerateInterpolator()
                 resultProgressBarAnimator.addUpdateListener { tvResult.text = resultProgressBarAnimator.animatedValue.toString() }
@@ -189,7 +195,15 @@ class ResultActivity : BaseActivity() {
                         purchaseAnimator.interpolator = BounceInterpolator()
 
                         val animSet = AnimatorSet()
-                        animSet.playTogether(greetingAlphaAnimator, purchaseAnimator)
+                        if (purchaised != null) {
+                            if (!purchaised!! && !inAppPurchaseContainer.getAppMode()) {
+                                animSet.playTogether(greetingAlphaAnimator, purchaseAnimator)
+                            } else {
+                                animSet.play(greetingAlphaAnimator)
+                            }
+                        } else {
+                            animSet.play(greetingAlphaAnimator)
+                        }
                         animSet.start()
                     }
 

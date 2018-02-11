@@ -16,7 +16,7 @@ interface DiscussionsContract {
 
     interface DiscussionsView : IView {
         fun showDiscussions(discussions: List<DiscussionQuestionDto>, account: GoogleSignInAccount?)
-        fun realmStatus(code: Int)
+        fun realmStatus(code: Int): Any
         fun onSuccessRate()
     }
 

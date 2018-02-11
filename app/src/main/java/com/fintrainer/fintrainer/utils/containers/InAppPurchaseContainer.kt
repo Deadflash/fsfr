@@ -36,6 +36,9 @@ class InAppPurchaseContainer {
     private val purchases: SparseArray<PurchaseStructDto> = SparseArray()
     private var splash: SplashStartApp? = null
     private var drawer: DrawerInterface? = null
+    private var standaloneMode: Boolean = true
+
+    fun getAppMode(): Boolean = standaloneMode
 
     fun initSplash(splash: Splash) {
         this.splash = splash
@@ -91,6 +94,7 @@ class InAppPurchaseContainer {
                             put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", inv.getSkuDetails("full_serial_6_test").description, inv.getSkuDetails("full_serial_6_test").price, inv.hasPurchase("full_serial_6_test")))
                             put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", inv.getSkuDetails("full_serial_7_test").description, inv.getSkuDetails("full_serial_7_test").price, inv.hasPurchase("full_serial_7_test")))
                         }
+                        standaloneMode = false
                         Log.d(TAG, "Received purchases : $purchases")
                         splash?.startApp()
                     })
@@ -100,9 +104,31 @@ class InAppPurchaseContainer {
                 }
             })
             setPurchaseListener()
-        }else{
+        } else {
             splash?.startApp()
         }
+    }
+
+    fun queryInventory() {
+        mHelper?.queryInventoryAsync(true, Arrays.asList("full_basic_test", "full_serial_1_test", "full_serial_2_test", "full_serial_3_test", "full_serial_4_test", "full_serial_5_test", "full_serial_6_test", "full_serial_7_test"),
+                ArrayList(), IabHelper.QueryInventoryFinishedListener { result, inv ->
+            if (result.isFailure) {
+                Log.d(TAG, "Result is failure In-app Billing: " + result)
+//                splash?.startApp()
+                return@QueryInventoryFinishedListener
+            }
+            purchases.run {
+                put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, inv.hasPurchase("full_basic_test")))
+                put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", inv.getSkuDetails("full_serial_1_test").description, inv.getSkuDetails("full_serial_1_test").price, inv.hasPurchase("full_serial_1_test")))
+                put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", inv.getSkuDetails("full_serial_2_test").description, inv.getSkuDetails("full_serial_2_test").price, inv.hasPurchase("full_serial_2_test")))
+                put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", inv.getSkuDetails("full_serial_3_test").description, inv.getSkuDetails("full_serial_3_test").price, inv.hasPurchase("full_serial_3_test")))
+                put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", inv.getSkuDetails("full_serial_4_test").description, inv.getSkuDetails("full_serial_4_test").price, inv.hasPurchase("full_serial_4_test")))
+                put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", inv.getSkuDetails("full_serial_5_test").description, inv.getSkuDetails("full_serial_5_test").price, inv.hasPurchase("full_serial_5_test")))
+                put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", inv.getSkuDetails("full_serial_6_test").description, inv.getSkuDetails("full_serial_6_test").price, inv.hasPurchase("full_serial_6_test")))
+                put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", inv.getSkuDetails("full_serial_7_test").description, inv.getSkuDetails("full_serial_7_test").price, inv.hasPurchase("full_serial_7_test")))
+            }
+            standaloneMode = false
+        })
     }
 
     fun purchase(activity: BaseActivity, position: Int) {

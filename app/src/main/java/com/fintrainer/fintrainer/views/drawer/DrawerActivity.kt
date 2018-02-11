@@ -59,9 +59,12 @@ import icepick.State
 import kotlinx.android.synthetic.main.activity_drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
+import kotlinx.android.synthetic.main.fragment_container.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.Appcompat
+import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.email
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivityForResult
@@ -174,6 +177,17 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         super.onStart()
         auth.bind(this@DrawerActivity)
         auth.tryToLogin()
+
+        if (inAppPurchaseContainer.getAppMode()) {
+//        if (true) {
+//            longSnackbar(drawer, "Не удалось получить покупки").show()
+
+            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Не удалось получить покупки", Snackbar.LENGTH_LONG)
+            snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
+            snack.show()
+            inAppPurchaseContainer.queryInventory()
+        }
+
     }
 
     override fun onResume() {
@@ -537,25 +551,38 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     override fun onClick(p0: View?) {
         val id = p0?.id
         id?.let {
-            if (it == exam_Layout.id || inAppPurchaseContainer.checkIsPurchasedExam(selectedExam)) {
+            if (it == exam_Layout.id || inAppPurchaseContainer.checkIsPurchasedExam(selectedExam) && !inAppPurchaseContainer.getAppMode()) {
                 showExam(it)
             } else {
-                showTrialDialog(getString(R.string.trial_message), it)
+                if (inAppPurchaseContainer.getAppMode()) {
+                    val dialog = alert(getString(R.string.standaloneMod), getString(R.string.trial_version))
+                    dialog.positiveButton(getString(R.string.ok), {
+                        if (id != search_layout.id && id != favourite_layout.id)
+                        showExam(id)
+                    })
+                    dialog.show()
+                } else {
+                    showTrialDialog(getString(R.string.trial_message), it)
+                }
             }
         }
     }
 
     private fun showExam(id: Int) {
+        var purchased = inAppPurchaseContainer.checkIsPurchasedExam(currentExam)
+        if (inAppPurchaseContainer.getAppMode()){
+            purchased = false
+        }
         when (id) {
             exam_Layout.id -> {
-                startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
+                startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam, "purchased" to purchased)
             }
             training_layout.id -> {
-                startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
+                startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam, "purchased" to purchased)
             }
             chapters_layout.id -> {
 //            presenter.onLayoutClick(0, 2, false)
-                startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
+                startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam, "purchased" to purchased)
             }
             search_layout.id -> {
                 startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
@@ -566,7 +593,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                     snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
                     snack.show()
                 } else {
-                    startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
+                    startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam, "purchased" to purchased)
                 }
             }
             else -> print("Miss click")
