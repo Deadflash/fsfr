@@ -52,12 +52,12 @@ class ChaptersActivity : BaseActivity(), ChaptersContract.View, ChaptersAdapter.
 
     override fun onChapterSelected(chapter: Int) {
         if (presenter.checkChapterStatisticsForExist(intent.getIntExtra("examId", 0), chapter)) {
-            val dialog = alert("В прошлый раз вы не завершили прохождение главы $chapter. Хотите продолжить или начать новый тест?","Глава $chapter")
+            val dialog = alert("В прошлый раз вы не завершили прохождение главы $chapter. Хотите продолжить или начать новый тест?", "Глава $chapter")
             dialog.positiveButton("продолжить", onClicked = {
                 startChapterTest(chapter)
             })
-            dialog.negativeButton("новый тест",onClicked = {
-                presenter.deleteChapterStatistics(intent.getIntExtra("examId", 0),chapter)
+            dialog.negativeButton("новый тест", onClicked = {
+                presenter.deleteChapterStatistics(intent.getIntExtra("examId", 0), chapter)
                 startChapterTest(chapter)
             })
             dialog.show()
@@ -67,7 +67,7 @@ class ChaptersActivity : BaseActivity(), ChaptersContract.View, ChaptersAdapter.
     }
 
     private fun startChapterTest(chapter: Int) {
-        startActivityForResult<TestingActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to intent.getIntExtra("examId", 0), "chapter" to chapter)
+        startActivityForResult<TestingActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to intent.getIntExtra("examId", 0), "chapter" to chapter, "purchased" to intent.getBooleanExtra("purchased", false))
 
     }
 

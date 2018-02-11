@@ -510,14 +510,14 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     private fun showExam(id: Int) {
         when (id) {
             exam_Layout.id -> {
-                startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam)
+                startActivityForResult<TestingActivity>(EXAM_INTENT, "intentId" to EXAM_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
             }
             training_layout.id -> {
-                startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam)
+                startActivityForResult<TestingActivity>(TESTING_INTENT, "intentId" to TESTING_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
             }
             chapters_layout.id -> {
 //            presenter.onLayoutClick(0, 2, false)
-                startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam)
+                startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
             }
             search_layout.id -> {
                 startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
@@ -528,7 +528,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                     snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
                     snack.show()
                 } else {
-                    startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam)
+                    startActivityForResult<TestingActivity>(FAVOURITE_INTENT, "intentId" to FAVOURITE_INTENT, "examId" to currentExam, "purchased" to inAppPurchaseContainer.checkIsPurchasedExam(currentExam))
                 }
             }
             else -> print("Miss click")

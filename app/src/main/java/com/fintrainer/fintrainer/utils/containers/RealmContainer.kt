@@ -135,11 +135,11 @@ class RealmContainer {
         }
     }
 
-    fun getTestsAsync(examId: Int): List<TestingDto> {
+    fun getTestsAsync(examId: Int, purchased: Boolean): List<TestingDto> {
         val testingDtos = ArrayList<TestingDto>()
         Realm.getDefaultInstance().use {
-            //            if (!purchased) {
-            if (!true) {
+                        if (!purchased) {
+//            if (!true) {
                 val chaptersCount = it.where(ChapterRealm::class.java).equalTo("type", examId).count()
                 (0L until chaptersCount)
                         .map { i -> it.where(TestingDto::class.java).equalTo("type", examId).equalTo("chapter", i + 1).findAll() }
@@ -182,13 +182,13 @@ class RealmContainer {
         }
     }
 
-    fun getByChapterAsync(chapter: Int, examId: Int): List<TestingDto> {
+    fun getByChapterAsync(chapter: Int, examId: Int, purchased: Boolean): List<TestingDto> {
         var testingDtos: MutableList<TestingDto> = ArrayList()
         Realm.getDefaultInstance().use {
             val freeTests = it.where(TestingDto::class.java).equalTo("type", examId).equalTo("chapter", chapter).findAll()
             if (!freeTests.isEmpty()) {
-//                    if (!purchased) {
-                if (false) {
+                    if (!purchased) {
+//                if (false) {
                     (0..4).mapTo(testingDtos) { i -> it.copyFromRealm<TestingDto>(freeTests[i]) }
                 } else {
                     testingDtos = it.copyFromRealm<TestingDto>(freeTests)

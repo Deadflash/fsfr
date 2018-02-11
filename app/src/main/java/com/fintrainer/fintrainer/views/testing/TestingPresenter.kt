@@ -39,16 +39,18 @@ class TestingPresenter(private val realmContainer: RealmContainer,
     private var intentId: Int? = null
     private var chapter: Int? = null
     private var chapterStatistics: List<ChapterStatistics>? = null
+    private var purchased: Boolean = false
 
     override fun bind(iView: IView) {
         view = iView as TestingContract.View
 //        authContainer.bindTestingActivityView(iView as TestingActivity)
     }
 
-    override fun loadTests(examId: Int, intentId: Int, chapter: Int) {
+    override fun loadTests(examId: Int, intentId: Int, chapter: Int, purchased: Boolean) {
         this.examId = examId
         this.intentId = intentId
         this.chapter = chapter
+        this.purchased = purchased
         if (tests.isEmpty()) {
             if (intentId != EXAM_INTENT) {
                 if (checkIsAuthenticatedUser()) {
@@ -69,7 +71,7 @@ class TestingPresenter(private val realmContainer: RealmContainer,
                     view?.showNeedAuth()
                 }
             } else {
-                getTests(intentId, examId, chapter)
+                getTests(intentId, examId, chapter, purchased)
             }
         } else {
             if (intentId == FAILED_TESTS_INTENT) {
@@ -95,17 +97,17 @@ class TestingPresenter(private val realmContainer: RealmContainer,
     override fun checkIsAuthenticatedUser(): Boolean = authContainer.isAuthenticated()
 
     override fun showTestsWithoutAuth() {
-        getTests(intentId, examId, chapter)
+        getTests(intentId, examId, chapter, purchased)
     }
 
-    private fun getTests(intentId: Int?, examId: Int?, chapter: Int?) {
+    private fun getTests(intentId: Int?, examId: Int?, chapter: Int?, purchased: Boolean) {
         doAsync {
             when (intentId) {
                 EXAM_INTENT -> tests = realmContainer.getExamAsync(examId!!)
                 TESTING_INTENT ->
-                    tests = realmContainer.getTestsAsync(examId!!)
+                    tests = realmContainer.getTestsAsync(examId!!, purchased)
                 CHAPTER_INTENT ->
-                    tests = realmContainer.getByChapterAsync(chapter!!, examId!!)
+                    tests = realmContainer.getByChapterAsync(chapter!!, examId!!, purchased)
                 FAVOURITE_INTENT ->
                     tests = realmContainer.getFavouriteQuestionsAsync(examId!!)
             }
@@ -164,7 +166,7 @@ class TestingPresenter(private val realmContainer: RealmContainer,
 
     override fun realmConfigCallback(code: Int) {
         if (code == Constants.REALM_SUCCESS_CONNECT_CODE) {
-            getTests(intentId, examId, chapter)
+            getTests(intentId, examId, chapter, purchased)
         } else {
             println("error")
         }

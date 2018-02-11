@@ -22,7 +22,7 @@ interface TestingContract {
         fun deleteChapterStatistics(index: Int, chapter: Int)
         fun getChapterStatistics(index: Int, chapter: Int): List<ChapterStatistics>?
         fun checkIsAuthenticatedUser(): Boolean
-        fun loadTests(examId: Int, intentId: Int, chapter: Int)
+        fun loadTests(examId: Int, intentId: Int, chapter: Int, purchased: Boolean)
         fun showTestsWithoutAuth()
         fun getLoadedTests(): List<TestingDto>
         fun getHints(): List<DiscussionCommentDto>

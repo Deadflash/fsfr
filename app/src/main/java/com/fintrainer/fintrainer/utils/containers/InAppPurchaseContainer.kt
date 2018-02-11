@@ -78,6 +78,7 @@ class InAppPurchaseContainer {
                             ArrayList(), IabHelper.QueryInventoryFinishedListener { result, inv ->
                         if (result.isFailure) {
                             Log.d(TAG, "Result is failure In-app Billing: " + result)
+                            splash?.startApp()
                             return@QueryInventoryFinishedListener
                         }
                         purchases.run {

@@ -79,7 +79,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
         }
 
         presenter.bind(this)
-        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1), intent.getIntExtra("chapter", 1))
+        presenter.loadTests(intent.getIntExtra("examId", -1), intent.getIntExtra("intentId", -1), intent.getIntExtra("chapter", 1), intent.getBooleanExtra("purchased", false))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
