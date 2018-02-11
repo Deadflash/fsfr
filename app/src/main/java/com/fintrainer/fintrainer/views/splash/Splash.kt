@@ -5,9 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fintrainer.fintrainer.utils.containers.InAppPurchaseContainer
 import com.fintrainer.fintrainer.views.App
 import com.fintrainer.fintrainer.views.drawer.DrawerActivity
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.uiThread
 import javax.inject.Inject
 
 class Splash : AppCompatActivity(), InAppPurchaseContainer.SplashStartApp {

@@ -74,7 +74,7 @@ class InAppPurchaseContainer {
                     Log.d(TAG, "Problem setting up In-app Billing: " + result)
                 }
                 try {
-                    mHelper?.queryInventoryAsync(true, Arrays.asList("full_basic_test"),
+                    mHelper?.queryInventoryAsync(true, Arrays.asList("full_basic_test", "full_serial_1_test", "full_serial_2_test", "full_serial_3_test", "full_serial_4_test", "full_serial_5_test", "full_serial_6_test", "full_serial_7_test"),
                             ArrayList(), IabHelper.QueryInventoryFinishedListener { result, inv ->
                         if (result.isFailure) {
                             Log.d(TAG, "Result is failure In-app Billing: " + result)
