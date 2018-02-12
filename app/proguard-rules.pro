@@ -25,12 +25,17 @@
 #-renamesourcefileattribute SourceFile
 
 -dontwarn icepick.**
+-dontwarn kotlin.**
 -keep class icepick.** { *; }
 -keep class **$$Icepick { *; }
 -keepclasseswithmembernames class * {
     @icepick.* <fields>;
 }
 -keepnames class * { @icepick.State *;}
+
+-keep class kotlin.Metadata { *; }
+
+-keep class kotlin.reflect.** { *; }
 
 -ignorewarnings
 -keepclassmembers class com.fintrainer.fintrainer.structure.** { *; }
