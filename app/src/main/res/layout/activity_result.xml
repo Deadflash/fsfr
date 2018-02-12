@@ -86,7 +86,6 @@
                     android:alpha="0"
                     android:gravity="center"
                     android:padding="8dp"
-                    android:text="Повторите 3 главу"
                     android:textColor="@color/blue_grey_600"
                     android:textSize="@dimen/large_text" />
 

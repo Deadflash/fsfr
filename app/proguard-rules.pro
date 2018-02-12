@@ -31,3 +31,7 @@
     @icepick.* <fields>;
 }
 -keepnames class * { @icepick.State *;}
+
+-ignorewarnings
+-keepclassmembers class com.fintrainer.fintrainer.structure.** { *; }
+-keepclassmembers class com.fintrainer.fintrainer.structure.db.** { *; }

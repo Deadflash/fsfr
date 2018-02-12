@@ -55,7 +55,7 @@ class DiscussionsPresenter(private val discussionsSyncRealmContainer: Discussion
                     this@DiscussionsPresenter.account = it
                     discussionsSyncRealmContainer.initDiscussionsRealm(it, this@DiscussionsPresenter)
                 }
-//                account?.let { realmContainer.createRealm() }
+//                account?.let { discussionsSyncRealmContainer.createRealm() }
             }
         })
     }

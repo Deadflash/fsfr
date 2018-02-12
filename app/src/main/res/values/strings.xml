@@ -44,6 +44,10 @@
     <string name="options">Настройки</string>
     <string name="other">Прочее</string>
     <string name="internet_connection_error">Проверьте подключение к сети</string>
+    <string name="rateApp">Оцените приложение</string>
+    <string name="rate">Оценить</string>
+    <string name="later">Позже</string>
+    <string name="rateDescription">Если вам понравилось приложение, пожалуйста оцените его и напишите в коментариях чего вам не хватает и что бы вы хотели увидеть в следующих обновлениях. \n\nСпасибо за поддержку!</string>
     <string name="my_exams">Мои Экзамены</string>
     <string name="discussion_add_menu">Добавить</string>
     <string name="add_discussion_text">Задайте интересующий вас вопрос, этот вопрос будет виден всем пользователям.</string>

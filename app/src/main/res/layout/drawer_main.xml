@@ -435,8 +435,7 @@
                         android:text="Вопросы которые вам интересны"
                         android:layout_below="@+id/textView5"
                         android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_above="@+id/favouriteProgressBar" />
+                        android:layout_alignParentStart="true" />
 
                     <TextView
                         android:id="@+id/tvFavouriteProgressCount"

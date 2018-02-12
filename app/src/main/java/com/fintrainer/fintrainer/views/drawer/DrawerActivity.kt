@@ -45,6 +45,7 @@ import com.fintrainer.fintrainer.utils.Constants.RC_SIGN_IN
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.SETTINGS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
+import com.fintrainer.fintrainer.utils.RateApp
 import com.fintrainer.fintrainer.utils.containers.GoogleAuthContainer
 import com.fintrainer.fintrainer.utils.containers.InAppPurchaseContainer
 import com.fintrainer.fintrainer.views.App
@@ -136,7 +137,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
         customPrefs = getSharedPreferences("customPrefs", 0)
         currentExam = customPrefs.getInt("currentExam", 0)
-        if (currentExam > 6) {
+        if (currentExam > 7 || currentExam < 0) {
             currentExam = 0
         }
         selectedExam = currentExam
@@ -200,6 +201,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             App.releaseChapterComponent()
             App.releaseTestingComponent()
         }
+        RateApp.showRateDialog(this)
     }
 
     private fun initStatusBar() {
@@ -558,7 +560,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                     val dialog = alert(getString(R.string.standaloneMod), getString(R.string.trial_version))
                     dialog.positiveButton(getString(R.string.ok), {
                         if (id != search_layout.id && id != favourite_layout.id)
-                        showExam(id)
+                            showExam(id)
                     })
                     dialog.show()
                 } else {
@@ -570,7 +572,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     private fun showExam(id: Int) {
         var purchased = inAppPurchaseContainer.checkIsPurchasedExam(currentExam)
-        if (inAppPurchaseContainer.getAppMode()){
+        if (inAppPurchaseContainer.getAppMode()) {
             purchased = false
         }
         when (id) {

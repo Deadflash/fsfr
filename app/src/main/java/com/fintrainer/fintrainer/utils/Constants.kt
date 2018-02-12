@@ -7,11 +7,13 @@ package com.fintrainer.fintrainer.utils
 object Constants {
 
     const val APP_PNAME = "com.fintrainer.fintrainer"
+    const val DAYS_UNTIL_PROMPT = 1//Min number of days
+    const val LAUNCHES_UNTIL_PROMPT = 3//Min number of launches
     const val REALM_SERVER_HTTP_URL = "http://91.240.84.213:9080"
     const val REALM_SERVER__REALM_URL = "realm://91.240.84.213:9080"
     const val REALM_SERVER_AUTH = "/auth"
     const val REALM_SERVER_SCHEMA_VERSION = 4L
-    const val REALM_SERVER_DISCUSSION_REALM = "/fsfr-discussion-test"
+    const val REALM_SERVER_DISCUSSION_REALM = "/fsfr-discussion"
     const val REALM_SUCCESS_CONNECT_CODE = 2
     const val REALM_FAIL_CONNECT_CODE: Int = -1
     const val AUTH_INTERNET_CONNECTION_ERROR = 7

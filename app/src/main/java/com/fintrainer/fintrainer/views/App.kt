@@ -3,6 +3,7 @@ package com.fintrainer.fintrainer.views
 import android.app.Application
 import com.fintrainer.fintrainer.di.components.*
 import com.fintrainer.fintrainer.di.modules.*
+import com.fintrainer.fintrainer.utils.RateApp
 import com.fintrainer.fintrainer.utils.containers.RealmContainer
 import io.realm.Realm
 import javax.inject.Inject
@@ -110,5 +111,7 @@ class App : Application() {
         realmContainer.initChapterStatisticsConf()
         realmContainer.initStatisticsRealm()
         realmContainer.initSharedPrefrences(this)
+
+        RateApp.setupRate(this)
     }
 }
