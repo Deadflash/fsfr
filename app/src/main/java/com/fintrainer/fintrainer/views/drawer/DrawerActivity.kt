@@ -162,7 +162,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             customPrefs.edit().putBoolean("firstLaunch", false).apply()
             val welcomeDialog = alert(Appcompat) {
                 title = "Добро пожаловать!"
-                message = "ФСФР Экзаменатор представляет собой бесплатное приложение для эффективной подготовки к сдаче экзаменов для получения квалификационного аттестата специалиста финансового рынка. \n\nХотите авторизироваться для получения возможности смотреть коментарии и задавать вопросы?"
+                message = "Хотите авторизироваться для получения возможности просмотра комментариев и участия в обсуждении вопросов"
                 positiveButton(getString(R.string.yes), onClicked = {
                     login(navView)
                 })
@@ -172,28 +172,24 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             welcomeDialog.setCancelable(false)
             welcomeDialog.show()
         }
+        if (inAppPurchaseContainer.getAppMode()) {
+            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Не удалось получить покупки", Snackbar.LENGTH_LONG)
+            snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
+            snack.show()
+            inAppPurchaseContainer.queryInventory()
+        }
     }
 
     override fun onStart() {
         super.onStart()
         auth.bind(this@DrawerActivity)
         auth.tryToLogin()
-
-        if (inAppPurchaseContainer.getAppMode()) {
-//        if (true) {
-//            longSnackbar(drawer, "Не удалось получить покупки").show()
-
-            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Не удалось получить покупки", Snackbar.LENGTH_LONG)
-            snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
-            snack.show()
-            inAppPurchaseContainer.queryInventory()
-        }
-
     }
 
     override fun onResume() {
         super.onResume()
         clearStatisticView()
+        setupPurchasedIcons()
         inAppPurchaseContainer.initDrawer(this)
         if (intent.getBooleanExtra("buy", false)) {
             intent.removeExtra("buy")
@@ -259,8 +255,6 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         }
 
         navigation_view.menu?.getItem(currentExam)?.isChecked = true
-
-        setupPurchasedIcons()
     }
 
     private fun login(navView: View) {

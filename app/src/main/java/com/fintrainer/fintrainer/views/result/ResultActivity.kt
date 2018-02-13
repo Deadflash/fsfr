@@ -49,7 +49,7 @@ class ResultActivity : BaseActivity() {
     private var wrongAnswers: Int? = null
     private var testType: Int? = null
     private var intentId: Int? = null
-    private var purchaised: Boolean? = null
+    private var purchased: Boolean? = null
     private var isStandalone: Boolean? = null
     private var worthChapter: Int? = null
     private var weight: Int? = null
@@ -75,7 +75,7 @@ class ResultActivity : BaseActivity() {
         intentId = intent.getIntExtra("intentId", 0)
         isStandalone = intent.getBooleanExtra("standaloned", false)
         testType = intent.getIntExtra("testType", 0)
-        purchaised = intent.getBooleanExtra("purchased", false)
+        purchased = intent.getBooleanExtra("purchased", false)
         weight = intent.getIntExtra("weight", 0)
 
         setupAnimations()
@@ -195,8 +195,8 @@ class ResultActivity : BaseActivity() {
                         purchaseAnimator.interpolator = BounceInterpolator()
 
                         val animSet = AnimatorSet()
-                        if (purchaised != null) {
-                            if (!purchaised!! && !inAppPurchaseContainer.getAppMode()) {
+                        if (purchased != null) {
+                            if (!purchased!! && !inAppPurchaseContainer.getAppMode()) {
                                 animSet.playTogether(greetingAlphaAnimator, purchaseAnimator)
                             } else {
                                 animSet.play(greetingAlphaAnimator)

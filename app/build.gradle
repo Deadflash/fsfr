@@ -9,7 +9,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.fintrainer.fintrainer"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 27
         versionCode 41
         versionName "2.0"
