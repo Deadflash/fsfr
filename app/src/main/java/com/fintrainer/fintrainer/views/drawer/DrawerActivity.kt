@@ -161,8 +161,8 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         if (customPrefs.getBoolean("firstLaunch", true) && !auth.isAuthenticated()) {
             customPrefs.edit().putBoolean("firstLaunch", false).apply()
             val welcomeDialog = alert(Appcompat) {
-                title = "Добро пожаловать!"
-                message = "Хотите авторизироваться для получения возможности просмотра комментариев и участия в обсуждении вопросов"
+                title = getString(R.string.welcome)
+                message = getString(R.string.welcome_message)
                 positiveButton(getString(R.string.yes), onClicked = {
                     login(navView)
                 })
@@ -173,7 +173,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             welcomeDialog.show()
         }
         if (inAppPurchaseContainer.getAppMode()) {
-            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), "Не удалось получить покупки", Snackbar.LENGTH_LONG)
+            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), getString(R.string.unable_to_get_purchases), Snackbar.LENGTH_LONG)
             snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
             snack.show()
             inAppPurchaseContainer.queryInventory()
