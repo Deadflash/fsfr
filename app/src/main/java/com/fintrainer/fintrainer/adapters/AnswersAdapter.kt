@@ -61,12 +61,12 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
                     if (intentId == CHAPTER_INTENT) {
                         iAnswers.addChapterStatistics(test.type!!, test.code!!, test.chapter!!, position)
                     }
-                    if (intentId == TESTING_INTENT || intentId == CHAPTER_INTENT) {
+                    if (intentId == TESTING_INTENT || intentId == CHAPTER_INTENT || intentId == EXAM_INTENT) {
                         if (test.answers?.get(position)?.status != true) {
                             iAnswers.autoAddToFavourite()
                         }
                     }
-                    if (intentId == TESTING_INTENT || intentId == CHAPTER_INTENT || intentId == FAVOURITE_INTENT) {
+                    if (intentId == TESTING_INTENT || intentId == CHAPTER_INTENT || intentId == FAVOURITE_INTENT || intentId == EXAM_INTENT) {
                         if (test.answers?.get(position)?.status == true) {
                             iAnswers.autoRemoveFromFavourite()
                         }

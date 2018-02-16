@@ -60,6 +60,7 @@ class RateApp {
                     dialog.negativeButton(activity.getString(R.string.later)) {
                         if (editor != null) {
                             editor.putLong("launch_count", 0)
+                            launch_count = 0
                             editor.apply()
                         }
                     }

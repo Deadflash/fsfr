@@ -184,7 +184,7 @@ class TestingActivity : BaseActivity(), TestingContract.View, IPageSelector {
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         if (intent.getIntExtra("intentId", -1) == EXAM_INTENT) {
             menu?.getItem(0)?.isVisible = false
-            menu?.getItem(1)?.isVisible = false
+//            menu?.getItem(1)?.isVisible = false
         }
         menuItem = menu!!.getItem(1)
         setFavouriteIcon(isFavourite)
