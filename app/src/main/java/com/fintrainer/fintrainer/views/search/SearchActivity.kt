@@ -2,7 +2,6 @@ package com.fintrainer.fintrainer.views.search
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.view.MenuItem
 import android.view.View
@@ -13,7 +12,7 @@ import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.containers.PicassoContainer
 import com.fintrainer.fintrainer.views.App
 import kotlinx.android.synthetic.main.activity_search.*
-import kotlinx.android.synthetic.main.toolbar_layout.*
+import org.zakariya.stickyheaders.StickyHeaderLayoutManager
 import javax.inject.Inject
 
 class SearchActivity : AppCompatActivity(), SearchContract.View {
@@ -43,7 +42,7 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
     override fun showQuestions(questions: List<TestingDto>) {
         progressBar.visibility = View.GONE
         search.visibility = View.VISIBLE
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.layoutManager = StickyHeaderLayoutManager()
         recycler.adapter = SearchAdapter(intent.getIntExtra("intentId", -1), questions, picasso, this)
 
         search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

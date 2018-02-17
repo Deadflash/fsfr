@@ -18,6 +18,7 @@ class Splash : AppCompatActivity(), InAppPurchaseContainer.SplashStartApp {
         App.appComponent.inject(this)
 
         inAppPurchaseContainer.initSplash(this@Splash)
+        inAppPurchaseContainer.setupPurchases()
         inAppPurchaseContainer.initPurchases(this@Splash)
     }
 

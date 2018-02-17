@@ -17,6 +17,7 @@
             android:theme="@style/DrawerTheme" />
         <activity
             android:name=".views.splash.Splash"
+            android:screenOrientation="portrait"
             android:noHistory="true"
             android:theme="@style/SplashTheme">
             <intent-filter>

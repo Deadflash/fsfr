@@ -58,18 +58,37 @@ class InAppPurchaseContainer {
 
     fun getPurchases(): SparseArray<PurchaseStructDto> = purchases
 
-    fun checkIsPurchasedExam(position: Int): Boolean = purchases.get(position).hasPurchased
+    fun checkIsPurchasedExam(position: Int): Boolean {
+        var isPurchased = false
+        try {
+            isPurchased = purchases.get(position).hasPurchased
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return isPurchased
+    }
+
+    fun setupPurchases(){
+        purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", "", "0.0", false))
+        purchases.put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", "", "0.0", false))
+    }
 
     fun initPurchases(context: Context) {
         if (mHelper == null) {
-            purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", "", "0.0", false))
-            purchases.put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", "", "0.0", false))
+//            purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", "", "0.0", false))
             mHelper = IabHelper(context, base64EncodedPublicKey)
 
             mHelper?.startSetup({ result ->
