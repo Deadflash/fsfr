@@ -1,6 +1,5 @@
 package com.fintrainer.fintrainer.adapters
 
-import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -14,9 +13,6 @@ import com.fintrainer.fintrainer.utils.Constants.FAILED_TESTS_INTENT
 import com.fintrainer.fintrainer.utils.Constants.FAVOURITE_INTENT
 import com.fintrainer.fintrainer.utils.Constants.SEARCH_INTENT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
-import com.fintrainer.fintrainer.views.testing.TestingActivity
-import com.fintrainer.fintrainer.views.testing.fragments.TestingFragment
-import kotlinx.android.synthetic.main.fragment_testing.*
 import kotlinx.android.synthetic.main.item_answers.view.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
@@ -27,7 +23,8 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
 
     override fun getItemCount(): Int = test.answers?.size ?: 0
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_answers, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_answers, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvAnswer?.text = test.answers?.get(position)?.text ?: ""

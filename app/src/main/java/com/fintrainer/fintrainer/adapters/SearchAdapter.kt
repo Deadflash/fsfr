@@ -10,20 +10,20 @@ import android.widget.Filterable
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.containers.PicassoContainer
+import com.fintrainer.fintrainer.utils.header.SectioningAdapter
 import kotlinx.android.synthetic.main.item_search.view.*
 import kotlinx.android.synthetic.main.search_header_layout.view.*
-import org.zakariya.stickyheaders.SectioningAdapter
 
 /**
  * Created by krotk on 23.10.2017.
  */
 class SearchAdapter(private val intentId: Int, private val questions: List<TestingDto>, private val picasso: PicassoContainer, private val context: Context)
-//    : RecyclerView.Adapter<SearchAdapter.ViewHolder>(), Filterable {
     : SectioningAdapter(), Filterable {
 
     var sections = mutableListOf<Section>()
     private val itemFilter: ItemFilter = ItemFilter()
     private var filteredQuestions: List<TestingDto> = fillFilteredQuestions(questions)
+    private var sectionQuestions = mutableListOf<TestingDto>()
 
     class Section {
         var header: Int? = null
@@ -84,6 +84,7 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
         holder.recycler?.layoutManager = object : LinearLayoutManager(holder.itemView?.context) {
             override fun canScrollVertically(): Boolean = false
         }
+        holder.recycler?.isNestedScrollingEnabled = false
         holder.recycler?.adapter = AnswersAdapter(object : AnswersAdapter.IAnswers {
             override fun autoRemoveFromFavourite() {}
 
@@ -112,6 +113,18 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
                 }
             }
         }
+    }
+
+    fun showCurrentChapter(chapter: Int) {
+        fillFilteredQuestions(questions)
+        sectionQuestions.addAll(fillFilteredQuestions(sections[chapter].tests))
+        notifyAllSectionsDataSetChanged()
+    }
+
+    fun showAllChapters() {
+        sectionQuestions.clear()
+        filteredQuestions = fillFilteredQuestions(questions)
+        notifyAllSectionsDataSetChanged()
     }
 
 
@@ -171,6 +184,7 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
 
             val filterString = constraint.toString().toLowerCase()
             val results = Filter.FilterResults()
+//            val list = if (sectionQuestions.isEmpty()) questions else sectionQuestions
             val list = questions
             val count = list.size
             val nlist = ArrayList<TestingDto>(count)

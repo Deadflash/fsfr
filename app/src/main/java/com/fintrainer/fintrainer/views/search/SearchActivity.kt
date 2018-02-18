@@ -2,17 +2,20 @@ package com.fintrainer.fintrainer.views.search
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.view.MenuItem
 import android.view.View
 import com.fintrainer.fintrainer.R
 import com.fintrainer.fintrainer.adapters.SearchAdapter
+import com.fintrainer.fintrainer.adapters.SearchRecyclerAdapter
 import com.fintrainer.fintrainer.di.contracts.SearchContract
 import com.fintrainer.fintrainer.structure.TestingDto
 import com.fintrainer.fintrainer.utils.containers.PicassoContainer
+import com.fintrainer.fintrainer.utils.header.StickyHeaderLayoutManager
 import com.fintrainer.fintrainer.views.App
 import kotlinx.android.synthetic.main.activity_search.*
-import org.zakariya.stickyheaders.StickyHeaderLayoutManager
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 class SearchActivity : AppCompatActivity(), SearchContract.View {
@@ -40,6 +43,7 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
     }
 
     override fun showQuestions(questions: List<TestingDto>) {
+
         progressBar.visibility = View.GONE
         search.visibility = View.VISIBLE
         recycler.layoutManager = StickyHeaderLayoutManager()
@@ -60,6 +64,16 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
                 return true
             }
         })
+
+        chapters_recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        chapters_recycler.adapter = SearchRecyclerAdapter(13, this, object : SearchRecyclerAdapter.OnItemClickListener {
+            override fun onClick(position: Int) {
+                (recycler.adapter as SearchAdapter).showCurrentChapter(position)
+                recycler.scrollToPosition(0)
+            }
+
+        })
+        chapters_recycler.clearFocus()
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean = when (item?.itemId) {
