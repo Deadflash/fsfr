@@ -16,6 +16,13 @@ import org.jetbrains.anko.textColor
  */
 class SearchRecyclerAdapter(private val chapters: Int, private val context: Context, private val onitemclickListener: OnItemClickListener) : RecyclerView.Adapter<SearchRecyclerAdapter.ViewHolder>() {
 
+    private var clickedChapter: Int? = null
+
+    fun resetClickedChapter() {
+        clickedChapter = null
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_tests_tabbar, parent, false))
 
@@ -24,8 +31,19 @@ class SearchRecyclerAdapter(private val chapters: Int, private val context: Cont
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder?.tvTabbar?.text = (position + 1).toString()
         holder?.tvTabbar?.textColor = ContextCompat.getColor(context, R.color.blue_grey_50)
+        holder?.tabBarLayout?.background = null
 
-        holder?.tabBarLayout?.onClick { onitemclickListener.onClick(position) }
+        clickedChapter?.let {
+            if (it == position) {
+                holder?.tabBarLayout?.background = ContextCompat.getDrawable(holder?.itemView?.context!!, R.color.blue_grey_300)
+            }
+        }
+
+        holder?.tabBarLayout?.onClick {
+            clickedChapter = position
+            onitemclickListener.onClick(position)
+            notifyDataSetChanged()
+        }
     }
 
 

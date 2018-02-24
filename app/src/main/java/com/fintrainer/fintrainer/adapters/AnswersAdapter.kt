@@ -21,6 +21,12 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
  */
 class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDto, private val intentId: Int) : RecyclerView.Adapter<AnswersAdapter.ViewHolder>() {
 
+    private var wrongAnswersVisibleState: Boolean = false
+
+    fun changeWrongAnswersVisible(newState: Boolean) {
+        wrongAnswersVisibleState = newState
+    }
+
     override fun getItemCount(): Int = test.answers?.size ?: 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
@@ -29,6 +35,13 @@ class AnswersAdapter(private val iAnswers: IAnswers, private var test: TestingDt
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tvAnswer?.text = test.answers?.get(position)?.text ?: ""
         holder.tvAnswerPosition?.text = (position + 1).toString()
+
+        if (intentId == SEARCH_INTENT && !wrongAnswersVisibleState) {
+            if (!test.answers?.get(position)?.status!!) {
+                holder.answerLayout?.visibility = View.GONE
+            }
+        }
+
         if (test.clicked == true || intentId == SEARCH_INTENT) {
             if (test.answers?.get(position)?.clicked == true) {
                 setAnswerLayoutBg(position, holder)

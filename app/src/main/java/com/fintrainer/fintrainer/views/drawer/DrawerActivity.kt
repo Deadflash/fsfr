@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -507,6 +508,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
         tvFavouriteProgressCount.text = "Добавлено 0 вопросов"
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupUserProgress() {
         tvExamProgressCount.text = "Средний бал: ${examProgress.toString() ?: "0"}"
         examProgressBar.progress = examProgress ?: 0
@@ -581,7 +583,7 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
                 startActivityForResult<ChaptersActivity>(CHAPTER_INTENT, "intentId" to CHAPTER_INTENT, "examId" to currentExam, "purchased" to purchased)
             }
             search_layout.id -> {
-                startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam)
+                startActivityForResult<SearchActivity>(SEARCH_INTENT, "intentId" to SEARCH_INTENT, "examId" to currentExam, "chaptersCount" to chaptersCountProgress)
             }
             favourite_layout.id -> {
                 if (favouriteCountProgress == 0) {

@@ -17,20 +17,31 @@ import kotlinx.android.synthetic.main.search_header_layout.view.*
 /**
  * Created by krotk on 23.10.2017.
  */
-class SearchAdapter(private val intentId: Int, private val questions: List<TestingDto>, private val picasso: PicassoContainer, private val context: Context)
+class SearchAdapter(private val intentId: Int, private val questions: List<TestingDto>, private val picasso: PicassoContainer, private val context: Context, private val fabVisibilityController: FabVisibilityController)
     : SectioningAdapter(), Filterable {
 
-    var sections = mutableListOf<Section>()
+    private var sections = mutableListOf<Section>()
     private val itemFilter: ItemFilter = ItemFilter()
     private var filteredQuestions: List<TestingDto> = fillFilteredQuestions(questions)
     private var sectionQuestions = mutableListOf<TestingDto>()
+    private var wrongAnswersVisibleState: Boolean = false
 
     class Section {
         var header: Int? = null
         var tests = mutableListOf<TestingDto>()
     }
 
+    fun changeWrongAnswersVisible(newState: Boolean) {
+        wrongAnswersVisibleState = newState
+    }
+
     override fun getNumberOfSections(): Int = sections.size
+
+    override fun doesSectionHaveFooter(sectionIndex: Int): Boolean = false
+
+    override fun doesSectionHaveHeader(sectionIndex: Int): Boolean = true
+
+    override fun getNumberOfItemsInSection(sectionIndex: Int): Int = sections[sectionIndex].tests.size
 
     private fun fillFilteredQuestions(questions: List<TestingDto>): List<TestingDto> {
         sections.clear()
@@ -57,12 +68,6 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
         }
         return filteredQuestions
     }
-
-    override fun getNumberOfItemsInSection(sectionIndex: Int): Int = sections[sectionIndex].tests.size
-
-    override fun doesSectionHaveFooter(sectionIndex: Int): Boolean = false
-
-    override fun doesSectionHaveHeader(sectionIndex: Int): Boolean = true
 
     override fun onCreateItemViewHolder(parent: ViewGroup?, itemUserType: Int): SectioningAdapter.ItemViewHolder? =
             ItemViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.item_search, parent, false))
@@ -98,6 +103,7 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
 
             override fun addTestProgress(isRight: Boolean, weight: Int, chapter: Int) {}
         }, sections[sectionIndex].tests[position], intentId)
+        (holder.recycler?.adapter as AnswersAdapter).changeWrongAnswersVisible(wrongAnswersVisibleState)
 
 
 
@@ -116,12 +122,14 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
     }
 
     fun showCurrentChapter(chapter: Int) {
+        fabVisibilityController.fabState(true)
         fillFilteredQuestions(questions)
         sectionQuestions.addAll(fillFilteredQuestions(sections[chapter].tests))
         notifyAllSectionsDataSetChanged()
     }
 
     fun showAllChapters() {
+        fabVisibilityController.fabState(false)
         sectionQuestions.clear()
         filteredQuestions = fillFilteredQuestions(questions)
         notifyAllSectionsDataSetChanged()
@@ -160,8 +168,6 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
 //        }
 //    }
 
-    override fun getItemCount(): Int = filteredQuestions.size
-
 //    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder =
 //            ViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.item_search, parent, false))
 
@@ -184,8 +190,8 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
 
             val filterString = constraint.toString().toLowerCase()
             val results = Filter.FilterResults()
-//            val list = if (sectionQuestions.isEmpty()) questions else sectionQuestions
-            val list = questions
+            val list = if (sectionQuestions.isEmpty()) questions else sectionQuestions
+//            val list = questions
             val count = list.size
             val nlist = ArrayList<TestingDto>(count)
             var filterableString: TestingDto
@@ -207,9 +213,12 @@ class SearchAdapter(private val intentId: Int, private val questions: List<Testi
 
         override fun publishResults(constraint: CharSequence, results: Filter.FilterResults) {
             filteredQuestions = fillFilteredQuestions(results.values as List<TestingDto>)
-//            notifyDataSetChanged()
             notifyAllSectionsDataSetChanged()
         }
 
+    }
+
+    interface FabVisibilityController {
+        fun fabState(showFab: Boolean)
     }
 }

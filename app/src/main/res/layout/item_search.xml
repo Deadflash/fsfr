@@ -41,7 +41,6 @@
         android:paddingRight="8dp"
         android:paddingBottom="4dp"
         android:paddingTop="4dp"
-        android:text="Тело вопроса"
         android:textSize="@dimen/large_text" />
 
     <ImageView

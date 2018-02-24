@@ -12,7 +12,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 /**
  * Created by krotk on 22.10.2017.
  */
-class ChaptersAdapter(private val chapters: List<ChapterRealm>,private val clicked: OnChapterClick) : RecyclerView.Adapter<ChaptersAdapter.ViewHolder>() {
+class ChaptersAdapter(private val chapters: List<ChapterRealm>, private val clicked: OnChapterClick) : RecyclerView.Adapter<ChaptersAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent?.context)
             .inflate(R.layout.item_chapters, parent, false))
@@ -20,10 +20,10 @@ class ChaptersAdapter(private val chapters: List<ChapterRealm>,private val click
     override fun getItemCount(): Int = chapters.size
 
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder?.tvChapter?.text = chapters[position].chapterName ?: ""
+        holder?.tvChapter?.text = "Глава: ${position + 1}. ${chapters[position].chapterName ?: ""}"
         holder?.tvTestsCount?.text = chapters[position].testsCount.toString()
         holder?.chapterLayout?.onClick {
-            clicked.onChapterSelected(position+1)
+            clicked.onChapterSelected(position + 1)
         }
     }
 

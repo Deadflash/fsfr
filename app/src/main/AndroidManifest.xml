@@ -17,8 +17,8 @@
             android:theme="@style/DrawerTheme" />
         <activity
             android:name=".views.splash.Splash"
-            android:screenOrientation="portrait"
             android:noHistory="true"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,7 +29,9 @@
         <activity android:name=".views.testing.TestingActivity" />
         <activity android:name=".views.result.ResultActivity" />
         <activity android:name=".views.chapters.ChaptersActivity" />
-        <activity android:name=".views.search.SearchActivity" />
+        <activity
+            android:name=".views.search.SearchActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".views.discussions.DiscussionsActivity"
             android:windowSoftInputMode="adjustResize" />
