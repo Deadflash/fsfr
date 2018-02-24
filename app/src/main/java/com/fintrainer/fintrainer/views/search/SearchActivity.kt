@@ -100,6 +100,8 @@ class SearchActivity : BaseActivity(), SearchContract.View {
             override fun onClick(position: Int) {
                 (recycler.adapter as SearchAdapter).showCurrentChapter(position)
                 recycler.scrollToPosition(0)
+                search.setQuery("", false)
+                search.clearFocus()
             }
 
         })
@@ -110,6 +112,8 @@ class SearchActivity : BaseActivity(), SearchContract.View {
             (chapters_recycler.adapter as SearchRecyclerAdapter).resetClickedChapter()
             chapters_recycler.smoothScrollToPosition(0)
             recycler.scrollToPosition(0)
+            search.setQuery("", false)
+            search.clearFocus()
         }
     }
 

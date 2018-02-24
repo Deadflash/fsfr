@@ -4,7 +4,7 @@
     android:id="@+id/headerLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/blue_grey_100"
+    android:background="@color/blue_grey_50"
     android:orientation="vertical">
 
     <TextView fontPath="fonts/RobotoBold.ttf"
@@ -13,8 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
         android:textSize="@dimen/large_text"
-
-        android:padding="16dp"
+        android:padding="10dp"
         android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
         tools:text="Medium Text" />
