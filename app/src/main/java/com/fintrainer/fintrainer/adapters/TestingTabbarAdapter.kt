@@ -18,39 +18,39 @@ class TestingTabbarAdapter(private val tests: List<TestingDto>, private val onIt
 
     private var selectedPosition = 0
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder
-            = ViewHolder(LayoutInflater.from(parent?.context).inflate(R.layout.item_tests_tabbar, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+            = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_tests_tabbar, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder?.tvTabNumber?.text = (position + 1).toString()
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.tvTabNumber?.text = (position + 1).toString()
 
-        holder?.tabBarLayout?.background = ContextCompat.getDrawable(holder?.itemView?.context!!, R.color.blue_grey_50)
+        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.blue_grey_50)
 
         if (tests[position].clicked == true) {
             if (intentId != EXAM_INTENT && intentId != -1) {
                 if (tests[position].rightAnswer == true) {
                     if (selectedPosition == position) {
-                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.green_300_transparent)
+                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.green_300_transparent)
                     } else {
-                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.green_300)
+                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.green_300)
                     }
                 } else {
                     if (selectedPosition == position) {
-                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.red_300_transparent)
+                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.red_300_transparent)
                     } else {
-                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.red_300)
+                        holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.red_300)
                     }
                 }
             } else {
                 if (selectedPosition == position) {
-                    holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.blue_grey_300_transparent)
+                    holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.blue_grey_300_transparent)
                 } else {
-                    holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.blue_grey_300)
+                    holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.blue_grey_300)
                 }
             }
         } else {
             if (selectedPosition == position) {
-                holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.blue_grey_300_transparent)
+                holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView.context!!, R.color.blue_grey_300_transparent)
             }
         }
 

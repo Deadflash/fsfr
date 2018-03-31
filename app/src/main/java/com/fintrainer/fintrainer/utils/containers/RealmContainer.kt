@@ -3,13 +3,17 @@ package com.fintrainer.fintrainer.utils.containers
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.util.SparseArray
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.structure.chapters.ChapterStatistics
+import com.fintrainer.fintrainer.utils.Constants
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
+import com.fintrainer.fintrainer.utils.billing.Inventory
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmList
 import io.realm.annotations.RealmModule
 import java.util.*
 
@@ -60,6 +64,91 @@ class RealmContainer {
                 .schemaVersion(2)
                 .migration(Migration())
                 .build()
+    }
+
+    fun saveInAppPurchases(purchases: SparseArray<PurchaseStructDto>, inv: Inventory) {
+
+        Realm.getInstance(statisticConf).use {
+            it.executeTransaction {
+                val purchases = RealmList<PurchaseStructDto>()
+                (0..7).forEach {
+                    val purchase = PurchaseStructDto()
+                    when (it) {
+                        0 -> {
+                            purchase.type = 0
+                            purchase.purchaseId = "full_basic_test"
+                            purchase.description = inv.getSkuDetails("full_basic_test").description
+                            purchase.price = inv.getSkuDetails("full_basic_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_basic_test")
+                        }
+                        1 -> {
+                            purchase.type = 1
+                            purchase.purchaseId = "full_serial_1_test"
+                            purchase.description = inv.getSkuDetails("full_serial_1_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_1_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_1_test")
+                        }
+                        2 -> {
+                            purchase.type = 2
+                            purchase.purchaseId = "full_serial_2_test"
+                            purchase.description = inv.getSkuDetails("full_serial_2_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_2_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_2_test")
+                        }
+                        3 -> {
+                            purchase.type = 3
+                            purchase.purchaseId = "full_serial_3_test"
+                            purchase.description = inv.getSkuDetails("full_serial_3_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_3_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_3_test")
+                        }
+                        4 -> {
+                            purchase.type = 4
+                            purchase.purchaseId = "full_serial_4_test"
+                            purchase.description = inv.getSkuDetails("full_serial_4_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_4_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_4_test")
+                        }
+                        5 -> {
+                            purchase.type = 5
+                            purchase.purchaseId = "full_serial_5_test"
+                            purchase.description = inv.getSkuDetails("full_serial_5_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_5_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_5_test")
+                        }
+                        6 -> {
+                            purchase.type = 6
+                            purchase.purchaseId = "full_serial_6_test"
+                            purchase.description = inv.getSkuDetails("full_serial_6_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_6_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_6_test")
+                        }
+                        7 -> {
+                            purchase.type = 7
+                            purchase.purchaseId = "full_serial_7_test"
+                            purchase.description = inv.getSkuDetails("full_serial_7_test").description
+                            purchase.price = inv.getSkuDetails("full_serial_7_test").price
+                            purchase.hasPurchased = inv.hasPurchase("full_serial_7_test")
+                        }
+                    }
+                    purchases.add(it, purchase)
+                }
+                val inAppPurchases = InAppPurchases()
+                inAppPurchases.purchases = purchases
+                it.copyToRealm(inAppPurchases)
+            }
+        }
+        getInAppPurchases(purchases)
+    }
+
+    fun getInAppPurchases(purchases: SparseArray<PurchaseStructDto>) {
+        Realm.getInstance(statisticConf).executeTransaction {
+            it.where(InAppPurchases::class.java).findFirst()?.let { inAppPurchases ->
+                purchases.run {
+                    it.copyFromRealm(inAppPurchases)?.purchases?.forEach{purchase: PurchaseStructDto? -> purchase?.type?.let { it1 -> put(it1, purchase) } }
+                }
+            }
+        }
     }
 
     fun getExamInformation(examId: Int): ExamStatisticAndInfo {
@@ -138,15 +227,20 @@ class RealmContainer {
     fun getTestsAsync(examId: Int, purchased: Boolean): List<TestingDto> {
         val testingDtos = ArrayList<TestingDto>()
         Realm.getDefaultInstance().use {
-                        if (!purchased) {
-//            if (!true) {
+            return if (!purchased) {
+                //            if (true) {
                 val chaptersCount = it.where(ChapterRealm::class.java).equalTo("type", examId).count()
                 (0L until chaptersCount)
                         .map { i -> it.where(TestingDto::class.java).equalTo("type", examId).equalTo("chapter", i + 1).findAll() }
-                        .forEach { freeTests -> (0..4).mapTo(testingDtos) { o -> it.copyFromRealm(freeTests[o]) } }
-                return testingDtos
+                        .forEach { freeTests ->
+                            for (i in 0..4) {
+                                freeTests[i]?.let { test -> testingDtos.add(it.copyFromRealm(test)) }
+                            }
+                        }
+                //                        .forEach { freeTests -> (0..4).mapTo(testingDtos) { o -> it.copyFromRealm(freeTests[o]) } }
+                testingDtos
             } else {
-                return randomPurchasedTests(it, RANDOM_TESTS_COUNT, false, examId)
+                randomPurchasedTests(it, RANDOM_TESTS_COUNT, false, examId)
             }
         }
     }
@@ -187,7 +281,7 @@ class RealmContainer {
         Realm.getDefaultInstance().use {
             val freeTests = it.where(TestingDto::class.java).equalTo("type", examId).equalTo("chapter", chapter).findAll()
             if (!freeTests.isEmpty()) {
-                    if (!purchased) {
+                if (!purchased) {
 //                if (false) {
                     (0..4).mapTo(testingDtos) { i -> it.copyFromRealm<TestingDto>(freeTests[i]) }
                 } else {
@@ -383,7 +477,7 @@ class RealmContainer {
     @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class)])
     private inner class Default
 
-    @RealmModule(classes = [(CorrectedTestDto::class), (AverageGradeStatisticDto::class), (FavouriteQuestionsDto::class)])
+    @RealmModule(classes = [(CorrectedTestDto::class), (AverageGradeStatisticDto::class), (FavouriteQuestionsDto::class), (InAppPurchases::class), (PurchaseStructDto::class)])
     private inner class Statistics
 
     @RealmModule(classes = [(ChapterStatistics::class)])

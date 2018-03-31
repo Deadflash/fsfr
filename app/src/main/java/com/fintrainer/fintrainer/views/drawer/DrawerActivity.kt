@@ -266,9 +266,10 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
 
     fun setupPurchasedIcons() {
         val purchases = inAppPurchaseContainer.getPurchases()
-        purchases.forEach(action = { i, purchaseStructDto ->
+        purchases.forEach({ i, purchaseStructDto ->
             run {
                 if (purchaseStructDto.hasPurchased) {
+//                if (false) {
                     navigation_view.menu?.getItem(i)?.setIcon(R.drawable.ic_check_black_24dp)
                     navigation_view.menu?.getItem(i)?.icon?.setColorFilter(ContextCompat.getColor(this@DrawerActivity, R.color.green_300), PorterDuff.Mode.SRC_IN)
                 } else {

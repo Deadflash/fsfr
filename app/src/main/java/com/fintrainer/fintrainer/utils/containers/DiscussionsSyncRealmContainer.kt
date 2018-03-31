@@ -182,9 +182,9 @@ class DiscussionsSyncRealmContainer {
                 tests.forEach {
                     val question = discussionsRealm?.where(DiscussionQuestionDto::class.java)?.equalTo("questionType", it.type)?.equalTo("questionId", it.code)?.findAll()
                     question?.let {
-                        if (!it.isEmpty() && !it[0].commentList?.isEmpty()!!) {
+                        if (!it.isEmpty() && !it[0]?.commentList?.isEmpty()!!) {
                             val questionDto = discussionsRealm?.copyFromRealm(it)
-                            questionDto?.let { it[0]?.commentList?.let { hints.add(it[0]) } }
+                            questionDto?.let { it[0]?.commentList?.let { it[0]?.let { it1 -> hints.add(it1) } } }
                         } else {
                             val comment = DiscussionCommentDto()
                             comment.text = null
@@ -220,7 +220,7 @@ class DiscussionsSyncRealmContainer {
                     } else {
                         val discussionRate = result[0]
                         discussionsRealm?.beginTransaction()
-                        discussionRate.direction?.let {
+                        discussionRate?.direction?.let {
                             if (it == rate) {
                                 discussionRate.deleteFromRealm()
                             } else {
@@ -257,7 +257,7 @@ class DiscussionsSyncRealmContainer {
                     } else {
                         val commentRate = result[0]
                         discussionsRealm?.beginTransaction()
-                        commentRate.direction?.let {
+                        commentRate?.direction?.let {
                             if (it == rate) {
                                 commentRate.deleteFromRealm()
                             } else {

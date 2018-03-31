@@ -28,18 +28,18 @@ class SearchRecyclerAdapter(private val chapters: Int, private val context: Cont
 
     override fun getItemCount(): Int = chapters
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-        holder?.tvTabbar?.text = (position + 1).toString()
-        holder?.tvTabbar?.textColor = ContextCompat.getColor(context, R.color.blue_grey_50)
-        holder?.tabBarLayout?.background = null
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.tvTabbar?.text = (position + 1).toString()
+        holder.tvTabbar?.textColor = ContextCompat.getColor(context, R.color.blue_grey_50)
+        holder.tabBarLayout?.background = null
 
         clickedChapter?.let {
             if (it == position) {
-                holder?.tabBarLayout?.background = ContextCompat.getDrawable(holder?.itemView?.context!!, R.color.blue_grey_300)
+                holder.tabBarLayout?.background = ContextCompat.getDrawable(holder.itemView?.context!!, R.color.blue_grey_300)
             }
         }
 
-        holder?.tabBarLayout?.onClick {
+        holder.tabBarLayout?.onClick {
             clickedChapter = position
             onitemclickListener.onClick(position)
             notifyDataSetChanged()

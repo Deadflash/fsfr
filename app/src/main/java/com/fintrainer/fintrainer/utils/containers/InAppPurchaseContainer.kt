@@ -24,7 +24,7 @@ import java.util.*
 /**
  * Created by krotk on 03.12.2017.
  */
-class InAppPurchaseContainer {
+class InAppPurchaseContainer(val realmContainer: RealmContainer) {
 
     private val TAG = InAppPurchaseContainer::class.java.name
 
@@ -33,7 +33,7 @@ class InAppPurchaseContainer {
     private var skuDetails: SkuDetails? = null
     private var mHelper: IabHelper? = null
     private val base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo1e+hjuC8QlVO4HZM2/D5W/Mn26L1bW2edBJs2MEO6CFqnRrVjkm7wAW5NXq7HYpG4pyM1W3fz+aPxIO7zcNEEiNq9k7NaMjphe3Whhvc5ro8O43xEGjTQ+PVoDAPx3JepkU9yM0FQ8lgvWs5UFZ1S1lmMbt1DIUOFz3kXml/vR6D3NCjk8XNq2H0HdZSErnulnlZrhBAyf7KAH+PoNkFcd7ADxVtwzPsNhJmsN9WVEk6tInTouiRYITDKl7VAA3n3+TbmCKpsYN7A5O5PkwMrbRaTGHbbAABShaDl9fjBYquS8uCF23lLUTLHGlSIaC5pUMFPm/5Vcbg7ahvUF8YwIDAQAB"
-    private val purchases: SparseArray<PurchaseStructDto> = SparseArray()
+    private var purchases: SparseArray<PurchaseStructDto> = SparseArray()
     private var splash: SplashStartApp? = null
     private var drawer: DrawerInterface? = null
     private var standaloneMode: Boolean = true
@@ -68,15 +68,18 @@ class InAppPurchaseContainer {
         return isPurchased
     }
 
-    fun setupPurchases(){
-        purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", "", "0.0", false))
-        purchases.put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", "", "0.0", false))
+    fun setupPurchases() {
+        if (purchases.size() < 1) {
+            realmContainer.getInAppPurchases(purchases)
+//            purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", "", "0.0", false))
+//            purchases.put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", "", "0.0", false))
+        }
     }
 
     fun initPurchases(context: Context) {
@@ -103,16 +106,17 @@ class InAppPurchaseContainer {
                             splash?.startApp()
                             return@QueryInventoryFinishedListener
                         }
-                        purchases.run {
-                            put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, inv.hasPurchase("full_basic_test")))
-                            put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", inv.getSkuDetails("full_serial_1_test").description, inv.getSkuDetails("full_serial_1_test").price, inv.hasPurchase("full_serial_1_test")))
-                            put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", inv.getSkuDetails("full_serial_2_test").description, inv.getSkuDetails("full_serial_2_test").price, inv.hasPurchase("full_serial_2_test")))
-                            put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", inv.getSkuDetails("full_serial_3_test").description, inv.getSkuDetails("full_serial_3_test").price, inv.hasPurchase("full_serial_3_test")))
-                            put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", inv.getSkuDetails("full_serial_4_test").description, inv.getSkuDetails("full_serial_4_test").price, inv.hasPurchase("full_serial_4_test")))
-                            put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", inv.getSkuDetails("full_serial_5_test").description, inv.getSkuDetails("full_serial_5_test").price, inv.hasPurchase("full_serial_5_test")))
-                            put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", inv.getSkuDetails("full_serial_6_test").description, inv.getSkuDetails("full_serial_6_test").price, inv.hasPurchase("full_serial_6_test")))
-                            put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", inv.getSkuDetails("full_serial_7_test").description, inv.getSkuDetails("full_serial_7_test").price, inv.hasPurchase("full_serial_7_test")))
-                        }
+                        realmContainer.saveInAppPurchases(purchases, inv)
+//                        purchases.run {
+//                            put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, inv.hasPurchase("full_basic_test")))
+//                            put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", inv.getSkuDetails("full_serial_1_test").description, inv.getSkuDetails("full_serial_1_test").price, inv.hasPurchase("full_serial_1_test")))
+//                            put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", inv.getSkuDetails("full_serial_2_test").description, inv.getSkuDetails("full_serial_2_test").price, inv.hasPurchase("full_serial_2_test")))
+//                            put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", inv.getSkuDetails("full_serial_3_test").description, inv.getSkuDetails("full_serial_3_test").price, inv.hasPurchase("full_serial_3_test")))
+//                            put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", inv.getSkuDetails("full_serial_4_test").description, inv.getSkuDetails("full_serial_4_test").price, inv.hasPurchase("full_serial_4_test")))
+//                            put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", inv.getSkuDetails("full_serial_5_test").description, inv.getSkuDetails("full_serial_5_test").price, inv.hasPurchase("full_serial_5_test")))
+//                            put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", inv.getSkuDetails("full_serial_6_test").description, inv.getSkuDetails("full_serial_6_test").price, inv.hasPurchase("full_serial_6_test")))
+//                            put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", inv.getSkuDetails("full_serial_7_test").description, inv.getSkuDetails("full_serial_7_test").price, inv.hasPurchase("full_serial_7_test")))
+//                        }
                         standaloneMode = false
                         Log.d(TAG, "Received purchases : $purchases")
                         splash?.startApp()
@@ -136,16 +140,16 @@ class InAppPurchaseContainer {
 //                splash?.startApp()
                 return@QueryInventoryFinishedListener
             }
-            purchases.run {
-                put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, inv.hasPurchase("full_basic_test")))
-                put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", inv.getSkuDetails("full_serial_1_test").description, inv.getSkuDetails("full_serial_1_test").price, inv.hasPurchase("full_serial_1_test")))
-                put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", inv.getSkuDetails("full_serial_2_test").description, inv.getSkuDetails("full_serial_2_test").price, inv.hasPurchase("full_serial_2_test")))
-                put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", inv.getSkuDetails("full_serial_3_test").description, inv.getSkuDetails("full_serial_3_test").price, inv.hasPurchase("full_serial_3_test")))
-                put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", inv.getSkuDetails("full_serial_4_test").description, inv.getSkuDetails("full_serial_4_test").price, inv.hasPurchase("full_serial_4_test")))
-                put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", inv.getSkuDetails("full_serial_5_test").description, inv.getSkuDetails("full_serial_5_test").price, inv.hasPurchase("full_serial_5_test")))
-                put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", inv.getSkuDetails("full_serial_6_test").description, inv.getSkuDetails("full_serial_6_test").price, inv.hasPurchase("full_serial_6_test")))
-                put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", inv.getSkuDetails("full_serial_7_test").description, inv.getSkuDetails("full_serial_7_test").price, inv.hasPurchase("full_serial_7_test")))
-            }
+//            purchases.run {
+//                put(EXAM_BASE, PurchaseStructDto("full_basic_test", inv.getSkuDetails("full_basic_test").description, inv.getSkuDetails("full_basic_test").price, inv.hasPurchase("full_basic_test")))
+//                put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", inv.getSkuDetails("full_serial_1_test").description, inv.getSkuDetails("full_serial_1_test").price, inv.hasPurchase("full_serial_1_test")))
+//                put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", inv.getSkuDetails("full_serial_2_test").description, inv.getSkuDetails("full_serial_2_test").price, inv.hasPurchase("full_serial_2_test")))
+//                put(EXAM_SERIAL_3, PurchaseStructDto("full_serial_3_test", inv.getSkuDetails("full_serial_3_test").description, inv.getSkuDetails("full_serial_3_test").price, inv.hasPurchase("full_serial_3_test")))
+//                put(EXAM_SERIAL_4, PurchaseStructDto("full_serial_4_test", inv.getSkuDetails("full_serial_4_test").description, inv.getSkuDetails("full_serial_4_test").price, inv.hasPurchase("full_serial_4_test")))
+//                put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", inv.getSkuDetails("full_serial_5_test").description, inv.getSkuDetails("full_serial_5_test").price, inv.hasPurchase("full_serial_5_test")))
+//                put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", inv.getSkuDetails("full_serial_6_test").description, inv.getSkuDetails("full_serial_6_test").price, inv.hasPurchase("full_serial_6_test")))
+//                put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", inv.getSkuDetails("full_serial_7_test").description, inv.getSkuDetails("full_serial_7_test").price, inv.hasPurchase("full_serial_7_test")))
+//            }
             standaloneMode = false
         })
     }

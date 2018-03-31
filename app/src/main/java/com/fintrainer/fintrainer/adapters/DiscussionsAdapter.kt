@@ -18,19 +18,19 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, private val account: GoogleSignInAccount?, private val discussionsButtonsClickListener: DiscussionsButtonsClickListener) : RecyclerView.Adapter<DiscussionsAdapter.ViewHolder>() {
 
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent?.context)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent.context)
             .inflate(R.layout.item_discussions, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var superRate = 0
 //        var likeClicked = false
 //        var dislikeClicked = false
 
-        holder?.userName?.text = discussions[position].discussionCreator ?: ""
-        holder?.discussionText?.text = discussions[position].text ?: ""
-        holder?.tvCommentsCount?.text = discussions[position].commentList?.size.toString()
-        holder?.itemView?.context?.let { ContextCompat.getColor(it, R.color.blue_grey_300) }?.let { holder.dislike?.setColorFilter(it) }
-        holder?.itemView?.context?.let { ContextCompat.getColor(it, R.color.blue_grey_300) }?.let { holder.likes?.setColorFilter(it) }
+        holder.userName?.text = discussions[position].discussionCreator ?: ""
+        holder.discussionText?.text = discussions[position].text ?: ""
+        holder.tvCommentsCount?.text = discussions[position].commentList?.size.toString()
+        holder.itemView?.context?.let { ContextCompat.getColor(it, R.color.blue_grey_300) }?.let { holder.dislike?.setColorFilter(it) }
+        holder.itemView?.context?.let { ContextCompat.getColor(it, R.color.blue_grey_300) }?.let { holder.likes?.setColorFilter(it) }
 
         discussions[position].rateList?.let {
             for (rateElem in it) {
@@ -38,12 +38,12 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
                 if (account?.email.equals(rateElem.userId)) {
                     if (rateElem.direction!!) {
 //                        likeClicked = true
-                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.green_300) }?.let { it1 -> holder.likes?.setColorFilter(it1) }
-                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.blue_grey_300) }?.let { it1 -> holder.dislike?.setColorFilter(it1) }
+                        holder.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.green_300) }?.let { it1 -> holder.likes?.setColorFilter(it1) }
+                        holder.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.blue_grey_300) }?.let { it1 -> holder.dislike?.setColorFilter(it1) }
                     } else {
 //                        dislikeClicked = true
-                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.red_300) }?.let { it1 -> holder.dislike?.setColorFilter(it1) }
-                        holder?.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.blue_grey_300) }?.let { it1 -> holder.likes?.setColorFilter(it1) }
+                        holder.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.red_300) }?.let { it1 -> holder.dislike?.setColorFilter(it1) }
+                        holder.itemView?.context?.let { it1 -> ContextCompat.getColor(it1, R.color.blue_grey_300) }?.let { it1 -> holder.likes?.setColorFilter(it1) }
                     }
                 }
             }
@@ -51,7 +51,7 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
 
 
 
-        holder?.ivStartDiscussion?.onClick {
+        holder.ivStartDiscussion?.onClick {
             discussions[position].questionId?.let { it1 ->
                 discussions[position].questionType?.
                         let { it2 ->
@@ -61,7 +61,7 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
             }
         }
 
-        holder?.likes?.onClick {
+        holder.likes?.onClick {
 //            var finded = false
 ////            likeClicked = !likeClicked
 //            discussions[position].rateList?.forEach {
@@ -92,7 +92,7 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
             discussionsButtonsClickListener.onRateClick(discussions[position], true)
         }
 
-        holder?.dislike?.onClick {
+        holder.dislike?.onClick {
 //            var finded = false
 //            dislikeClicked = !dislikeClicked
 //            discussions[position].rateList?.forEach {
@@ -145,13 +145,13 @@ class DiscussionsAdapter(private val discussions: List<DiscussionQuestionDto>, p
 
         }
 
-        holder?.rateCount?.text = superRate.toString()
+        holder.rateCount?.text = superRate.toString()
         if (superRate < DISLIKES_TO_HIDE_COMMENT) {
-            holder?.mainLayout?.visibility = View.GONE
-            holder?.negativeLayout?.visibility = View.VISIBLE
+            holder.mainLayout?.visibility = View.GONE
+            holder.negativeLayout?.visibility = View.VISIBLE
         } else {
-            holder?.mainLayout?.visibility = View.VISIBLE
-            holder?.negativeLayout?.visibility = View.GONE
+            holder.mainLayout?.visibility = View.VISIBLE
+            holder.negativeLayout?.visibility = View.GONE
         }
     }
 

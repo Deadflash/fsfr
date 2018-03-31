@@ -34,5 +34,5 @@ class AppModule(val context: Context) {
 
     @Provides
     @Singleton
-    fun provideInAppPurchaiseContainer(): InAppPurchaseContainer = InAppPurchaseContainer()
+    fun provideInAppPurchaiseContainer(realmContainer: RealmContainer): InAppPurchaseContainer = InAppPurchaseContainer(realmContainer)
 }
