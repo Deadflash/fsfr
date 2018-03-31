@@ -71,6 +71,9 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
     fun setupPurchases() {
         if (purchases.size() < 1) {
             realmContainer.getInAppPurchases(purchases)
+            if (purchases.size() < 1) {
+                realmContainer.fillFakePurchases(purchases)
+            }
 //            purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
 //            purchases.put(EXAM_SERIAL_1, PurchaseStructDto("full_serial_1_test", "", "0.0", false))
 //            purchases.put(EXAM_SERIAL_2, PurchaseStructDto("full_serial_2_test", "", "0.0", false))

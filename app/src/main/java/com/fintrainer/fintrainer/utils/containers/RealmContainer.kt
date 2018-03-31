@@ -42,7 +42,8 @@ class RealmContainer {
                 .assetFile("n") // e.g "default.realmWithExams" or "lib/data.realmWithExams"
                 .modules(Default())
                 .encryptionKey((fk + fk2).toByteArray())
-                .schemaVersion(1)
+                .schemaVersion(3)
+                .migration(PurchaseMigration())
                 .build()
 
 //        Realm.compactRealm(config);
@@ -68,7 +69,7 @@ class RealmContainer {
 
     fun saveInAppPurchases(purchases: SparseArray<PurchaseStructDto>, inv: Inventory) {
 
-        Realm.getInstance(statisticConf).use {
+        Realm.getDefaultInstance().use {
             it.executeTransaction {
                 val purchases = RealmList<PurchaseStructDto>()
                 (0..7).forEach {
@@ -141,8 +142,73 @@ class RealmContainer {
         getInAppPurchases(purchases)
     }
 
+    fun fillFakePurchases(purchases: SparseArray<PurchaseStructDto>){
+        (0..7).forEach {
+            val purchase = PurchaseStructDto()
+            when (it) {
+                0 -> {
+                    purchase.type = 0
+                    purchase.purchaseId = "full_basic_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                1 -> {
+                    purchase.type = 1
+                    purchase.purchaseId = "full_serial_1_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                2 -> {
+                    purchase.type = 2
+                    purchase.purchaseId = "full_serial_2_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                3 -> {
+                    purchase.type = 3
+                    purchase.purchaseId = "full_serial_3_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                4 -> {
+                    purchase.type = 4
+                    purchase.purchaseId = "full_serial_4_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                5 -> {
+                    purchase.type = 5
+                    purchase.purchaseId = "full_serial_5_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                6 -> {
+                    purchase.type = 6
+                    purchase.purchaseId = "full_serial_6_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+                7 -> {
+                    purchase.type = 7
+                    purchase.purchaseId = "full_serial_7_test"
+                    purchase.description = ""
+                    purchase.price = ""
+                    purchase.hasPurchased = false
+                }
+            }
+            purchases.put(it, purchase)
+        }
+    }
+
     fun getInAppPurchases(purchases: SparseArray<PurchaseStructDto>) {
-        Realm.getInstance(statisticConf).executeTransaction {
+        Realm.getDefaultInstance().executeTransaction {
             it.where(InAppPurchases::class.java).findFirst()?.let { inAppPurchases ->
                 purchases.run {
                     it.copyFromRealm(inAppPurchases)?.purchases?.forEach{purchase: PurchaseStructDto? -> purchase?.type?.let { it1 -> put(it1, purchase) } }
@@ -474,10 +540,10 @@ class RealmContainer {
         }
     }
 
-    @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class)])
+    @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class), (InAppPurchases::class), (PurchaseStructDto::class)])
     private inner class Default
 
-    @RealmModule(classes = [(CorrectedTestDto::class), (AverageGradeStatisticDto::class), (FavouriteQuestionsDto::class), (InAppPurchases::class), (PurchaseStructDto::class)])
+    @RealmModule(classes = [(CorrectedTestDto::class), (AverageGradeStatisticDto::class), (FavouriteQuestionsDto::class)])
     private inner class Statistics
 
     @RealmModule(classes = [(ChapterStatistics::class)])

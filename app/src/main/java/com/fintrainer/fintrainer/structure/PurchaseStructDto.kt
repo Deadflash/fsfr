@@ -7,7 +7,7 @@ import io.realm.RealmObject
  */
 
 open class PurchaseStructDto : RealmObject(){
-    var type: Int? = null
+    var type: Int = 0
     var purchaseId: String? = null
     var description: String? = null
     var price: String? = null
