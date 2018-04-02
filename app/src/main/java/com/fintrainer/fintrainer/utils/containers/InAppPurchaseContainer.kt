@@ -6,14 +6,6 @@ import android.util.Log
 import android.util.SparseArray
 import collections.forEach
 import com.fintrainer.fintrainer.structure.PurchaseStructDto
-import com.fintrainer.fintrainer.utils.Constants.EXAM_BASE
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_1
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_2
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_3
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_4
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_5
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_6
-import com.fintrainer.fintrainer.utils.Constants.EXAM_SERIAL_7
 import com.fintrainer.fintrainer.utils.billing.IabHelper
 import com.fintrainer.fintrainer.utils.billing.SkuDetails
 import com.fintrainer.fintrainer.views.BaseActivity
@@ -69,9 +61,9 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
     }
 
     fun setupPurchases() {
-        if (purchases.size() < 1) {
+//        if (purchases.size() < 1) {
             realmContainer.getInAppPurchases(purchases)
-            if (purchases.size() < 1) {
+            if (purchases.size() == 0) {
                 realmContainer.fillFakePurchases(purchases)
             }
 //            purchases.put(EXAM_BASE, PurchaseStructDto("full_basic_test", "", "0.0", false))
@@ -82,7 +74,7 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
 //            purchases.put(EXAM_SERIAL_5, PurchaseStructDto("full_serial_5_test", "", "0.0", false))
 //            purchases.put(EXAM_SERIAL_6, PurchaseStructDto("full_serial_6_test", "", "0.0", false))
 //            purchases.put(EXAM_SERIAL_7, PurchaseStructDto("full_serial_7_test", "", "0.0", false))
-        }
+//        }
     }
 
     fun initPurchases(context: Context) {
@@ -182,7 +174,8 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
             } else {
                 purchases.forEach { _, purchaseStructDto ->
                     if (purchaseStructDto.purchaseId == purchase.sku) {
-                        purchaseStructDto.hasPurchased = true
+                        realmContainer.savePurchase(purchaseStructDto.type, purchases)
+//                        purchaseStructDto.hasPurchased = true
                     }
                 }
                 drawer?.let { (it as DrawerActivity).setupPurchasedIcons() }

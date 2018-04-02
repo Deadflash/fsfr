@@ -214,13 +214,9 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
                 // we need to vend the ghost header and position/size it same as the actual header
                 adapterPosition++;
 
-                try {
-                    View ghostHeader = recycler.getViewForPosition(adapterPosition);
-                    addView(ghostHeader);
-                    layoutDecorated(ghostHeader, left, top, right, top + height);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                View ghostHeader = recycler.getViewForPosition(adapterPosition);
+                addView(ghostHeader);
+                layoutDecorated(ghostHeader, left, top, right, top + height);
             } else if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
 
                 // we need to back up and get the header for this ghostHeader
@@ -309,63 +305,61 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
             // content moving downwards, so we're panning to top of list
 
             View topView = getTopmostChildView();
-            if (topView != null) {
-                while (scrolled > dy) {
+            while (scrolled > dy) {
 
-                    // get the topmost view
-                    int hangingTop = Math.max(-getDecoratedTop(topView), 0);
-                    int scrollBy = Math.min(scrolled - dy, hangingTop); // scrollBy is positive, causing content to move downwards
+                // get the topmost view
+                int hangingTop = Math.max(-getDecoratedTop(topView), 0);
+                int scrollBy = Math.min(scrolled - dy, hangingTop); // scrollBy is positive, causing content to move downwards
 
-                    scrolled -= scrollBy;
-                    offsetChildrenVertical(scrollBy);
+                scrolled -= scrollBy;
+                offsetChildrenVertical(scrollBy);
 
-                    // vend next view above topView
+                // vend next view above topView
 
-                    if (firstViewAdapterPosition > 0 && scrolled > dy) {
+                if (firstViewAdapterPosition > 0 && scrolled > dy) {
+                    firstViewAdapterPosition--;
+
+                    // we're skipping headers. they should already be vended, but if we're vending a ghostHeader
+                    // here an actual header will be vended if needed for measurement
+                    int itemViewType = adapter.getItemViewBaseType(firstViewAdapterPosition);
+                    boolean isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
+
+                    // skip the header, move to next item above
+                    if (isHeader) {
                         firstViewAdapterPosition--;
-
-                        // we're skipping headers. they should already be vended, but if we're vending a ghostHeader
-                        // here an actual header will be vended if needed for measurement
-                        int itemViewType = adapter.getItemViewBaseType(firstViewAdapterPosition);
-                        boolean isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
-
-                        // skip the header, move to next item above
-                        if (isHeader) {
-                            firstViewAdapterPosition--;
-                            if (firstViewAdapterPosition < 0) {
-                                break;
-                            }
-
-                            itemViewType = adapter.getItemViewBaseType(firstViewAdapterPosition);
-                            isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
-
-                            // If it's still a header, we don't need to do anything right now
-                            if (isHeader)
-                                break;
+                        if (firstViewAdapterPosition < 0) {
+                            break;
                         }
 
-                        View v = recycler.getViewForPosition(firstViewAdapterPosition);
-                        addView(v, 0);
+                        itemViewType = adapter.getItemViewBaseType(firstViewAdapterPosition);
+                        isHeader = itemViewType == SectioningAdapter.TYPE_HEADER;
 
-                        int bottom = getDecoratedTop(topView);
-                        int top;
-                        boolean isGhostHeader = itemViewType == SectioningAdapter.TYPE_GHOST_HEADER;
-                        if (isGhostHeader) {
-                            View header = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(firstViewAdapterPosition));
-                            top = bottom - getDecoratedMeasuredHeight(header); // header is already measured
-                        } else {
-                            measureChildWithMargins(v, 0, 0);
-                            top = bottom - getDecoratedMeasuredHeight(v);
-                        }
-
-                        layoutDecorated(v, left, top, right, bottom);
-                        topView = v;
-
-                    } else {
-                        break;
+                        // If it's still a header, we don't need to do anything right now
+                        if (isHeader)
+                            break;
                     }
 
+                    View v = recycler.getViewForPosition(firstViewAdapterPosition);
+                    addView(v, 0);
+
+                    int bottom = getDecoratedTop(topView);
+                    int top;
+                    boolean isGhostHeader = itemViewType == SectioningAdapter.TYPE_GHOST_HEADER;
+                    if (isGhostHeader) {
+                        View header = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(firstViewAdapterPosition));
+                        top = bottom - getDecoratedMeasuredHeight(header); // header is already measured
+                    } else {
+                        measureChildWithMargins(v, 0, 0);
+                        top = bottom - getDecoratedMeasuredHeight(v);
+                    }
+
+                    layoutDecorated(v, left, top, right, bottom);
+                    topView = v;
+
+                } else {
+                    break;
                 }
+
             }
 
         } else {
@@ -374,62 +368,60 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 
             int parentHeight = getHeight();
             View bottomView = getBottommostChildView();
-            if (bottomView != null) {
-                while (scrolled < dy) {
-                    int hangingBottom = Math.max(getDecoratedBottom(bottomView) - parentHeight, 0);
-                    int scrollBy = -Math.min(dy - scrolled, hangingBottom);
-                    scrolled -= scrollBy;
-                    offsetChildrenVertical(scrollBy);
+            while (scrolled < dy) {
+                int hangingBottom = Math.max(getDecoratedBottom(bottomView) - parentHeight, 0);
+                int scrollBy = -Math.min(dy - scrolled, hangingBottom);
+                scrolled -= scrollBy;
+                offsetChildrenVertical(scrollBy);
 
-                    int adapterPosition = getViewAdapterPosition(bottomView);
-                    int nextAdapterPosition = adapterPosition + 1;
+                int adapterPosition = getViewAdapterPosition(bottomView);
+                int nextAdapterPosition = adapterPosition + 1;
 
-                    if (scrolled < dy && nextAdapterPosition < state.getItemCount()) {
+                if (scrolled < dy && nextAdapterPosition < state.getItemCount()) {
 
-                        int top = getDecoratedBottom(bottomView);
+                    int top = getDecoratedBottom(bottomView);
 
-                        int itemViewType = adapter.getItemViewBaseType(nextAdapterPosition);
-                        if (itemViewType == SectioningAdapter.TYPE_HEADER) {
+                    int itemViewType = adapter.getItemViewBaseType(nextAdapterPosition);
+                    if (itemViewType == SectioningAdapter.TYPE_HEADER) {
 
-                            // get the header and measure it so we can followup immediately by vending the ghost header
-                            View headerView = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
-                            int height = getDecoratedMeasuredHeight(headerView);
-                            layoutDecorated(headerView, left, 0, right, height);
+                        // get the header and measure it so we can followup immediately by vending the ghost header
+                        View headerView = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
+                        int height = getDecoratedMeasuredHeight(headerView);
+                        layoutDecorated(headerView, left, 0, right, height);
 
-                            // but we need to vend the followup ghost header too
-                            nextAdapterPosition++;
-                            View ghostHeader = recycler.getViewForPosition(nextAdapterPosition);
-                            addView(ghostHeader);
-                            layoutDecorated(ghostHeader, left, top, right, top + height);
-                            bottomView = ghostHeader;
+                        // but we need to vend the followup ghost header too
+                        nextAdapterPosition++;
+                        View ghostHeader = recycler.getViewForPosition(nextAdapterPosition);
+                        addView(ghostHeader);
+                        layoutDecorated(ghostHeader, left, top, right, top + height);
+                        bottomView = ghostHeader;
 
-                        } else if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
+                    } else if (itemViewType == SectioningAdapter.TYPE_GHOST_HEADER) {
 
-                            // get the header and measure it so we can followup immediately by vending the ghost header
-                            View headerView = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
-                            int height = getDecoratedMeasuredHeight(headerView);
-                            layoutDecorated(headerView, left, 0, right, height);
+                        // get the header and measure it so we can followup immediately by vending the ghost header
+                        View headerView = createSectionHeaderIfNeeded(recycler, adapter.getSectionForAdapterPosition(nextAdapterPosition));
+                        int height = getDecoratedMeasuredHeight(headerView);
+                        layoutDecorated(headerView, left, 0, right, height);
 
-                            // but we need to vend the followup ghost header too
-                            View ghostHeader = recycler.getViewForPosition(nextAdapterPosition);
-                            addView(ghostHeader);
-                            layoutDecorated(ghostHeader, left, top, right, top + height);
-                            bottomView = ghostHeader;
-
-                        } else {
-
-                            View v = recycler.getViewForPosition(nextAdapterPosition);
-                            addView(v);
-
-                            measureChildWithMargins(v, 0, 0);
-                            int height = getDecoratedMeasuredHeight(v);
-                            layoutDecorated(v, left, top, right, top + height);
-                            bottomView = v;
-                        }
+                        // but we need to vend the followup ghost header too
+                        View ghostHeader = recycler.getViewForPosition(nextAdapterPosition);
+                        addView(ghostHeader);
+                        layoutDecorated(ghostHeader, left, top, right, top + height);
+                        bottomView = ghostHeader;
 
                     } else {
-                        break;
+
+                        View v = recycler.getViewForPosition(nextAdapterPosition);
+                        addView(v);
+
+                        measureChildWithMargins(v, 0, 0);
+                        int height = getDecoratedMeasuredHeight(v);
+                        layoutDecorated(v, left, top, right, top + height);
+                        bottomView = v;
                     }
+
+                } else {
+                    break;
                 }
             }
         }

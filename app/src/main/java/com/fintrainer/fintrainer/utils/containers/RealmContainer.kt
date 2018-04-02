@@ -6,14 +6,13 @@ import android.preference.PreferenceManager
 import android.util.SparseArray
 import com.fintrainer.fintrainer.structure.*
 import com.fintrainer.fintrainer.structure.chapters.ChapterStatistics
-import com.fintrainer.fintrainer.utils.Constants
 import com.fintrainer.fintrainer.utils.Constants.EXAM_INTENT
 import com.fintrainer.fintrainer.utils.Constants.RANDOM_TESTS_COUNT
 import com.fintrainer.fintrainer.utils.Constants.TESTING_INTENT
 import com.fintrainer.fintrainer.utils.billing.Inventory
+import com.fintrainer.fintrainer.utils.billing.Purchase
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.RealmList
 import io.realm.annotations.RealmModule
 import java.util.*
 
@@ -70,10 +69,10 @@ class RealmContainer {
     fun saveInAppPurchases(purchases: SparseArray<PurchaseStructDto>, inv: Inventory) {
 
         Realm.getDefaultInstance().use {
-            it.executeTransaction {
-                val purchases = RealmList<PurchaseStructDto>()
+            it.executeTransaction { realm ->
                 (0..7).forEach {
-                    val purchase = PurchaseStructDto()
+                    var purchase = realm.where(PurchaseStructDto::class.java).equalTo("type", it).findFirst()
+                            ?: PurchaseStructDto()
                     when (it) {
                         0 -> {
                             purchase.type = 0
@@ -132,17 +131,27 @@ class RealmContainer {
                             purchase.hasPurchased = inv.hasPurchase("full_serial_7_test")
                         }
                     }
-                    purchases.add(it, purchase)
+                    realm.insertOrUpdate(purchase)
                 }
-                val inAppPurchases = InAppPurchases()
-                inAppPurchases.purchases = purchases
-                it.copyToRealm(inAppPurchases)
             }
         }
+
         getInAppPurchases(purchases)
     }
 
-    fun fillFakePurchases(purchases: SparseArray<PurchaseStructDto>){
+    fun savePurchase(type: Int, purchases: SparseArray<PurchaseStructDto>) {
+        Realm.getDefaultInstance().executeTransaction {
+            val purchaseToSave = it.where(PurchaseStructDto::class.java).equalTo("type", type).findFirst()
+                    ?: PurchaseStructDto()
+            purchaseToSave.type = type
+            purchaseToSave.hasPurchased = true
+            it.insertOrUpdate(purchaseToSave)
+        }
+
+        getInAppPurchases(purchases)
+    }
+
+    fun fillFakePurchases(purchases: SparseArray<PurchaseStructDto>) {
         (0..7).forEach {
             val purchase = PurchaseStructDto()
             when (it) {
@@ -208,13 +217,27 @@ class RealmContainer {
     }
 
     fun getInAppPurchases(purchases: SparseArray<PurchaseStructDto>) {
-        Realm.getDefaultInstance().executeTransaction {
-            it.where(InAppPurchases::class.java).findFirst()?.let { inAppPurchases ->
-                purchases.run {
-                    it.copyFromRealm(inAppPurchases)?.purchases?.forEach{purchase: PurchaseStructDto? -> purchase?.type?.let { it1 -> put(it1, purchase) } }
+
+        Realm.getDefaultInstance().executeTransaction { realm ->
+            (0..7).forEach {
+                val purchase = realm.where(PurchaseStructDto::class.java).equalTo("type", it).findFirst()
+                if (purchase != null) {
+                    purchases.put(it, realm.copyFromRealm(purchase))
+                } else {
+                    val emptyPurchase = PurchaseStructDto()
+                    emptyPurchase.type = it
+                    purchases.put(it, emptyPurchase)
                 }
             }
         }
+
+//        Realm.getDefaultInstance().executeTransaction {
+//            it.where(InAppPurchases::class.java).findFirst()?.let { inAppPurchases ->
+//                purchases.run {
+//                    it.copyFromRealm(inAppPurchases)?.purchases?.forEach { purchase: PurchaseStructDto? -> purchase?.type?.let { it1 -> put(it1, purchase) } }
+//                }
+//            }
+//        }
     }
 
     fun getExamInformation(examId: Int): ExamStatisticAndInfo {
@@ -540,7 +563,8 @@ class RealmContainer {
         }
     }
 
-    @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class), (InAppPurchases::class), (PurchaseStructDto::class)])
+    //    @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class), (InAppPurchases::class), (PurchaseStructDto::class)])
+    @RealmModule(classes = [(ExamDto::class), (TestingDto::class), (ChapterRealm::class), (AnswersDto::class), (PurchaseStructDto::class)])
     private inner class Default
 
     @RealmModule(classes = [(CorrectedTestDto::class), (AverageGradeStatisticDto::class), (FavouriteQuestionsDto::class)])

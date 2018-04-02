@@ -22,6 +22,11 @@ class PurchaseMigration : RealmMigration {
                     .addRealmListField("purchases", purchaseStruct)
             oldVersion++
         }
+//        if (oldVersion == 2L || oldVersion == 3L) {
+//            schema.get("InAppPurchases")?.addField("id", Int::class.java, FieldAttribute.PRIMARY_KEY)
+////            schema.get("PurchaseStructDto")?.addPrimaryKey("type")
+//            oldVersion = 4
+//        }
         println("After Migration old schema: $oldVersion, new schema: $newVersion")
     }
 }
