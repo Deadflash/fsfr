@@ -61,12 +61,9 @@ import icepick.State
 import kotlinx.android.synthetic.main.activity_drawer.*
 import kotlinx.android.synthetic.main.drawer_header.view.*
 import kotlinx.android.synthetic.main.drawer_main.*
-import kotlinx.android.synthetic.main.fragment_container.*
 import kotlinx.android.synthetic.main.toolbar_layout.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.appcompat.v7.Appcompat
-import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.design.snackbar
 import org.jetbrains.anko.email
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.startActivityForResult
@@ -174,10 +171,11 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             welcomeDialog.show()
         }
         if (inAppPurchaseContainer.getAppMode()) {
+            inAppPurchaseContainer.switchOffStandalone()
             val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), getString(R.string.unable_to_get_purchases), Snackbar.LENGTH_LONG)
             snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
             snack.show()
-            inAppPurchaseContainer.queryInventory()
+//            inAppPurchaseContainer.queryInventory()
         }
     }
 

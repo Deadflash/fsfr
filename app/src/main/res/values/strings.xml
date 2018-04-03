@@ -48,7 +48,7 @@
     <string name="rate">Оценить</string>
     <string name="welcome">Добро пожаловать!</string>
     <string name="welcome_message">Хотите авторизироваться для получения возможности просмотра комментариев и участия в обсуждении вопросов?</string>
-    <string name="unable_to_get_purchases">Не удалось получить покупки</string>
+    <string name="unable_to_get_purchases">Проверьте подключение к интернету</string>
     <string name="later">Позже</string>
     <string name="rateDescription">Если вам понравилось приложение, пожалуйста оцените его и напишите в коментариях чего вам не хватает и что бы вы хотели увидеть в следующих обновлениях. \n\nСпасибо за поддержку!</string>
     <string name="my_exams">Мои Экзамены</string>
