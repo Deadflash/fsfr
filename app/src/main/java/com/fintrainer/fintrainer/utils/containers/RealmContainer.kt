@@ -37,8 +37,8 @@ class RealmContainer {
 
     fun initRealm() {
         val config = RealmConfiguration.Builder()
-                .name("n")
-                .assetFile("n") // e.g "default.realmWithExams" or "lib/data.realmWithExams"
+                .name("n0")
+                .assetFile("n0") // e.g "default.realmWithExams" or "lib/data.realmWithExams"
                 .modules(Default())
                 .encryptionKey((fk + fk2).toByteArray())
                 .schemaVersion(3)
