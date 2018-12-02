@@ -10,7 +10,6 @@ import com.fintrainer.fintrainer.utils.billing.IabHelper
 import com.fintrainer.fintrainer.utils.billing.SkuDetails
 import com.fintrainer.fintrainer.views.BaseActivity
 import com.fintrainer.fintrainer.views.drawer.DrawerActivity
-import com.fintrainer.fintrainer.views.splash.Splash
 import java.util.*
 
 /**
@@ -36,7 +35,7 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
         standaloneMode = false
     }
 
-    fun initSplash(splash: Splash) {
+    fun initSplash(splash: SplashStartApp) {
         this.splash = splash
     }
 
@@ -84,22 +83,22 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
                             ArrayList(), IabHelper.QueryInventoryFinishedListener { result, inv ->
                         if (result.isFailure) {
                             Log.d(TAG, "Result is failure In-app Billing: " + result)
-                            splash?.startApp()
+                            splash?.onAppInited()
                             return@QueryInventoryFinishedListener
                         }
                         realmContainer.saveInAppPurchases(purchases, inv)
                         standaloneMode = false
                         Log.d(TAG, "Received purchases : $purchases")
-                        splash?.startApp()
+                        splash?.onAppInited()
                     })
                 } catch (e: IabHelper.IabAsyncInProgressException) {
                     Log.w(TAG, "Error while getting billing service. Exception : ", e)
-                    splash?.startApp()
+                    splash?.onAppInited()
                 }
             })
             setPurchaseListener()
         } else {
-            splash?.startApp()
+            splash?.onAppInited()
         }
     }
 
@@ -151,7 +150,7 @@ class InAppPurchaseContainer(val realmContainer: RealmContainer) {
     }
 
     interface SplashStartApp {
-        fun startApp()
+        fun onAppInited()
     }
 
     interface DrawerInterface {

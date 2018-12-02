@@ -8,7 +8,8 @@ import com.fintrainer.fintrainer.views.drawer.DrawerActivity
 import org.jetbrains.anko.startActivity
 import javax.inject.Inject
 
-class Splash : AppCompatActivity(), InAppPurchaseContainer.SplashStartApp {
+
+class Splash : AppCompatActivity() {
 
     @Inject
     lateinit var inAppPurchaseContainer: InAppPurchaseContainer
@@ -17,12 +18,15 @@ class Splash : AppCompatActivity(), InAppPurchaseContainer.SplashStartApp {
         super.onCreate(savedInstanceState)
         App.appComponent.inject(this)
 
-        inAppPurchaseContainer.initSplash(this@Splash)
-        inAppPurchaseContainer.setupPurchases()
-        inAppPurchaseContainer.initPurchases(this@Splash)
+
     }
 
-    override fun startApp() {
+    override fun onStart() {
+        super.onStart()
+        startApp()
+    }
+
+    fun startApp() {
         startActivity<DrawerActivity>()
     }
 

@@ -71,7 +71,8 @@ import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 
-class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener, AuthContract.View, InAppPurchaseContainer.DrawerInterface {
+class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DrawerContract.View, View.OnClickListener, AuthContract.View, InAppPurchaseContainer.DrawerInterface, InAppPurchaseContainer.SplashStartApp {
+
 
     private val TAG = DrawerActivity::class.java.name
 
@@ -125,14 +126,12 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
     private val delayDuration: Long = 100
     private var translationX: Float = 0.0f
     private lateinit var navView: View
-
     private lateinit var customPrefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawer)
         App.initDrawerComponent()?.inject(this)
-
         customPrefs = getSharedPreferences("customPrefs", 0)
         currentExam = customPrefs.getInt("currentExam", 0)
         if (currentExam > 7 || currentExam < 0) {
@@ -170,20 +169,18 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             welcomeDialog.setCancelable(false)
             welcomeDialog.show()
         }
-        if (inAppPurchaseContainer.getAppMode()) {
-            inAppPurchaseContainer.switchOffStandalone()
-            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), getString(R.string.unable_to_get_purchases), Snackbar.LENGTH_LONG)
-            snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
-            snack.show()
-//            inAppPurchaseContainer.queryInventory()
-        }
+
     }
 
     override fun onStart() {
         super.onStart()
         auth.bind(this@DrawerActivity)
         auth.tryToLogin()
+        proceedPurchases()
+
+        // put splash screen logic here
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -724,6 +721,23 @@ class DrawerActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedLi
             drawer.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    fun proceedPurchases() {
+        inAppPurchaseContainer.initSplash(this@DrawerActivity)
+        inAppPurchaseContainer.setupPurchases()
+        inAppPurchaseContainer.initPurchases(this@DrawerActivity)
+
+
+    }
+
+    override fun onAppInited() {
+        if (inAppPurchaseContainer.getAppMode()) {
+            inAppPurchaseContainer.switchOffStandalone()
+            val snack = Snackbar.make(findViewById(R.id.main_drawer_layout), getString(R.string.unable_to_get_purchases), Snackbar.LENGTH_LONG)
+            snack.view.findViewById<TextView>(android.support.design.R.id.snackbar_text).setTextColor(Color.WHITE)
+            snack.show()
         }
     }
 }
